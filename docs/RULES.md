@@ -69,6 +69,35 @@ All agents and humans working with the [MVP Factory Board](https://github.com/us
 
 ---
 
+## 8. When adding project docs to this repo (unified knowledge center)
+
+When you move **project-related agent docs** (e.g. agent operating documents for a product) into mvp-factory-control, **all agents** must follow these rules so every doc is resolvable from GitHub and from an agent’s workspace.
+
+### 8.1 Use stable references — no bare relative paths
+
+- **Do not** use relative links that only work inside one repo (e.g. `[RULES](RULES.md)` or `docs/TASKLIST.md` with no context).
+- **Do** use one or both of:
+  - **Full GitHub URL** for every referenced document (e.g. `https://github.com/moldovancsaba/mvp-factory-control/blob/main/docs/RULES.md`, `https://github.com/moldovancsaba/amanoba/blob/main/docs/TASKLIST.md`). Links then work when the doc is viewed on GitHub or from any clone.
+  - **Explicit local path** so agents can open the file in the IDE (e.g. `mvp-factory-control/docs/RULES.md`, `amanoba/docs/TASKLIST.md`). Use a convention that does not depend on one machine (e.g. avoid `/Users/username/` unless you document it as an example).
+
+### 8.2 Document “where things are” for agents
+
+- In each project-level agent doc (e.g. `agent-operating-document-<product>.md`), include a **“Where documents are (for agents)”** (or equivalent) section with:
+  - **This repo (mvp-factory-control):** table or list of doc name, GitHub URL, and local path (e.g. `mvp-factory-control/docs/RULES.md`).
+  - **Product repo(s):** same for the product repo (e.g. amanoba) — doc name, GitHub URL, local path (e.g. `amanoba/docs/TASKLIST.md`).
+- Local path format: **`<repo-folder>/docs/<file>`** or **`<repo-folder>/scripts/<file>`**, where `<repo-folder>` is the clone name (e.g. `amanoba`, `mvp-factory-control`). If both repos sit under a common parent (e.g. `Projects/`), you can note: “Full path e.g. `Projects/amanoba/docs/TASKLIST.md`”.
+
+### 8.3 One product doc per product
+
+- Store one main agent operating doc per product in this repo, with a clear name (e.g. `agent-operating-document-amanoba.md`).
+- That doc is the single place for “how agents work on product X and how product X ties into the board.” Link to this repo’s RULES, SETUP, SYNC, and script; link to the product repo’s core docs (TASKLIST, ROADMAP, RELEASE_NOTES, etc.) via GitHub URL + local path.
+
+### 8.4 Keep product development docs in the product repo
+
+- **Do not** move TASKLIST, ROADMAP, RELEASE_NOTES, layout_grammar, LEARNINGS, etc. out of the **product repo** (e.g. amanoba) into mvp-factory-control. Those stay with the code. In the agent doc, **reference** them via GitHub URL and local path only.
+
+---
+
 ## Summary
 
 | Rule | Meaning |
@@ -78,3 +107,4 @@ All agents and humans working with the [MVP Factory Board](https://github.com/us
 | Ready = start | Do not start work until the card is in **Ready**. |
 | Set Agent & Product | Every card has Agent and Product set. |
 | No overwrite | Script and behaviour: only change what you pass; leave the rest as on the board. |
+| **Doc references (knowledge center)** | When adding project/agent docs to this repo: use GitHub URLs + local paths; include a “Where documents are” section; one product doc per product; keep product dev docs (TASKLIST, ROADMAP, etc.) in the product repo. |
