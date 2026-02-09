@@ -1,0 +1,72 @@
+name: Refactor
+description: Structural change with no (or minimal) user-facing feature change
+title: "[Refactor] "
+labels: ["type:refactor"]
+body:
+  - type: input
+    id: product
+    attributes:
+      label: Product
+      placeholder: "Messmass"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Agent
+      options:
+        - Chappie
+        - Tribeca
+        - Katja
+        - Becca
+        - Gwen
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why this refactor is needed now (risk, speed, maintainability).
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What will be changed (files/modules/systems). Be explicit.
+    validations:
+      required: true
+
+  - type: textarea
+    id: non_goals
+    attributes:
+      label: Non-goals
+      description: What will NOT be changed.
+    validations:
+      required: true
+
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks / regression areas
+      placeholder: |
+        - ...
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: dod
+    attributes:
+      label: Definition of Done
+      options:
+        - label: Behaviour preserved (or explicitly documented if changed)
+          required: true
+        - label: Tests added/updated (or justified if not applicable)
+          required: true
+        - label: Docs updated (TASKLIST/RELEASE_NOTES if applicable)
+          required: true
+        - label: No new hardcoded sample data or placeholders
+          required: true
