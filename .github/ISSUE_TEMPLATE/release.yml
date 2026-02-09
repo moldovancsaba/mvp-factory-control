@@ -1,0 +1,59 @@
+name: Release
+description: Release planning and execution (MVP Factory standard)
+title: "[Release] "
+labels: ["type:release"]
+body:
+  - type: input
+    id: product
+    attributes:
+      label: Product
+      placeholder: "Amanoba"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Agent
+      options:
+        - Chappie
+        - Tribeca
+        - Katja
+        - Becca
+        - Gwen
+    validations:
+      required: true
+
+  - type: input
+    id: release
+    attributes:
+      label: Release tag / name
+      description: Example: v0.3.0 or 2026-02-09
+      placeholder: "v0.1.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What goes into this release (links to issues/PRs).
+      placeholder: |
+        - #
+        - #
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: dod
+    attributes:
+      label: Definition of Done
+      options:
+        - label: All scoped issues closed or explicitly deferred
+          required: true
+        - label: Tests green (or justified if not applicable)
+          required: true
+        - label: Release notes written and published
+          required: true
+        - label: Version/tag created (if applicable)
+          required: true
