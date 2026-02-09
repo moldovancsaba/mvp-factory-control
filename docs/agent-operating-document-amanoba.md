@@ -12,9 +12,37 @@
 
 This file lives in **[moldovancsaba/mvp-factory-control](https://github.com/moldovancsaba/mvp-factory-control)** so all project-related agentic docs are in one place. When working on **Amanoba** (code in the amanoba repo), use this doc for agent rules and for how Amanoba connects to the board.
 
-- **Board and project rules**: This repo’s [RULES.md](RULES.md), [SETUP.md](SETUP.md), [SYNC.md](SYNC.md).
-- **Script to set board fields**: This repo’s [scripts/mvp-factory-set-project-fields.sh](../scripts/mvp-factory-set-project-fields.sh) (or the same script in the amanoba repo).
-- **Amanoba code and task list**: In the **amanoba** repo — ROADMAP, TASKLIST, RELEASE_NOTES, layout_grammar, etc. (paths below refer to the amanoba repo when you work there).
+- **Board and project rules**: [RULES.md](https://github.com/moldovancsaba/mvp-factory-control/blob/main/docs/RULES.md), [SETUP.md](https://github.com/moldovancsaba/mvp-factory-control/blob/main/docs/SETUP.md), [SYNC.md](https://github.com/moldovancsaba/mvp-factory-control/blob/main/docs/SYNC.md).
+- **Script to set board fields**: [scripts/mvp-factory-set-project-fields.sh](https://github.com/moldovancsaba/mvp-factory-control/blob/main/scripts/mvp-factory-set-project-fields.sh) (in this repo; same script may exist in amanoba).
+- **Amanoba code and task list**: In the **amanoba** repo — see “Where documents are (for agents)” below for exact paths and URLs.
+
+---
+
+## Where documents are (for agents)
+
+Use these so agents can open the right file in the IDE or from the repo.
+
+**mvp-factory-control (this repo):**
+
+| Doc | GitHub URL | Local path (when cloned) |
+|-----|------------|---------------------------|
+| RULES | https://github.com/moldovancsaba/mvp-factory-control/blob/main/docs/RULES.md | `mvp-factory-control/docs/RULES.md` (e.g. `Projects/mvp-factory-control/docs/RULES.md`) |
+| SETUP | https://github.com/moldovancsaba/mvp-factory-control/blob/main/docs/SETUP.md | `mvp-factory-control/docs/SETUP.md` |
+| SYNC | https://github.com/moldovancsaba/mvp-factory-control/blob/main/docs/SYNC.md | `mvp-factory-control/docs/SYNC.md` |
+| Script | https://github.com/moldovancsaba/mvp-factory-control/blob/main/scripts/mvp-factory-set-project-fields.sh | `mvp-factory-control/scripts/mvp-factory-set-project-fields.sh` |
+
+**amanoba (product repo):**
+
+| Doc | GitHub URL | Local path (when cloned) |
+|-----|------------|---------------------------|
+| TASKLIST | https://github.com/moldovancsaba/amanoba/blob/main/docs/TASKLIST.md | `amanoba/docs/TASKLIST.md` (e.g. `Projects/amanoba/docs/TASKLIST.md`) |
+| ROADMAP | https://github.com/moldovancsaba/amanoba/blob/main/docs/ROADMAP.md | `amanoba/docs/ROADMAP.md` |
+| RELEASE_NOTES | https://github.com/moldovancsaba/amanoba/blob/main/docs/RELEASE_NOTES.md | `amanoba/docs/RELEASE_NOTES.md` |
+| layout_grammar | https://github.com/moldovancsaba/amanoba/blob/main/docs/layout_grammar.md | `amanoba/docs/layout_grammar.md` |
+| brain dump | https://github.com/moldovancsaba/amanoba/blob/main/docs/amanoba_codex_brain_dump.md | `amanoba/docs/amanoba_codex_brain_dump.md` |
+| LEARNINGS | https://github.com/moldovancsaba/amanoba/blob/main/docs/LEARNINGS.md | `amanoba/docs/LEARNINGS.md` |
+
+If your workspace has both repos under a common parent (e.g. `Projects/`), full paths are: **`<workspace>/amanoba/docs/<file>`** and **`<workspace>/mvp-factory-control/docs/<file>`**. Use the path that matches your clone so the agent can resolve the file.
 
 ---
 
@@ -27,8 +55,8 @@ This file lives in **[moldovancsaba/mvp-factory-control](https://github.com/mold
 - **Documentation = code:** Update docs with every change. No placeholders, no TBD.
 - **Single-place rule:** ROADMAP = vision only. TASKLIST = what to do. RELEASE_NOTES = what’s done. Do not duplicate tasks across the three.
 - **Only related items:** ROADMAP = future vision only; TASKLIST = open tasks only; RELEASE_NOTES = completed only.
-- **Layout / content / course / UI:** In the amanoba repo, read **`docs/layout_grammar.md`** first when touching content or structure.
-- **Project board (MVP Factory):** Work is tracked as issues in **mvp-factory-control** and as cards on the [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1). Create issues only; use templates; work starts when the card is in **Ready**. Set **Agent**, **Product** (e.g. amanoba), **Status**, **Priority** via [RULES.md](RULES.md) and [scripts/mvp-factory-set-project-fields.sh](../scripts/mvp-factory-set-project-fields.sh). See this repo’s [SETUP.md](SETUP.md) for one-time `gh` project scope.
+- **Layout / content / course / UI:** In the amanoba repo, read **layout_grammar** first when touching content or structure — [GitHub](https://github.com/moldovancsaba/amanoba/blob/main/docs/layout_grammar.md), local: `amanoba/docs/layout_grammar.md`.
+- **Project board (MVP Factory):** Work is tracked as issues in **mvp-factory-control** and as cards on the [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1). Create issues only; use templates; work starts when the card is in **Ready**. Set **Agent**, **Product** (e.g. amanoba), **Status**, **Priority** via [RULES.md](https://github.com/moldovancsaba/mvp-factory-control/blob/main/docs/RULES.md) and the [script](https://github.com/moldovancsaba/mvp-factory-control/blob/main/scripts/mvp-factory-set-project-fields.sh). One-time: [SETUP.md](https://github.com/moldovancsaba/mvp-factory-control/blob/main/docs/SETUP.md) for `gh` project scope.
 - **Auth / NextAuth / service worker (amanoba):** Do not modify without explicit approval.
 
 ---
@@ -37,13 +65,13 @@ This file lives in **[moldovancsaba/mvp-factory-control](https://github.com/mold
 
 When **starting fresh** on Amanoba (new session, new task):
 
-1. **In the amanoba repo:** Read **`docs/amanoba_codex_brain_dump.md`** (current job, where we left off).
+1. **In the amanoba repo:** Read **amanoba_codex_brain_dump.md** (current job, where we left off) — [GitHub](https://github.com/moldovancsaba/amanoba/blob/main/docs/amanoba_codex_brain_dump.md), local: `amanoba/docs/amanoba_codex_brain_dump.md`.
 2. **Read this document** (Reminder, “How to come back”, “Ground Zero”).
-3. **In the amanoba repo:** Read **`docs/TASKLIST.md`** — next actionable task. Read **`docs/ROADMAP.md`** for context.
-4. **If work is tracked on the board:** Check [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1); set yourself (Agent) via UI or script. See this repo’s [RULES.md](RULES.md).
-5. **If the work touches content, course, lesson, quiz, or UI:** In amanoba, read **`docs/layout_grammar.md`** before coding.
+3. **In the amanoba repo:** Read **TASKLIST.md** (next task) and **ROADMAP.md** (context) — [TASKLIST](https://github.com/moldovancsaba/amanoba/blob/main/docs/TASKLIST.md), [ROADMAP](https://github.com/moldovancsaba/amanoba/blob/main/docs/ROADMAP.md); local: `amanoba/docs/TASKLIST.md`, `amanoba/docs/ROADMAP.md`.
+4. **If work is tracked on the board:** Check [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1); set yourself (Agent) via UI or script. See [RULES.md](https://github.com/moldovancsaba/mvp-factory-control/blob/main/docs/RULES.md).
+5. **If the work touches content, course, lesson, quiz, or UI:** In amanoba, read **layout_grammar.md** before coding — local: `amanoba/docs/layout_grammar.md`.
 6. **Define your rollback plan** (baseline, rollback steps, verification).
-7. **Then start.** Before ending a session: update amanoba’s **`docs/amanoba_codex_brain_dump.md`**.
+7. **Then start.** Before ending a session: update amanoba’s **amanoba_codex_brain_dump.md** — local: `amanoba/docs/amanoba_codex_brain_dump.md`.
 
 ---
 
@@ -51,10 +79,10 @@ When **starting fresh** on Amanoba (new session, new task):
 
 When you **lose context** while working on Amanoba:
 
-1. **Re-anchor:** Read amanoba’s **`docs/amanoba_codex_brain_dump.md`**, then this doc’s Reminder and “Ground Zero”.
-2. **Re-orient:** In amanoba, open **`docs/TASKLIST.md`** (next task) and **`docs/RELEASE_NOTES.md`** (last delivered).
+1. **Re-anchor:** Read amanoba’s **amanoba_codex_brain_dump.md** (local: `amanoba/docs/amanoba_codex_brain_dump.md`), then this doc’s Reminder and “Ground Zero”.
+2. **Re-orient:** In amanoba, open **TASKLIST.md** (next task) and **RELEASE_NOTES.md** (last delivered) — local: `amanoba/docs/TASKLIST.md`, `amanoba/docs/RELEASE_NOTES.md`.
 3. **Re-scope:** Re-read the task and any linked doc; run `git status` and `git log -3 --oneline` in the amanoba repo.
-4. **Re-apply rules:** Documentation = code; single-place rule; layout → amanoba’s **`docs/layout_grammar.md`**. Update brain dump at end of session.
+4. **Re-apply rules:** Documentation = code; single-place rule; layout → amanoba’s **layout_grammar.md** (local: `amanoba/docs/layout_grammar.md`). Update brain dump at end of session.
 5. **Then continue.** If anything is unclear, ask. Never assume.
 
 ---
@@ -72,9 +100,9 @@ When you **lose context** while working on Amanoba:
 - **Approve work** by moving the card to **Ready** on the [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1). Work starts only after Ready.
 - **Set Agent and Product:** On each card set **Agent** (Tribeca, Katja, Becca, Gwen, Chappie) and **Product** (e.g. amanoba). Use the board UI or this repo’s script:  
   **`./scripts/mvp-factory-set-project-fields.sh ISSUE_NUMBER --agent YourName`**  
-  (One-time: [SETUP.md](SETUP.md) — `gh auth refresh -h github.com -s read:project,project`.)
+  (One-time: [SETUP.md](https://github.com/moldovancsaba/mvp-factory-control/blob/main/docs/SETUP.md) — `gh auth refresh -h github.com -s read:project,project`.)
 - **No overwrite:** The script reads current board state and only updates fields you pass; other fields stay unchanged.
-- **Full rules:** [RULES.md](RULES.md). **Keeping board and repo in sync:** [SYNC.md](SYNC.md).
+- **Full rules:** [RULES.md](https://github.com/moldovancsaba/mvp-factory-control/blob/main/docs/RULES.md). **Keeping board and repo in sync:** [SYNC.md](https://github.com/moldovancsaba/mvp-factory-control/blob/main/docs/SYNC.md).
 
 ---
 
@@ -92,13 +120,14 @@ When you **lose context** while working on Amanoba:
 
 # Amanoba repo — core docs (when working in amanoba)
 
-| In amanoba repo | Purpose |
-|-----------------|---------|
-| **docs/TASKLIST.md** | Actionable tasks. When done → move to RELEASE_NOTES and remove from TASKLIST. |
-| **docs/ROADMAP.md** | Future vision and client benefits only. |
-| **docs/RELEASE_NOTES.md** | Completed work only. |
-| **docs/layout_grammar.md** | Mandatory for content, course, lesson, quiz, UI, doc structure. |
-| **docs/amanoba_codex_brain_dump.md** | Current job, where we left off, open decisions. |
+| Doc | Purpose | GitHub | Local path |
+|-----|---------|--------|------------|
+| TASKLIST.md | Actionable tasks. When done → RELEASE_NOTES, remove from TASKLIST. | [amanoba/docs/TASKLIST.md](https://github.com/moldovancsaba/amanoba/blob/main/docs/TASKLIST.md) | `amanoba/docs/TASKLIST.md` |
+| ROADMAP.md | Future vision and client benefits only. | [amanoba/docs/ROADMAP.md](https://github.com/moldovancsaba/amanoba/blob/main/docs/ROADMAP.md) | `amanoba/docs/ROADMAP.md` |
+| RELEASE_NOTES.md | Completed work only. | [amanoba/docs/RELEASE_NOTES.md](https://github.com/moldovancsaba/amanoba/blob/main/docs/RELEASE_NOTES.md) | `amanoba/docs/RELEASE_NOTES.md` |
+| layout_grammar.md | Mandatory for content, course, lesson, quiz, UI, doc structure. | [amanoba/docs/layout_grammar.md](https://github.com/moldovancsaba/amanoba/blob/main/docs/layout_grammar.md) | `amanoba/docs/layout_grammar.md` |
+| amanoba_codex_brain_dump.md | Current job, where we left off, open decisions. | [amanoba/docs/amanoba_codex_brain_dump.md](https://github.com/moldovancsaba/amanoba/blob/main/docs/amanoba_codex_brain_dump.md) | `amanoba/docs/amanoba_codex_brain_dump.md` |
+| LEARNINGS.md | Learnings and solutions. | [amanoba/docs/LEARNINGS.md](https://github.com/moldovancsaba/amanoba/blob/main/docs/LEARNINGS.md) | `amanoba/docs/LEARNINGS.md` |
 
 Single-place rule: ROADMAP = vision; TASKLIST = open tasks; RELEASE_NOTES = completed. Do not duplicate.
 
@@ -106,12 +135,12 @@ Single-place rule: ROADMAP = vision; TASKLIST = open tasks; RELEASE_NOTES = comp
 
 # mvp-factory-control (this repo) — project and board
 
-| In this repo | Purpose |
-|--------------|---------|
-| **[RULES.md](RULES.md)** | Rules for the project board: create issues only, use templates, Ready = start, set Agent/Product, no overwrite. |
-| **[SETUP.md](SETUP.md)** | One-time: grant `gh` project scope so scripts can read/update the board. |
-| **[SYNC.md](SYNC.md)** | Keeping board and repo in sync; new issues → board (Action); MVP_PROJECT_TOKEN secret. |
-| **[scripts/mvp-factory-set-project-fields.sh](../scripts/mvp-factory-set-project-fields.sh)** | Set Status, Agent, Product, Type, Priority for an issue; reads current state first. |
+| Doc | Purpose | GitHub | Local path |
+|-----|---------|--------|------------|
+| RULES.md | Board rules: create issues only, use templates, Ready = start, set Agent/Product, no overwrite. | [docs/RULES.md](https://github.com/moldovancsaba/mvp-factory-control/blob/main/docs/RULES.md) | `mvp-factory-control/docs/RULES.md` |
+| SETUP.md | One-time: grant `gh` project scope for scripts. | [docs/SETUP.md](https://github.com/moldovancsaba/mvp-factory-control/blob/main/docs/SETUP.md) | `mvp-factory-control/docs/SETUP.md` |
+| SYNC.md | Board and repo sync; new issues → board; MVP_PROJECT_TOKEN. | [docs/SYNC.md](https://github.com/moldovancsaba/mvp-factory-control/blob/main/docs/SYNC.md) | `mvp-factory-control/docs/SYNC.md` |
+| mvp-factory-set-project-fields.sh | Set Status, Agent, Product, Type, Priority; reads current state first. | [scripts/...](https://github.com/moldovancsaba/mvp-factory-control/blob/main/scripts/mvp-factory-set-project-fields.sh) | `mvp-factory-control/scripts/mvp-factory-set-project-fields.sh` |
 
 ---
 
@@ -120,10 +149,10 @@ Single-place rule: ROADMAP = vision; TASKLIST = open tasks; RELEASE_NOTES = comp
 | I want to… | Do this |
 |------------|--------|
 | Know Amanoba agent rules | Read this document (and amanoba’s layout_grammar when touching content/structure). |
-| Know board/project rules | Read this repo’s [RULES.md](RULES.md). |
-| Get board access (script) | One-time: this repo’s [SETUP.md](SETUP.md). Then run **`./scripts/mvp-factory-set-project-fields.sh ISSUE_NUM --agent MyName`** from this repo (or amanoba if the script is there). |
+| Know board/project rules | [RULES.md](https://github.com/moldovancsaba/mvp-factory-control/blob/main/docs/RULES.md) (local: `mvp-factory-control/docs/RULES.md`). |
+| Get board access (script) | One-time: [SETUP.md](https://github.com/moldovancsaba/mvp-factory-control/blob/main/docs/SETUP.md). Then run **`./scripts/mvp-factory-set-project-fields.sh ISSUE_NUM --agent MyName`** from the mvp-factory-control clone (or amanoba if the script is there). |
 | See the board | [MVP Factory Board (Project 1)](https://github.com/users/moldovancsaba/projects/1). |
-| Get next Amanoba task | In the **amanoba** repo, read **docs/TASKLIST.md**. |
+| Get next Amanoba task | In the **amanoba** repo: [TASKLIST.md](https://github.com/moldovancsaba/amanoba/blob/main/docs/TASKLIST.md) (local: `amanoba/docs/TASKLIST.md`). |
 | Create a new task | Create an issue in [mvp-factory-control](https://github.com/moldovancsaba/mvp-factory-control) (use a template); it can auto-add to the board. Set Agent/Product. |
 
 ---
