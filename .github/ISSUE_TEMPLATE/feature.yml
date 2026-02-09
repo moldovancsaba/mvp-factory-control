@@ -1,0 +1,87 @@
+name: Feature
+description: New feature request (MVP Factory standard)
+title: "[Feature] "
+labels: ["type:feature"]
+body:
+  - type: input
+    id: product
+    attributes:
+      label: Product
+      description: Amanoba / Messmass / Narimato / DoneIsBetter / SEYU
+      placeholder: "Amanoba"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Agent
+      options:
+        - Chappie
+        - Tribeca
+        - Katja
+        - Becca
+        - Gwen
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What exists today, and why this matters now.
+    validations:
+      required: true
+
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: One sentence. What should be true when this is done.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Bullet list. Observable behaviour only.
+      placeholder: |
+        - ...
+        - ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: non_goals
+    attributes:
+      label: Non-goals
+      description: What is explicitly out of scope for this issue.
+      placeholder: |
+        - ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks / Edge cases
+      description: Anything that could break, regress, or cause production risk.
+      placeholder: |
+        - ...
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: dod
+    attributes:
+      label: Definition of Done
+      options:
+        - label: Implementation complete and reviewed
+          required: true
+        - label: Tests added or updated (or justified if not applicable)
+          required: true
+        - label: Docs updated (ROADMAP/TASKLIST/RELEASE_NOTES as applicable)
+          required: true
+        - label: No hardcoded sample data or placeholders introduced
+          required: true
