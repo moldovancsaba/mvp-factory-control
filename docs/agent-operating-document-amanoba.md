@@ -67,7 +67,7 @@ When **starting fresh** on Amanoba (new session, new task):
 
 1. **In the amanoba repo:** Read **amanoba_codex_brain_dump.md** (current job, where we left off) — [GitHub](https://github.com/moldovancsaba/amanoba/blob/main/docs/amanoba_codex_brain_dump.md), local: `amanoba/docs/amanoba_codex_brain_dump.md`.
 2. **Read this document** (Reminder, “How to come back”, “Ground Zero”).
-3. **In the amanoba repo:** Read **TASKLIST.md** (next task) and **ROADMAP.md** (context) — [TASKLIST](https://github.com/moldovancsaba/amanoba/blob/main/docs/TASKLIST.md), [ROADMAP](https://github.com/moldovancsaba/amanoba/blob/main/docs/ROADMAP.md); local: `amanoba/docs/TASKLIST.md`, `amanoba/docs/ROADMAP.md`.
+3. **Next task:** Check the [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1) for cards with **Product = amanoba** and **Status = Ready**. Roadmap = vision; Backlog = not yet broken down; Ready = start work. Optionally read **TASKLIST.md** / **ROADMAP.md** in amanoba for context (they are reference only; source of truth is the board).
 4. **If work is tracked on the board:** Check [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1); set yourself (Agent) via UI or script. See [RULES.md](https://github.com/moldovancsaba/mvp-factory-control/blob/main/docs/RULES.md).
 5. **If the work touches content, course, lesson, quiz, or UI:** In amanoba, read **layout_grammar.md** before coding — local: `amanoba/docs/layout_grammar.md`.
 6. **Define your rollback plan** (baseline, rollback steps, verification).
@@ -80,7 +80,7 @@ When **starting fresh** on Amanoba (new session, new task):
 When you **lose context** while working on Amanoba:
 
 1. **Re-anchor:** Read amanoba’s **amanoba_codex_brain_dump.md** (local: `amanoba/docs/amanoba_codex_brain_dump.md`), then this doc’s Reminder and “Ground Zero”.
-2. **Re-orient:** In amanoba, open **TASKLIST.md** (next task) and **RELEASE_NOTES.md** (last delivered) — local: `amanoba/docs/TASKLIST.md`, `amanoba/docs/RELEASE_NOTES.md`.
+2. **Re-orient:** Check the [board](https://github.com/users/moldovancsaba/projects/1) for **Product = amanoba**, **Status = Ready** (next task). In amanoba, open **RELEASE_NOTES.md** (last delivered) — local: `amanoba/docs/RELEASE_NOTES.md`.
 3. **Re-scope:** Re-read the task and any linked doc; run `git status` and `git log -3 --oneline` in the amanoba repo.
 4. **Re-apply rules:** Documentation = code; single-place rule; layout → amanoba’s **layout_grammar.md** (local: `amanoba/docs/layout_grammar.md`). Update brain dump at end of session.
 5. **Then continue.** If anything is unclear, ask. Never assume.

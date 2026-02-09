@@ -19,6 +19,9 @@
 | **[docs/SYNC.md](docs/SYNC.md)** | **Keeping board and repo in sync** — new issues auto-added to the board (Action); one-time secret `MVP_PROJECT_TOKEN`; how to keep both up to date. |
 | **[.github/workflows/add-issue-to-project.yml](.github/workflows/add-issue-to-project.yml)** | Action: when an issue is opened, add it to the board. Requires repo secret `MVP_PROJECT_TOKEN` (PAT with project scope). |
 | **[docs/CENTRALIZATION.md](docs/CENTRALIZATION.md)** | **What else to care about** when centralizing: discovery/index, adding a new product, agent-doc template, avoiding drift, secrets, onboarding, naming. Checklist for the process. |
+| **[docs/MIGRATION_ROADMAP_TASKLIST.md](docs/MIGRATION_ROADMAP_TASKLIST.md)** | **Migration:** ROADMAP.md / TASKLIST.md → board. Roadmap column = vision; Backlog = not broken down; Ready = actionable. Script: `scripts/migrate-roadmap-tasklist-to-project.sh`. |
+| **[scripts/migrate-roadmap-tasklist-to-project.sh](scripts/migrate-roadmap-tasklist-to-project.sh)** | One-time migration: create issues from ROADMAP + TASKLIST, set Status = Roadmap / Backlog / Ready. Use `--dry-run` first. |
+| **[docs/PROMPT_RELOCATE_PROJECT_TO_BOARD.md](docs/PROMPT_RELOCATE_PROJECT_TO_BOARD.md)** | **Prompt to give to any agent** to relocate another product’s project management into this repo and the board (replace &lt;PRODUCT&gt; and &lt;PRODUCT_REPO&gt;). |
 
 ---
 
@@ -33,7 +36,7 @@
 
 | Field       | Purpose           | Example values |
 |------------|-------------------|----------------|
-| **Status** | Workflow state     | `Backlog` → `Ready` → `In Progress` → `Review` → `Done` |
+| **Status** | Workflow state     | `Roadmap` \| `Backlog` → `Ready` → `In Progress` → `Review` → `Done` |
 | **Agent**  | Who does the work | `Tribeca`, `Katja`, `Becca`, `Gwen`, `Chappie` |
 | **Product**| Which product/repo | `amanoba`, `doneisbetter`, `messmass`, etc. |
 | **Type**   | Kind of work      | `Feature`, `Bug`, `Refactor`, `Docs`, `Audit`, `Release`, `Plan` |

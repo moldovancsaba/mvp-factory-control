@@ -79,7 +79,27 @@ When moving project/agent coordination into **mvp-factory-control** (unified kno
 
 ---
 
-## 8. Optional future checks
+## 8. Project documents in the product folder (uniformity)
+
+**Care:** In each **product repo** (e.g. amanoba), docs in `docs/` are not yet fully uniform. When centralising or onboarding new products, be aware of the following.
+
+**Current situation (example: amanoba):**
+
+- **Index exists:** [DOCS_INDEX.md](https://github.com/moldovancsaba/amanoba/blob/main/docs/DOCS_INDEX.md) defines *core* vs *feature/reference* vs *deprecated* vs *dated*. Use it as the single entry for “what matters” in that repo.
+- **Naming is mixed:** Core docs use **UPPER_SNAKE** (e.g. `TASKLIST.md`, `ROADMAP.md`, `RELEASE_NOTES.md`, `LEARNINGS.md`) or **UPPERCASE** (`CONTRIBUTING.md`, `ARCHITECTURE.md`). Other docs use **snake_case** or **lowercase** (e.g. `layout_grammar.md`, `amanoba_codex_brain_dump.md`). The product’s [NAMING_GUIDE.md](https://github.com/moldovancsaba/amanoba/blob/main/docs/NAMING_GUIDE.md) recommends **kebab-case, lowercase** for files — so doc filenames are not yet aligned with that guide.
+- **Agent doc “Where documents are”:** The agent operating doc in mvp-factory-control lists a **subset** of core docs (TASKLIST, ROADMAP, RELEASE_NOTES, layout_grammar, brain dump, LEARNINGS). It does not list every core doc from DOCS_INDEX (e.g. ARCHITECTURE, CONTRIBUTING). That is intentional: the table is “what agents need most”; for full inventory, use the product’s DOCS_INDEX.
+- **Many one-off docs:** Product `docs/` often contains many ad-hoc files (audits, migrations, SSO_*, QUIZ_*, etc.). DOCS_INDEX and `_archive/` help separate “current source of truth” from “reference or historical.”
+
+**Recommendations:**
+
+- **Do not** rename core docs in the product repo purely for uniformity unless the product owner agrees; renaming breaks links and agent paths.
+- **Do** keep one **DOCS_INDEX** (or equivalent) per product and keep it updated when adding or retiring docs.
+- **Do** align **new** product repos: pick one convention (e.g. UPPER_SNAKE for core process docs, or kebab-case everywhere) and document it in that product’s CONTRIBUTING or a short docs README.
+- **Optional:** In mvp-factory-control, the agent doc’s “Where documents are” can add a row pointing to the product’s **DOCS_INDEX** so agents know where to find the full list.
+
+---
+
+## 9. Optional future checks
 
 **Care:** Over time you might want light automation to keep things consistent.
 
@@ -98,6 +118,7 @@ When moving project/agent coordination into **mvp-factory-control** (unified kno
 | **Secrets** | Document who can set MVP_PROJECT_TOKEN; no product tokens here unless you add and document them. |
 | **Onboarding** | README as entry point; one-line onboarding: clone, SETUP, RULES, product agent doc. |
 | **Naming** | agent-operating-document-&lt;product&gt;.md; local path &lt;repo-folder&gt;/docs/ or /scripts/. |
+| **Product docs uniformity** | One DOCS_INDEX per product; naming may be mixed (see §8); agent doc lists subset; new products pick one convention. |
 
 ---
 

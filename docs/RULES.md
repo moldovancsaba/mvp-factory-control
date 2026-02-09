@@ -24,7 +24,7 @@ All agents and humans working with the [MVP Factory Board](https://github.com/us
 
 - **Product / you approve** by moving the card to **Ready** on the board.
 - **Work starts only when the card is in Ready.** Do not start implementation until the card is in Ready.
-- Status flow: `Backlog` → `Ready` (start work) → `In Progress` → `Review` → `Done` (and optionally `Blocked`).
+- Status flow: `Roadmap` (vision) | `Backlog` (not yet broken down) → `Ready` (start work) → `In Progress` → `Review` → `Done` (and optionally `Blocked`).
 
 ---
 
@@ -48,7 +48,7 @@ All agents and humans working with the [MVP Factory Board](https://github.com/us
 
 | Field       | Purpose           | Example values |
 |------------|-------------------|----------------|
-| **Status** | Workflow state    | Backlog, Ready, In Progress, Review, Done, Blocked |
+| **Status** | Workflow state    | Roadmap, Backlog, Ready, In Progress, Review, Done, Blocked |
 | **Agent**  | Who does the work | Tribeca, Katja, Becca, Gwen, Chappie |
 | **Product**| Which product     | amanoba, doneisbetter, messmass, etc. |
 | **Type**   | Kind of work      | Feature, Bug, Refactor, Docs, Audit, Release, Plan |
