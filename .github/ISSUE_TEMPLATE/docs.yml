@@ -1,0 +1,56 @@
+name: Docs
+description: Documentation change (MVP Factory standard)
+title: "[Docs] "
+labels: ["type:docs"]
+body:
+  - type: input
+    id: product
+    attributes:
+      label: Product
+      placeholder: "MVP Factory Control"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Agent
+      options:
+        - Chappie
+        - Tribeca
+        - Katja
+        - Becca
+        - Gwen
+    validations:
+      required: true
+
+  - type: textarea
+    id: change
+    attributes:
+      label: Change request
+      description: What should be added/updated/removed in docs.
+    validations:
+      required: true
+
+  - type: textarea
+    id: location
+    attributes:
+      label: Target files/sections
+      description: Exact files and sections to update (paths).
+      placeholder: |
+        - docs/...
+        - README.md#...
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: dod
+    attributes:
+      label: Definition of Done
+      options:
+        - label: Docs updated with precise, non-placeholder content
+          required: true
+        - label: Links verified (no broken references)
+          required: true
+        - label: Change logged in RELEASE_NOTES if applicable
+          required: true
