@@ -18,6 +18,7 @@
 | **[.github/ISSUE_TEMPLATE/](.github/ISSUE_TEMPLATE/)** | Issue templates (Feature, Bug, Docs, Refactor, Release). Use them when creating issues. |
 | **[docs/SYNC.md](docs/SYNC.md)** | **Keeping board and repo in sync** — new issues auto-added to the board (Action); one-time secret `MVP_PROJECT_TOKEN`; how to keep both up to date. |
 | **[.github/workflows/add-issue-to-project.yml](.github/workflows/add-issue-to-project.yml)** | Action: when an issue is opened, add it to the board. Requires repo secret `MVP_PROJECT_TOKEN` (PAT with project scope). |
+| **[docs/CENTRALIZATION.md](docs/CENTRALIZATION.md)** | **What else to care about** when centralizing: discovery/index, adding a new product, agent-doc template, avoiding drift, secrets, onboarding, naming. Checklist for the process. |
 
 ---
 
@@ -39,6 +40,12 @@
 | **Priority** | Urgency         | `P0`, `P1`, `P2`, `P3` |
 
 Work starts only when **Status** is **Ready**.
+
+---
+
+## Onboarding (new agents)
+
+Clone this repo (and the product repo you work on, e.g. amanoba). Do [SETUP.md](docs/SETUP.md) once, then read [RULES.md](docs/RULES.md) and the **agent doc for your product** (e.g. [agent-operating-document-amanoba.md](docs/agent-operating-document-amanoba.md)).
 
 ---
 
