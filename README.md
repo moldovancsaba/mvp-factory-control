@@ -12,6 +12,7 @@
 |------|--------|
 | **[docs/RULES.md](docs/RULES.md)** | **Rules you must follow** — create issues only, use templates, Ready = start work, set Agent/Product, no overwrite. Read this before working on the board. |
 | **[docs/SETUP.md](docs/SETUP.md)** | **One-time access** — grant GitHub CLI project scope so scripts can read/update the board (`gh auth refresh -h github.com -s read:project,project`). |
+| **[docs/agent-operating-document-amanoba.md](docs/agent-operating-document-amanoba.md)** | **Agent operating document — Amanoba project.** Project-related agentic rules for the Amanoba product (repo: amanoba); how Amanoba ties into the board; cold start, loopback, handoff. Stored here as part of the unified knowledge center. |
 | **[scripts/mvp-factory-set-project-fields.sh](scripts/mvp-factory-set-project-fields.sh)** | Script to set board fields (Status, Agent, Product, Type, Priority) for an issue. Reads current state first; only updates fields you pass. Requires `gh` + `jq` and completed [SETUP.md](docs/SETUP.md). |
 | **[scripts/mvp-factory-defaults.env](scripts/mvp-factory-defaults.env)** | Default values for the script (used when a field has no override and no current value on the board). Override with flags or env. |
 | **[.github/ISSUE_TEMPLATE/](.github/ISSUE_TEMPLATE/)** | Issue templates (Feature, Bug, Docs, Refactor, Release). Use them when creating issues. |
