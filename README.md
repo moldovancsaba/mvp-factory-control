@@ -15,6 +15,8 @@
 | **[scripts/mvp-factory-set-project-fields.sh](scripts/mvp-factory-set-project-fields.sh)** | Script to set board fields (Status, Agent, Product, Type, Priority) for an issue. Reads current state first; only updates fields you pass. Requires `gh` + `jq` and completed [SETUP.md](docs/SETUP.md). |
 | **[scripts/mvp-factory-defaults.env](scripts/mvp-factory-defaults.env)** | Default values for the script (used when a field has no override and no current value on the board). Override with flags or env. |
 | **[.github/ISSUE_TEMPLATE/](.github/ISSUE_TEMPLATE/)** | Issue templates (Feature, Bug, Docs, Refactor, Release). Use them when creating issues. |
+| **[docs/SYNC.md](docs/SYNC.md)** | **Keeping board and repo in sync** — new issues auto-added to the board (Action); one-time secret `MVP_PROJECT_TOKEN`; how to keep both up to date. |
+| **[.github/workflows/add-issue-to-project.yml](.github/workflows/add-issue-to-project.yml)** | Action: when an issue is opened, add it to the board. Requires repo secret `MVP_PROJECT_TOKEN` (PAT with project scope). |
 
 ---
 
@@ -88,3 +90,5 @@ Work starts only when **Status** is **Ready**.
 
 **Repo:** [moldovancsaba/mvp-factory-control](https://github.com/moldovancsaba/mvp-factory-control)  
 **Board:** [MVP Factory Board (Project 1)](https://github.com/users/moldovancsaba/projects/1)
+
+To keep the **board and repo in sync** (new issues → board automatically), see [docs/SYNC.md](docs/SYNC.md) and set the **MVP_PROJECT_TOKEN** repository secret once.
