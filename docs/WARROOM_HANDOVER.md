@@ -51,8 +51,8 @@ Implemented and live in code:
 Current execution lane (board as-of 2026-02-13):
 - `In Progress`: (none)
 - `Ready`: (none)
-- `Backlog`: `#133`, `#134`, `#135`, `#136`, `#137`, `#138`
-- `Done`: `#131`, `#132`, `#75`, `#144`
+- `Backlog`: `#133`, `#134`, `#135`, `#137`, `#138`
+- `Done`: `#131`, `#132`, `#136`, `#75`, `#144`
 
 Current `IDEA BANK` items (board as-of 2026-02-13):
 - `#118` policy simulation and replay harness for governance changes
@@ -91,9 +91,9 @@ Active delivery kickoff (current window):
 - `#94` runtime mutability policy is delivered (`Done`) with write-time/runtime-load enforcement and mutable/denied mutation audit events.
 - launch-enablement chain for dev-operator cockpit is created:
   - roadmap umbrella `#130`
-  - `Done`: `#131`, `#132`
-  - `Backlog`: `#133`, `#134`, `#135`, `#136`, `#137`, `#138`
-  - locked order from next execution: `#136 -> #133 -> (#134 + #137) -> #135 -> #138`
+  - `Done`: `#131`, `#132`, `#136`
+  - `Backlog`: `#133`, `#134`, `#135`, `#137`, `#138`
+  - locked order from next execution: `#133 -> (#134 + #137) -> #135 -> #138`
 - prompt package validator pass evidence confirmed for `#130` -> `#138`.
 - `#131` is delivered (`Done`) with acceptance evidence comment and build gate pass (`cd apps/warroom && npm run build`).
 - `#132` is delivered (`Done`) with policy/approval gates + replay/expiry/fingerprint enforcement and build pass (`cd apps/warroom && npm run build`).
@@ -347,9 +347,10 @@ Current launch lane:
 - #130 Roadmap (Type=Plan umbrella only).
 - #131 Done (P0), closed.
 - #132 Done (P0), closed.
-- #136 Backlog (P0) and next executable item candidate.
-- Backlog chain: #136 (P0) -> #133 (P0) -> (#134 + #137) -> #135 (P1) -> #138 (P1).
-- Locked order: #136 -> #133 -> (#134 + #137) -> #135 -> #138.
+- #136 Done (P0), closed.
+- #133 Backlog (P0) and next executable item candidate.
+- Backlog chain: #133 (P0) -> (#134 + #137) -> #135 (P1) -> #138 (P1).
+- Locked order: #133 -> (#134 + #137) -> #135 -> #138.
 
 Per-issue execution loop:
 1) Confirm board status is Ready.
@@ -367,7 +368,7 @@ Per-issue execution loop:
 9) Refresh handover/status/backlog snapshot before next issue.
 
 Next action:
-- Promote #136 to Ready (after prompt-package revalidation) and execute next.
-- Keep locked order for remaining launch chain (#136 -> #133 -> (#134 + #137) -> #135 -> #138).
+- Promote #133 to Ready (after prompt-package revalidation) and execute next.
+- Keep locked order for remaining launch chain (#133 -> (#134 + #137) -> #135 -> #138).
 - If context pressure rises again, stop scope expansion and refresh handover/status before continuing.
 ```

@@ -16,6 +16,11 @@ const {
   evaluateToolCommandPolicy,
   summarizeToolCommandPolicyEvaluation
 } = require("./lib/tool-command-policy");
+const {
+  ToolFilesystemError,
+  executeFilesystemToolCall,
+  resolveFilesystemToolContext
+} = require("./lib/tool-filesystem");
 
 const prisma = new PrismaClient();
 
@@ -1661,6 +1666,7 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
   const policyByCallId = new Map(
     (policyEvaluation.decisions || []).map((decision) => [decision.callId, decision])
   );
+  let filesystemContext = null;
 
   for (let index = 0; index < envelope.calls.length; index += 1) {
     const call = envelope.calls[index];
@@ -1718,6 +1724,108 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
         policyClass: policyDecision.policyClass
       });
       continue;
+    }
+
+    if (call.tool.startsWith("filesystem.")) {
+      if (!filesystemContext) {
+        filesystemContext = await resolveFilesystemToolContext({
+          settingsFile: SETTINGS_FILE,
+          cwd: process.cwd(),
+          env: process.env
+        });
+      }
+      try {
+        const fsResult = await executeFilesystemToolCall(call, filesystemContext);
+        await recordLifecycleAudit({
+          entityType: "TASK",
+          entityId: task.id,
+          actorRole: "ORCHESTRATOR",
+          action: "TOOL_FILESYSTEM_INVOKE",
+          fromState: task.status,
+          toState: task.status,
+          allowed: true,
+          reason: `${callPrefix} filesystem operation executed.`,
+          metadata: {
+            callId: call.id,
+            tool: call.tool,
+            riskClass: call.riskClass,
+            approval: call.approval,
+            policyClass: policyDecision.policyClass,
+            workspaceRoot: filesystemContext.primaryWorkspaceRoot,
+            ...(fsResult.audit || {})
+          }
+        });
+        await recordLifecycleAudit({
+          entityType: "TASK",
+          entityId: task.id,
+          actorRole: "ORCHESTRATOR",
+          action: "TOOL_CALL_PROTOCOL_EXECUTE",
+          fromState: task.status,
+          toState: task.status,
+          allowed: true,
+          reason: `${callPrefix} executed.`,
+          metadata: {
+            callId: call.id,
+            tool: call.tool,
+            riskClass: call.riskClass,
+            approval: call.approval,
+            policyClass: policyDecision.policyClass,
+            dryRun: false
+          }
+        });
+        responses.push(envelope.calls.length === 1 ? fsResult.answer : `[${call.id}] ${fsResult.answer}`);
+        callMeta.push({
+          id: call.id,
+          tool: call.tool,
+          policyClass: policyDecision.policyClass,
+          workspaceRoot: filesystemContext.primaryWorkspaceRoot
+        });
+        continue;
+      } catch (error) {
+        const reason =
+          error instanceof ToolFilesystemError
+            ? error.message
+            : `${callPrefix} failed with unexpected filesystem runtime error.`;
+        await recordLifecycleAudit({
+          entityType: "TASK",
+          entityId: task.id,
+          actorRole: "ORCHESTRATOR",
+          action: "TOOL_FILESYSTEM_INVOKE",
+          fromState: task.status,
+          toState: task.status,
+          allowed: false,
+          reason,
+          metadata: {
+            callId: call.id,
+            tool: call.tool,
+            riskClass: call.riskClass,
+            approval: call.approval,
+            policyClass: policyDecision.policyClass,
+            code: error instanceof ToolFilesystemError ? error.code : "UNKNOWN",
+            details: error instanceof ToolFilesystemError ? error.metadata : null
+          }
+        });
+        await recordLifecycleAudit({
+          entityType: "TASK",
+          entityId: task.id,
+          actorRole: "ORCHESTRATOR",
+          action: "TOOL_CALL_PROTOCOL_EXECUTE",
+          fromState: task.status,
+          toState: task.status,
+          allowed: false,
+          reason,
+          metadata: {
+            callId: call.id,
+            tool: call.tool,
+            riskClass: call.riskClass,
+            approval: call.approval,
+            policyClass: policyDecision.policyClass,
+            dryRun: false,
+            code: error instanceof ToolFilesystemError ? error.code : "UNKNOWN"
+          }
+        });
+        throw new WorkerTaskError("TOOL_FILESYSTEM_DENIED", reason, false);
+      }
     }
 
     if (call.tool !== "chat.respond") {

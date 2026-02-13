@@ -102,7 +102,7 @@ function classifyCall(call: ToolCallDefinition): ToolCommandPolicyDecision {
     };
   }
 
-  if (/^filesystem\.(read|list|stat)$/.test(call.tool)) {
+  if (/^filesystem\.(read|list|stat|search)$/.test(call.tool)) {
     const effectiveRiskClass = maxRisk("MEDIUM", call.riskClass);
     const requiresApproval =
       base.requiresApproval || effectiveRiskClass === "HIGH" || effectiveRiskClass === "CRITICAL";
@@ -111,21 +111,22 @@ function classifyCall(call: ToolCallDefinition): ToolCommandPolicyDecision {
       policyClass: "FILESYSTEM_READ",
       effectiveRiskClass,
       requiresApproval,
-      allowed: false,
-      reason: `Policy class FILESYSTEM_READ is defined but runtime tool is not enabled in this phase.`
+      allowed: true,
+      reason: requiresApproval
+        ? "filesystem read/search escalated to approval-required execution."
+        : "filesystem read/search allowed by policy."
     };
   }
 
-  if (/^filesystem\.(write|patch|delete|move|mkdir|copy)$/.test(call.tool)) {
+  if (/^filesystem\.(write|patch|edit|delete|move|mkdir|copy)$/.test(call.tool)) {
     const effectiveRiskClass = maxRisk("HIGH", call.riskClass);
     return {
       ...base,
       policyClass: "FILESYSTEM_MUTATION",
       effectiveRiskClass,
       requiresApproval: true,
-      allowed: false,
-      reason:
-        "Policy class FILESYSTEM_MUTATION is defined and approval-gated, but runtime execution is disabled in this phase."
+      allowed: true,
+      reason: "filesystem mutation allowed only with explicit approval token."
     };
   }
 

@@ -27,9 +27,10 @@ Current launch lane:
 - #130 Roadmap (Type=Plan umbrella only).
 - #131 Done (P0), closed.
 - #132 Done (P0), closed.
-- #136 Backlog (P0) and next executable item candidate.
-- Backlog chain: #136 (P0) -> #133 (P0) -> (#134 + #137) -> #135 (P1) -> #138 (P1).
-- Locked order: #136 -> #133 -> (#134 + #137) -> #135 -> #138.
+- #136 Done (P0), closed.
+- #133 Backlog (P0) and next executable item candidate.
+- Backlog chain: #133 (P0) -> (#134 + #137) -> #135 (P1) -> #138 (P1).
+- Locked order: #133 -> (#134 + #137) -> #135 -> #138.
 
 Per-issue execution loop:
 1) Confirm board status is Ready.
@@ -51,6 +52,6 @@ Per-issue execution loop:
    - route checks: `/signin`, `/products`, `/agents`
 
 Next action:
-- Promote #136 to Ready (after prompt-package validation), then execute.
+- Promote #133 to Ready (after prompt-package validation), then execute.
 - Keep locked-order execution for remaining launch chain.
 - If context pressure rises again, stop scope expansion and refresh handover/status before continuing.
