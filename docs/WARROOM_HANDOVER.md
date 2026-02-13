@@ -52,7 +52,7 @@ Current execution lane (board as-of 2026-02-13):
 - `In Progress`: (none)
 - `Ready`: (none)
 - `Backlog`: `#133`, `#134`, `#135`, `#136`, `#137`, `#138`
-- `Done`: `#131`, `#132`, `#75`
+- `Done`: `#131`, `#132`, `#75`, `#144`
 
 Current `IDEA BANK` items (board as-of 2026-02-13):
 - `#118` policy simulation and replay harness for governance changes
@@ -242,6 +242,9 @@ Core app:
 ## 10) Incident Ledger (Latest)
 
 ### 2026-02-13: Docker runtime regression set (`#144`)
+
+Status:
+- `#144` is closed (`Done`) with board evidence comments and docs/runbook updates in the same work window.
 
 Symptoms observed:
 - `/signin` and server-rendered routes failed with generic Server Components error in production container mode.

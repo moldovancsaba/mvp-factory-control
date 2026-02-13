@@ -26,7 +26,7 @@ Current WarRoom board posture (as-of 2026-02-13):
 - Backlog: 6 (`#133`-`#138`)
 - Ready: 0
 - In Progress: 0
-- Done: 32
+- Done: 33
 
 Current delivery focus:
 - `#111` Docker portability preflight contract is delivered.
@@ -60,7 +60,7 @@ Current delivery focus:
   - allow/deny/approval outcomes captured in lifecycle audit evidence
   - build gate pass: `cd apps/warroom && npm run build`
 - context-pressure checkpoint: continuation context is treated as near 70%; execution remains constrained to ordered scope with handover-first updates before each implementation start.
-- incident capture in progress (`#144`): codifying Docker runtime regressions and mandatory prevention checks.
+- incident capture completed (`#144`, Done): Docker runtime regressions are now codified in board evidence and doctrine docs.
 
 ## 2) Architecture truth snapshot
 

@@ -88,7 +88,7 @@ WarRoom status counts:
 - Backlog: 6
 - Ready: 0
 - In Progress: 0
-- Done: 32
+- Done: 33
 
 Current Ready cards:
 - (none; next candidate is `#136` after Ready promotion gate)
