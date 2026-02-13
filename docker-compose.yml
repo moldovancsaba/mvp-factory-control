@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: warroom
       POSTGRES_DB: warroom
     ports:
-      - "${WARROOM_DB_PORT:-5432}:5432"
+      - "${WARROOM_DB_PORT:-3579}:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U warroom -d warroom"]
       interval: 10s
@@ -32,9 +32,9 @@ services:
       - ./apps/warroom/.env
     environment:
       DATABASE_URL: postgresql://warroom:warroom@warroom-db:5432/warroom?schema=public
-      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3007}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3577}
     ports:
-      - "${WARROOM_APP_PORT:-3007}:3007"
+      - "${WARROOM_APP_PORT:-3577}:3007"
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3007/signin >/dev/null || exit 1"]
       interval: 15s

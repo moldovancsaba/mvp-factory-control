@@ -9,8 +9,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 COMPOSE_FILE="$REPO_ROOT/docker-compose.yml"
 ENV_FILE="$REPO_ROOT/apps/warroom/.env"
-DB_PORT="${WARROOM_DB_PORT:-5432}"
-APP_PORT="${WARROOM_APP_PORT:-3007}"
+DB_PORT="${WARROOM_DB_PORT:-3579}"
+APP_PORT="${WARROOM_APP_PORT:-3577}"
 
 PASS_COUNT=0
 FAIL_COUNT=0

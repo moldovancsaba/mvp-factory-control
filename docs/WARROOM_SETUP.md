@@ -24,14 +24,16 @@ From `mvp-factory-control/`:
 
 What it does:
 - runs Docker preflight checks,
+- stops existing WarRoom containers and reclaims configured host ports (`WARROOM_DB_PORT`, `WARROOM_APP_PORT`) if occupied,
 - starts DB container and waits for healthy status,
 - applies Prisma migrations via container,
 - starts app container and verifies health + `/signin` reachability.
 
-If host ports `5432` or `3007` are occupied, run with overrides:
+Default host ports are `3579` (DB) and `3577` (app).  
+If those ports are occupied by services you want to keep, run with overrides:
 
 ```bash
-WARROOM_DB_PORT=55432 WARROOM_APP_PORT=3107 NEXTAUTH_URL=http://localhost:3107 ./scripts/warroom-docker-bootstrap.sh
+WARROOM_DB_PORT=55432 WARROOM_APP_PORT=3777 NEXTAUTH_URL=http://localhost:3777 ./scripts/warroom-docker-bootstrap.sh
 ```
 
 ## 3) Build WarRoom app image
@@ -66,11 +68,11 @@ Expected healthy-state interpretation:
 - `warroom-app` => `healthy`
 
 Port collision note:
-- defaults are host `5432` for DB and `3007` for app.
+- defaults are host `3579` for DB and `3577` for app.
 - if those ports are already used, override before startup:
 
 ```bash
-WARROOM_DB_PORT=55432 WARROOM_APP_PORT=3107 NEXTAUTH_URL=http://localhost:3107 docker compose up -d
+WARROOM_DB_PORT=55432 WARROOM_APP_PORT=3777 NEXTAUTH_URL=http://localhost:3777 docker compose up -d
 ```
 
 If Docker is not installed on your machine, install Docker Desktop (or Colima) or run Postgres via Homebrew, then set `DATABASE_URL` accordingly.
@@ -86,11 +88,11 @@ Minimal local example:
 
 ```bash
 cat > apps/warroom/.env <<'EOF'
-NEXTAUTH_URL=http://localhost:3007
+NEXTAUTH_URL=http://localhost:3577
 NEXTAUTH_SECRET=change-me-please
 GITHUB_CLIENT_ID=
 GITHUB_CLIENT_SECRET=
-DATABASE_URL=postgresql://warroom:warroom@localhost:5432/warroom?schema=public
+DATABASE_URL=postgresql://warroom:warroom@localhost:3579/warroom?schema=public
 WARROOM_GITHUB_TOKEN=
 WARROOM_GITHUB_PROJECT_OWNER=moldovancsaba
 WARROOM_GITHUB_PROJECT_NUMBER=1
@@ -136,7 +138,7 @@ From `apps/warroom/`:
 npm run dev
 ```
 
-Open `http://localhost:3007`.
+Open `http://localhost:3577`.
 
 ## 8) Start agents
 
@@ -221,9 +223,9 @@ Security note:
 Common failures and remediations:
 - `docker: command not found`:
   - install Docker CLI/runtime (for example `brew install docker docker-compose colima`), start daemon (`colima start`), then rerun preflight.
-- host port collision (`5432` or `3007` already used):
+- host port collision (`3579` or `3577` already used):
   - run with port overrides:
-    - `WARROOM_DB_PORT=55432 WARROOM_APP_PORT=3107 NEXTAUTH_URL=http://localhost:3107 ./scripts/warroom-docker-bootstrap.sh`
+    - `WARROOM_DB_PORT=55432 WARROOM_APP_PORT=3777 NEXTAUTH_URL=http://localhost:3777 ./scripts/warroom-docker-bootstrap.sh`
 - DB health timeout:
   - inspect DB logs: `docker logs warroom-db`
   - verify container health: `docker compose ps`

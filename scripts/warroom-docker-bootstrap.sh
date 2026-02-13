@@ -10,8 +10,8 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 COMPOSE_FILE="$REPO_ROOT/docker-compose.yml"
 PREFLIGHT_SCRIPT="$SCRIPT_DIR/warroom-docker-preflight.sh"
 
-DB_PORT="${WARROOM_DB_PORT:-5432}"
-APP_PORT="${WARROOM_APP_PORT:-3007}"
+DB_PORT="${WARROOM_DB_PORT:-3579}"
+APP_PORT="${WARROOM_APP_PORT:-3577}"
 NEXTAUTH_URL_VALUE="${NEXTAUTH_URL:-http://localhost:${APP_PORT}}"
 HEALTH_TIMEOUT_SECONDS="${WARROOM_DOCKER_HEALTH_TIMEOUT_SECONDS:-120}"
 
@@ -46,6 +46,47 @@ wait_for_health() {
   return 1
 }
 
+reclaim_port() {
+  local port="$1"
+  local label="$2"
+  local pids=""
+
+  if ! command -v lsof >/dev/null 2>&1; then
+    echo "[WARN] lsof unavailable; cannot reclaim busy port ${port} (${label})."
+    return 0
+  fi
+
+  pids="$(lsof -tiTCP:"$port" -sTCP:LISTEN 2>/dev/null || true)"
+  pids="$(printf "%s\n" "$pids" | sed '/^$/d' | sort -u | tr '\n' ' ' | sed 's/[[:space:]]*$//')"
+  if [ -z "$pids" ]; then
+    echo "[PASS] Port ${port} (${label}) is free."
+    return 0
+  fi
+
+  echo "[WARN] Port ${port} (${label}) is busy. Reclaiming listener PID(s): ${pids}"
+  # shellcheck disable=SC2086
+  kill $pids >/dev/null 2>&1 || true
+  sleep 1
+
+  pids="$(lsof -tiTCP:"$port" -sTCP:LISTEN 2>/dev/null || true)"
+  pids="$(printf "%s\n" "$pids" | sed '/^$/d' | sort -u | tr '\n' ' ' | sed 's/[[:space:]]*$//')"
+  if [ -n "$pids" ]; then
+    echo "[WARN] Port ${port} still busy after TERM. Sending KILL to PID(s): ${pids}"
+    # shellcheck disable=SC2086
+    kill -9 $pids >/dev/null 2>&1 || true
+    sleep 1
+  fi
+
+  if lsof -nP -iTCP:"$port" -sTCP:LISTEN >/dev/null 2>&1; then
+    echo "[FAIL] Could not reclaim port ${port} (${label})."
+    lsof -nP -iTCP:"$port" -sTCP:LISTEN || true
+    return 1
+  fi
+
+  echo "[PASS] Reclaimed port ${port} (${label})."
+  return 0
+}
+
 echo "WarRoom Docker bootstrap"
 echo "Repo: $REPO_ROOT"
 echo "Ports: db=$DB_PORT app=$APP_PORT"
@@ -58,6 +99,16 @@ if [ ! -x "$PREFLIGHT_SCRIPT" ]; then
 fi
 
 "$PREFLIGHT_SCRIPT"
+echo
+
+echo "[STEP] Stopping existing WarRoom stack (if running)"
+dc down --remove-orphans >/dev/null 2>&1 || true
+echo "[PASS] Existing stack stopped (or was not running)"
+echo
+
+echo "[STEP] Reclaiming configured host ports"
+reclaim_port "$DB_PORT" "WARROOM_DB_PORT"
+reclaim_port "$APP_PORT" "WARROOM_APP_PORT"
 echo
 
 echo "[STEP] Starting database service"

@@ -40,6 +40,10 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/next.config.mjs ./next.config.mjs
 COPY --from=builder /app/prisma ./prisma
 
+# Runtime needs write access for local settings/log artifacts.
+RUN mkdir -p /app/.warroom/worker-logs \
+  && chown -R nextjs:nodejs /app
+
 USER nextjs
 
 EXPOSE 3007
