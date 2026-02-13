@@ -21,10 +21,10 @@ Live baseline delivered:
 - agent identity reconciliation + Ready gate enforcement (`#98`, `#99`, `#102`)
 
 Current WarRoom board posture (as-of 2026-02-13):
-- IDEA BANK: 19 (`#118`-`#129`, `#139`-`#143`, `#145`-`#146`)
+- IDEA BANK: 15 (`#118`-`#129`, `#141`-`#143`)
 - Roadmap: 5
 - Backlog: 0
-- Ready: 0
+- Ready: 4 (`#145`, `#146`, `#140`, `#139`)
 - In Progress: 0
 - Done: 40
 
@@ -54,11 +54,21 @@ Current delivery focus:
   - `#135` delivered (`Done`) with policy-safe git runtime operations and protected-branch mutation safeguards
   - `#138` delivered (`Done`) with launch rehearsal report and GO decision
   - locked order: `#133 -> (#134 + #137) -> #135 -> #138`
+- post-MVP hardening queue prepared in Ready:
+  - `#145` (`P0`) portability gate parity + route/runtime regression checks
+  - `#146` (`P0`) filesystem safety regression harness
+  - `#140` (`P0`) secrets/DLP guardrail
+  - `#139` (`P1`) cancel/interrupt/resume semantics
+  - locked order: `#145 -> #146 -> #140 -> #139`
+- baseline e2e harness is now available and passing:
+  - script: `apps/warroom/scripts/e2e/warroom-postmvp.e2e.js`
+  - command: `cd apps/warroom && npm run e2e:warroom`
+  - latest run id: `warroom-e2e-2026-02-13T18:06:33.097Z` (PASS)
 - prompt package validator pass confirmed for launch cards `#130`-`#138`.
 - runtime umbrella `#75` is now closed (`Done`) with evidence linked to delivered child issues `#93` + `#94`.
-- additional foundation ideas captured in `IDEA BANK`: `#139`-`#143`, `#145`, `#146` (task controls, DLP, provenance, runtime SLOs, ephemeral workspace, portability gate parity, filesystem safety regression automation).
+- additional foundation ideas in `IDEA BANK`: `#141`-`#143` plus `#118`-`#129`.
 - new idea intake lane is active: all speculative and emerging WarRoom ideas now enter `IDEA BANK` first before roadmap/backlog triage.
-- active executable item: none (launch lane complete).
+- active executable item: `#145` (`Ready`) in post-MVP hardening lane.
 - `#132` acceptance summary:
   - command policy classes/risk tiers and deny-by-default matching delivered
   - approval-token expiry/fingerprint/replay enforcement delivered
@@ -86,7 +96,7 @@ Execution rules:
 ## 3) Known gaps (intentional backlog)
 
 Backlog gaps still open:
-- dev-operator cockpit runtime chain (`#130` umbrella, `#131`-`#138` execution plan)
+- post-MVP hardening lane (`#145`, `#146`, `#140`, `#139`)
 - Docker portability dependency chain:
   - preflight contract (`#111`) done
   - app containerization (`#112`) done
@@ -127,6 +137,7 @@ npm run build
 - `docs/WARROOM_DELIVERY_STORY.md`: milestone narrative and acceptance posture.
 - `docs/WARROOM_MVP_SPINE_AND_BACKLOG.md`: invariants, lane contract, initiative map.
 - `docs/WARROOM_DOCKER_PORTABILITY_HEALTH_REPORT.md`: Docker portability rubric and current healthy-level assessment.
+- `docs/WARROOM_E2E_TESTS.md`: e2e harness command pack and latest run evidence.
 - `docs/WARROOM_HANDOVER.md`: operational continuation pack.
 - this file: concise status digest and command pack only.
 

@@ -50,7 +50,7 @@ Implemented and live in code:
 
 Current execution lane (board as-of 2026-02-13):
 - `In Progress`: (none)
-- `Ready`: (none)
+- `Ready`: `#145`, `#146`, `#140`, `#139`
 - `Backlog`: (none)
 - `Done`: `#130`, `#131`, `#132`, `#133`, `#134`, `#135`, `#136`, `#137`, `#138`, `#75`, `#144`
 
@@ -67,13 +67,15 @@ Current `IDEA BANK` items (board as-of 2026-02-13):
 - `#127` canary rollout framework for newly onboarded agents
 - `#128` benchmark dataset governance for reproducible A/B/C/D evaluation
 - `#129` cost-aware routing policy (quality/latency/spend tradeoff)
-- `#139` task cancel/interrupt/resume semantics
-- `#140` secrets/DLP guardrail for terminal/file/chat output
 - `#141` execution identity/provenance chain
 - `#142` tool-runtime SLO dashboard
 - `#143` ephemeral workspace provisioning and cleanup policy
-- `#145` portability gate parity + route-level runtime regression checks
-- `#146` automated filesystem safety regression harness for `#136` invariants
+
+Post-MVP priority queue (Ready, execution order):
+1. `#145` portability gate parity + route-level runtime regression checks (`P0`)
+2. `#146` automated filesystem safety regression harness for `#136` invariants (`P0`)
+3. `#140` secrets/DLP guardrail for terminal/file/chat output (`P0`)
+4. `#139` task cancel/interrupt/resume semantics (`P1`)
 
 Active delivery kickoff (current window):
 - preflight dependency root `#111` is delivered (`Done`).
@@ -105,8 +107,9 @@ Active delivery kickoff (current window):
 - `#138` is delivered (`Done`) with launch rehearsal report, pass/fail matrix, rollback evidence, and GO decision.
 - `#130` umbrella is delivered (`Done`) with dependency-order closure evidence linking all child deliverables.
 - runtime settings umbrella `#75` is closed (`Done`) with closure evidence linked to delivered children `#93` + `#94`.
+- post-MVP hardening queue prepared (`Ready`): `#145`, `#146`, `#140`, `#139`.
 - context-pressure checkpoint: continuation context is treated as near 70%; scope expansion remains bounded to ordered execution with handover-first updates.
-- current gate state: launch lane `#130` -> `#138` is fully delivered and closed.
+- current gate state: MVP launch lane is closed; next execution starts from `#145` -> `#146` -> `#140` -> `#139`.
 
 New dependency-ordered backlog initiative:
 - Docker portability delivery chain (`#111` -> `#116`) was added to close the bring-anywhere runtime gap.
@@ -319,6 +322,7 @@ Doctrine:
 - `docs/WARROOM_DELIVERY_STORY.md`
 - `docs/WARROOM_MVP_SPINE_AND_BACKLOG.md`
 - `docs/WARROOM_DOCKER_PORTABILITY_HEALTH_REPORT.md`
+- `docs/WARROOM_E2E_TESTS.md`
 
 ## 10) Safety rules for next window
 
@@ -361,8 +365,13 @@ Current launch lane:
 - #137 Done (P0), closed.
 - #136 Done (P0), closed.
 - #138 Done (P1), closed.
-- Backlog chain: (none).
-- Locked order: #133 -> (#134 + #137) -> #135 -> #138.
+
+Current post-MVP hardening lane:
+- #145 Ready (P0) portability gate parity + runtime regression checks.
+- #146 Ready (P0) filesystem safety regression harness.
+- #140 Ready (P0) secrets/DLP guardrail.
+- #139 Ready (P1) cancel/interrupt/resume semantics.
+- Locked order: #145 -> #146 -> #140 -> #139.
 
 Per-issue execution loop:
 1) Confirm board status is Ready.
@@ -380,6 +389,6 @@ Per-issue execution loop:
 9) Refresh handover/status/backlog snapshot before next issue.
 
 Next action:
-- Execute post-launch hardening triage from IDEA BANK (`#145`, `#146`, `#139`-`#143`) under standard Ready-gate discipline.
+- Execute post-MVP hardening lane in locked order (`#145` -> `#146` -> `#140` -> `#139`) with standard Ready-gate discipline.
 - If context pressure rises again, stop scope expansion and refresh handover/status before continuing.
 ```

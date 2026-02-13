@@ -63,6 +63,12 @@ Idea-to-roadmap triage rule:
 - promotion to `Roadmap` requires triage notes (problem, expected value, and why now).
 - ideas that become actionable directly may move to `Backlog` instead of `Roadmap`, but never directly to `Ready`.
 
+Operational fast-track exception:
+- critical post-MVP hardening cards may be promoted from `IDEA BANK` to `Ready` in one window only when:
+  - triage rationale is posted in issue evidence comments,
+  - executable prompt package validation passes,
+  - safety invariants remain unchanged.
+
 ## 4) Canonical storage rule
 
 - Board is SSOT for all actionable status.
@@ -83,15 +89,18 @@ gh issue list --state all --limit 400 --json number,title,projectItems \
 ## 5) Snapshot (as-of 2026-02-13)
 
 WarRoom status counts:
-- IDEA BANK: 19
+- IDEA BANK: 15
 - Roadmap: 5
 - Backlog: 0
-- Ready: 0
+- Ready: 4
 - In Progress: 0
 - Done: 40
 
 Current Ready cards:
-- (none; launch lane complete)
+- `#145` [Bug] portability gate parity + route/runtime regression checks (`P0`)
+- `#146` [Feature] filesystem safety regression harness (`P0`)
+- `#140` [Feature] secrets/DLP guardrail (`P0`)
+- `#139` [Feature] task cancel/interrupt/resume semantics (`P1`)
 
 Current IdeaBank cards:
 - `#118` WarRoom: Policy simulation and replay harness for governance changes
@@ -106,13 +115,9 @@ Current IdeaBank cards:
 - `#127` WarRoom: Canary rollout framework for newly onboarded agents
 - `#128` WarRoom: Benchmark dataset governance for reproducible A/B/C/D evaluation
 - `#129` WarRoom: Cost-aware routing policy (quality/latency/spend tradeoff)
-- `#139` WarRoom: Task cancel/interrupt/resume semantics for tool sessions
-- `#140` WarRoom: Secrets/DLP guardrail for terminal, file, and chat outputs
 - `#141` WarRoom: Execution identity and provenance chain (approver -> runtime -> git author)
 - `#142` WarRoom: Tool-runtime SLO dashboard (latency/failures/approval wait/dead-letter)
 - `#143` WarRoom: Ephemeral workspace provisioning and cleanup policy
-- `#145` [Bug] WarRoom: Portability gate parity + route-level runtime regression checks
-- `#146` [Feature] WarRoom: Automated filesystem safety regression harness for #136 invariants
 
 ## 6) Strategic initiative map
 
@@ -154,6 +159,13 @@ Initiative D: Dev-operator cockpit launch enablement (current)
 - `#135` git operations toolkit (`Done`, P1)
 - `#138` end-to-end launch rehearsal (`Done`)
 - execution order lock completed: `#133 -> (#134 + #137) -> #135 -> #138`
+
+Initiative E: Post-MVP hardening lane (current)
+- `#145` portability gate parity + route/runtime regression checks (`Ready`, P0)
+- `#146` filesystem safety regression harness (`Ready`, P0)
+- `#140` secrets/DLP output guardrail (`Ready`, P0)
+- `#139` cancel/interrupt/resume semantics (`Ready`, P1)
+- execution order lock: `#145 -> #146 -> #140 -> #139`
 
 ## 7) Re-entry and drop rules
 

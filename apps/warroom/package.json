@@ -7,6 +7,7 @@
     "dev": "next dev -p 3007",
     "build": "next build",
     "start": "next start -p 3007",
+    "e2e:warroom": "node scripts/e2e/warroom-postmvp.e2e.js",
     "lint": "echo \"Lint not configured for this Next.js version\"",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
