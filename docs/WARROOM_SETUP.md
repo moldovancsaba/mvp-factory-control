@@ -29,6 +29,16 @@ What it does:
 - applies Prisma migrations via container,
 - starts app container and verifies health + `/signin` reachability.
 
+Post-bootstrap runtime verification (required before claiming healthy delivery):
+- check container health:
+  - `docker compose ps`
+- check app logs for runtime portability errors:
+  - `docker logs --tail 200 warroom-app`
+- probe key routes:
+  - `curl -fsS http://127.0.0.1:${WARROOM_APP_PORT:-3577}/signin >/dev/null`
+  - `curl -fsS http://127.0.0.1:${WARROOM_APP_PORT:-3577}/products >/dev/null`
+  - `curl -fsS http://127.0.0.1:${WARROOM_APP_PORT:-3577}/agents >/dev/null`
+
 Default host ports are `3579` (DB) and `3577` (app).  
 If those ports are occupied by services you want to keep, run with overrides:
 
@@ -236,6 +246,12 @@ Common failures and remediations:
 - app health timeout:
   - inspect app logs: `docker logs warroom-app`
   - verify env keys exist in `apps/warroom/.env` (`NEXTAUTH_*`, `WARROOM_GITHUB_TOKEN`, OAuth keys).
+- generic "Server Components render" error on `/agents` in Docker:
+  - inspect logs for `ps` portability failures (`bad -o argument 'command'`).
+  - ensure runtime uses portable process listing (`ps -eo pid=,args=` path in `src/lib/worker-process.ts`).
+- generic "Server Components render" error with `EACCES` and `/app/.warroom`:
+  - confirm image sets writable ownership for `/app/.warroom` before `USER nextjs`.
+  - rebuild app image and rerun bootstrap.
 
 ## 15) Automated Docker portability gate (CI + local)
 

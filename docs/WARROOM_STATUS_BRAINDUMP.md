@@ -60,6 +60,7 @@ Current delivery focus:
   - allow/deny/approval outcomes captured in lifecycle audit evidence
   - build gate pass: `cd apps/warroom && npm run build`
 - context-pressure checkpoint: continuation context is treated as near 70%; execution remains constrained to ordered scope with handover-first updates before each implementation start.
+- incident capture in progress (`#144`): codifying Docker runtime regressions and mandatory prevention checks.
 
 ## 2) Architecture truth snapshot
 
@@ -123,3 +124,22 @@ npm run build
 - `docs/WARROOM_DOCKER_PORTABILITY_HEALTH_REPORT.md`: Docker portability rubric and current healthy-level assessment.
 - `docs/WARROOM_HANDOVER.md`: operational continuation pack.
 - this file: concise status digest and command pack only.
+
+## 6) Operational incident learning (latest)
+
+Incident reference:
+- `#144` `[Bug] WarRoom: Capture and codify Docker runtime incident learnings (permissions + ps portability)`
+
+What failed:
+- container runtime could not write `/app/.warroom` (permission denied).
+- `/agents` route used non-portable `ps` flag (`command`) not supported in Alpine runtime.
+
+Fix commits:
+- `3260deb`: dedicated port defaults + bootstrap hardening + runtime writable `.warroom`.
+- `dd44b3e`: portable worker process listing (`ps -eo pid=,args=`).
+
+Evidence checklist now required on runtime-affecting work:
+1. `./scripts/warroom-docker-bootstrap.sh` passes.
+2. `docker compose ps` shows healthy app+db.
+3. `docker logs --tail 200 warroom-app` shows no permission or `ps` portability errors.
+4. route probes: `/signin`, `/products`, `/agents`.

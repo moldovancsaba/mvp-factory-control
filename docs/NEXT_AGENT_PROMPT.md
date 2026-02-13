@@ -18,6 +18,10 @@ Constraints:
 - Preserve lease/role/lifecycle/email-ingress safety invariants.
 - No secrets in output/logs/UI.
 - Additive/reversible changes only; do not revert unrelated local changes.
+- Incident-learning loop is mandatory:
+  - if runtime/container failure is found, open/update a board issue in the same session,
+  - attach RCA + fix evidence + verification commands,
+  - update handover/status docs before closing the issue.
 
 Current launch lane:
 - #130 Roadmap (Type=Plan umbrella only).
@@ -41,6 +45,10 @@ Per-issue execution loop:
 7) Post concise acceptance evidence comment.
 8) Move issue to Done.
 9) Refresh handover/status/backlog snapshot before next issue.
+10) For runtime/Docker changes, include portability verification evidence:
+   - `docker compose ps`
+   - `docker logs --tail 200 warroom-app`
+   - route checks: `/signin`, `/products`, `/agents`
 
 Next action:
 - Promote #136 to Ready (after prompt-package validation), then execute.

@@ -57,6 +57,25 @@ All agents and humans working with the [MVP Factory Board](https://github.com/us
 - Do not defer board updates to a later session.
 - A completed code change without board/status update is non-compliant.
 
+## 3.2 Incident Learning Loop (Mandatory)
+
+- Any runtime failure discovered during delivery (for example server-component render error, container boot/runtime error, portability failure) must be recorded as a board-tracked issue in the same session.
+- Incident issue minimum evidence:
+  - exact symptom/error text,
+  - root cause,
+  - fix summary with file references,
+  - verification commands and observed outcomes.
+- Incident closure requires all of:
+  1. issue evidence comment on GitHub,
+  2. status transition to `Done`,
+  3. handover/status docs updated with the learning snapshot,
+  4. starter prompt updates when the failure reveals a missing mandatory check.
+- For Docker/runtime-affecting changes, include route-level portability checks in evidence:
+  - `/signin`
+  - `/products`
+  - `/agents`
+- If incident learning is not documented in board evidence + doctrine docs, work is incomplete.
+
 ---
 
 ## 4. Set Agent and Product on the card

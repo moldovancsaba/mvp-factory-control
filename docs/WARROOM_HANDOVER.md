@@ -238,6 +238,49 @@ gh issue list --state all --limit 400 --json number,title,projectItems \
 Core app:
 - `apps/warroom/src/app/dashboard/page.tsx`
 - `apps/warroom/src/app/products/page.tsx`
+
+## 10) Incident Ledger (Latest)
+
+### 2026-02-13: Docker runtime regression set (`#144`)
+
+Symptoms observed:
+- `/signin` and server-rendered routes failed with generic Server Components error in production container mode.
+- `/agents` failed in container while `/products` remained functional.
+
+Root causes:
+1. Runtime write-path permission gap:
+- app attempted to create `/app/.warroom` as non-root runtime user, but directory ownership did not allow writes in container image.
+2. Process listing portability gap:
+- `/agents` worker process discovery used `ps -Ao pid=,command=`, which is unsupported in Alpine/BusyBox `ps`.
+
+Fixes delivered:
+- Docker runtime ownership fix in `apps/warroom/Dockerfile`:
+  - create `/app/.warroom/worker-logs`
+  - `chown -R nextjs:nodejs /app` before dropping to `USER nextjs`
+- Portable worker process listing fix in `apps/warroom/src/lib/worker-process.ts`:
+  - replace `ps -Ao pid=,command=` with `ps -eo pid=,args=`
+  - safe fallback to empty list on process-command failure.
+- Dedicated default ports + bootstrap resilience:
+  - default app/db host ports set to `3577`/`3579`
+  - bootstrap port reclaim logic for occupied configured ports.
+
+Verification evidence:
+- `./scripts/warroom-docker-bootstrap.sh` PASS on `3577`/`3579`.
+- `docker compose ps` shows healthy `warroom-app` and `warroom-db`.
+- `docker logs warroom-app` no longer shows:
+  - `EACCES: permission denied, mkdir '/app/.warroom'`
+  - `ps: bad -o argument 'command'`.
+- route checks:
+  - `/signin` reachable
+  - `/agents` renders in container mode.
+
+Prevention rules (mandatory going forward):
+- Any Docker/runtime incident must be logged on board with RCA + exact command evidence in same work window.
+- Portability verification for runtime-affecting changes must include:
+  - `docker compose ps`
+  - `docker logs --tail 200 warroom-app`
+  - route probes for `/signin`, `/products`, and `/agents`.
+- No issue can be considered done until handover/status docs include the incident snapshot.
 - `apps/warroom/src/app/agents/page.tsx`
 - `apps/warroom/src/app/chat/page.tsx`
 - `apps/warroom/src/app/issues/[number]/page.tsx`

@@ -68,6 +68,7 @@ Idea-to-roadmap triage rule:
 - Board is SSOT for all actionable status.
 - Docs are doctrine and context only.
 - Board fields + issue evidence must be updated after each meaningful execution step.
+- Runtime incident learning is mandatory: every production/runtime failure must be captured as board evidence and reflected in handover/status docs in the same work window.
 
 Live board reference:
 - [GitHub Project 1 - MVP Factory Board](https://github.com/users/moldovancsaba/projects/1)
