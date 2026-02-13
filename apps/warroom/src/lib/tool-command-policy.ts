@@ -176,9 +176,8 @@ function classifyCall(call: ToolCallDefinition): ToolCommandPolicyDecision {
       policyClass: "SHELL_EXECUTION",
       effectiveRiskClass,
       requiresApproval: true,
-      allowed: false,
-      reason:
-        "Policy class SHELL_EXECUTION is defined and approval-gated, but runtime execution is disabled in this phase."
+      allowed: true,
+      reason: "shell.exec allowed only with explicit approval token and runtime safeguards."
     };
   }
 

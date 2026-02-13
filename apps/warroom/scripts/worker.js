@@ -21,6 +21,11 @@ const {
   executeFilesystemToolCall,
   resolveFilesystemToolContext
 } = require("./lib/tool-filesystem");
+const {
+  ToolShellError,
+  executeShellToolCall,
+  resolveShellToolContext
+} = require("./lib/tool-shell");
 
 const prisma = new PrismaClient();
 
@@ -218,6 +223,11 @@ function evaluateOrchestratorTaskTransition(action, fromState, toState) {
     return fromState === "RUNNING" && toState === "DONE"
       ? { allowed: true, reason: "Orchestrator completion transition allowed." }
       : { allowed: false, reason: "Completion transition requires RUNNING -> DONE." };
+  }
+  if (action === "CANCEL_TASK") {
+    return fromState === "RUNNING" && toState === "CANCELED"
+      ? { allowed: true, reason: "Orchestrator cancel transition allowed." }
+      : { allowed: false, reason: "Cancel transition requires RUNNING -> CANCELED." };
   }
   if (action === "RETRY_TASK") {
     return fromState === "RUNNING" && toState === "QUEUED"
@@ -1667,6 +1677,18 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
     (policyEvaluation.decisions || []).map((decision) => [decision.callId, decision])
   );
   let filesystemContext = null;
+  let shellContext = null;
+
+  async function ensureWorkspaceContext() {
+    if (!filesystemContext) {
+      filesystemContext = await resolveFilesystemToolContext({
+        settingsFile: SETTINGS_FILE,
+        cwd: process.cwd(),
+        env: process.env
+      });
+    }
+    return filesystemContext;
+  }
 
   for (let index = 0; index < envelope.calls.length; index += 1) {
     const call = envelope.calls[index];
@@ -1726,16 +1748,142 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
       continue;
     }
 
-    if (call.tool.startsWith("filesystem.")) {
-      if (!filesystemContext) {
-        filesystemContext = await resolveFilesystemToolContext({
-          settingsFile: SETTINGS_FILE,
-          cwd: process.cwd(),
+    if (call.tool === "shell.exec") {
+      const workspaceContext = await ensureWorkspaceContext();
+      if (!shellContext) {
+        shellContext = await resolveShellToolContext({
+          sessionId: `task-${task.id}`,
+          workspaceRoots: workspaceContext.workspaceRoots,
+          defaultCwd: workspaceContext.primaryWorkspaceRoot,
           env: process.env
         });
       }
       try {
-        const fsResult = await executeFilesystemToolCall(call, filesystemContext);
+        const shellResult = await executeShellToolCall(call, shellContext, {
+          shouldCancel: async () => {
+            const current = await prisma.agentTask.findUnique({
+              where: { id: task.id },
+              select: { status: true }
+            });
+            return current?.status === "CANCELED";
+          }
+        });
+
+        await recordLifecycleAudit({
+          entityType: "TASK",
+          entityId: task.id,
+          actorRole: "ORCHESTRATOR",
+          action: "TOOL_SHELL_EXECUTE",
+          fromState: task.status,
+          toState: task.status,
+          allowed: true,
+          reason: `${callPrefix} shell command executed.`,
+          metadata: {
+            callId: call.id,
+            tool: call.tool,
+            riskClass: call.riskClass,
+            approval: call.approval,
+            policyClass: policyDecision.policyClass,
+            ...(shellResult.audit || {})
+          }
+        });
+        await recordLifecycleAudit({
+          entityType: "TASK",
+          entityId: task.id,
+          actorRole: "ORCHESTRATOR",
+          action: "TOOL_CALL_PROTOCOL_EXECUTE",
+          fromState: task.status,
+          toState: task.status,
+          allowed: true,
+          reason: `${callPrefix} executed.`,
+          metadata: {
+            callId: call.id,
+            tool: call.tool,
+            riskClass: call.riskClass,
+            approval: call.approval,
+            policyClass: policyDecision.policyClass,
+            dryRun: false
+          }
+        });
+
+        responses.push(
+          envelope.calls.length === 1 ? shellResult.answer : `[${call.id}] ${shellResult.answer}`
+        );
+        callMeta.push({
+          id: call.id,
+          tool: call.tool,
+          policyClass: policyDecision.policyClass,
+          sessionId: shellResult.audit?.sessionId || shellContext.sessionId,
+          cwd: shellResult.audit?.relativeCwd || ".",
+          exitCode: shellResult.audit?.exitCode,
+          durationMs: shellResult.audit?.durationMs
+        });
+        continue;
+      } catch (error) {
+        const reason =
+          error instanceof ToolShellError
+            ? error.message
+            : `${callPrefix} failed with unexpected shell runtime error.`;
+        await recordLifecycleAudit({
+          entityType: "TASK",
+          entityId: task.id,
+          actorRole: "ORCHESTRATOR",
+          action: "TOOL_SHELL_EXECUTE",
+          fromState: task.status,
+          toState: task.status,
+          allowed: false,
+          reason,
+          metadata: {
+            callId: call.id,
+            tool: call.tool,
+            riskClass: call.riskClass,
+            approval: call.approval,
+            policyClass: policyDecision.policyClass,
+            code: error instanceof ToolShellError ? error.code : "UNKNOWN",
+            details: error instanceof ToolShellError ? error.metadata : null
+          }
+        });
+        await recordLifecycleAudit({
+          entityType: "TASK",
+          entityId: task.id,
+          actorRole: "ORCHESTRATOR",
+          action: "TOOL_CALL_PROTOCOL_EXECUTE",
+          fromState: task.status,
+          toState: task.status,
+          allowed: false,
+          reason,
+          metadata: {
+            callId: call.id,
+            tool: call.tool,
+            riskClass: call.riskClass,
+            approval: call.approval,
+            policyClass: policyDecision.policyClass,
+            dryRun: false,
+            code: error instanceof ToolShellError ? error.code : "UNKNOWN"
+          }
+        });
+        if (error instanceof ToolShellError) {
+          if (error.code === "TASK_CANCELED") {
+            throw new WorkerTaskError("TASK_CANCELED", reason, false);
+          }
+          if (error.code === "TIMEOUT") {
+            throw new WorkerTaskError("TOOL_SHELL_TIMEOUT", reason, false);
+          }
+          if (error.code === "OUTPUT_LIMIT_EXCEEDED") {
+            throw new WorkerTaskError("TOOL_SHELL_OUTPUT_LIMIT", reason, false);
+          }
+          if (error.code === "EXIT_NON_ZERO") {
+            throw new WorkerTaskError("TOOL_SHELL_EXIT_NON_ZERO", reason, false);
+          }
+        }
+        throw new WorkerTaskError("TOOL_SHELL_DENIED", reason, false);
+      }
+    }
+
+    if (call.tool.startsWith("filesystem.")) {
+      const workspaceContext = await ensureWorkspaceContext();
+      try {
+        const fsResult = await executeFilesystemToolCall(call, workspaceContext);
         await recordLifecycleAudit({
           entityType: "TASK",
           entityId: task.id,
@@ -1751,7 +1899,7 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
             riskClass: call.riskClass,
             approval: call.approval,
             policyClass: policyDecision.policyClass,
-            workspaceRoot: filesystemContext.primaryWorkspaceRoot,
+            workspaceRoot: workspaceContext.primaryWorkspaceRoot,
             ...(fsResult.audit || {})
           }
         });
@@ -1778,7 +1926,7 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
           id: call.id,
           tool: call.tool,
           policyClass: policyDecision.policyClass,
-          workspaceRoot: filesystemContext.primaryWorkspaceRoot
+          workspaceRoot: workspaceContext.primaryWorkspaceRoot
         });
         continue;
       } catch (error) {
@@ -2134,6 +2282,83 @@ async function processTask(task) {
       return;
     }
     const nextAttemptCount = attemptCount + 1;
+    if (failure.code === "TASK_CANCELED") {
+      await withLeaseAuthority(`cancel-task:${task.id}`, async (tx) => {
+        const current = await tx.agentTask.findUnique({
+          where: { id: task.id },
+          select: { status: true }
+        });
+        if (!current) {
+          throw new WorkerTaskError(
+            "TRANSITION_DENIED",
+            `Cancel denied: task ${task.id} not found.`,
+            false
+          );
+        }
+        const decision = evaluateOrchestratorTaskTransition(
+          "CANCEL_TASK",
+          current.status,
+          "CANCELED"
+        );
+        if (!decision.allowed) {
+          await recordLifecycleAudit(
+            {
+              entityType: "TASK",
+              entityId: task.id,
+              actorRole: "ORCHESTRATOR",
+              action: "CANCEL_TASK",
+              fromState: current.status,
+              toState: "CANCELED",
+              allowed: false,
+              reason: decision.reason
+            },
+            tx
+          );
+          throw new WorkerTaskError("TRANSITION_DENIED", decision.reason, false);
+        }
+
+        await postMessage(
+          task.threadId,
+          "SYSTEM",
+          null,
+          `Task canceled for @${agentKey}: ${failure.message} (code=${failure.code}).`,
+          {
+            kind: "worker_canceled",
+            taskId: task.id,
+            error: failure.message,
+            ...failureMeta(failure, nextAttemptCount, maxAttempts)
+          },
+          tx
+        );
+        await tx.agentTask.update({
+          where: { id: task.id },
+          data: {
+            status: "CANCELED",
+            attemptCount: nextAttemptCount,
+            finishedAt: new Date(),
+            error: formatFailureMessage(failure),
+            lastFailureCode: failure.code,
+            lastFailureKind: failure.kind,
+            deadLetteredAt: null,
+            nextAttemptAt: new Date()
+          }
+        });
+        await recordLifecycleAudit(
+          {
+            entityType: "TASK",
+            entityId: task.id,
+            actorRole: "ORCHESTRATOR",
+            action: "CANCEL_TASK",
+            fromState: current.status,
+            toState: "CANCELED",
+            allowed: true,
+            reason: decision.reason
+          },
+          tx
+        );
+      });
+      return;
+    }
     const canRetry = failure.retryable && nextAttemptCount < maxAttempts;
     if (canRetry) {
       const delayMs = computeRetryDelayMs(nextAttemptCount);

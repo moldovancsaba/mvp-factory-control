@@ -23,10 +23,10 @@ Live baseline delivered:
 Current WarRoom board posture (as-of 2026-02-13):
 - IDEA BANK: 19 (`#118`-`#129`, `#139`-`#143`, `#145`-`#146`)
 - Roadmap: 6
-- Backlog: 5 (`#133`, `#134`, `#135`, `#137`, `#138`)
+- Backlog: 4 (`#134`, `#135`, `#137`, `#138`)
 - Ready: 0
 - In Progress: 0
-- Done: 34
+- Done: 35
 
 Current delivery focus:
 - `#111` Docker portability preflight contract is delivered.
@@ -48,13 +48,14 @@ Current delivery focus:
   - `#131` delivered (`Done`) with acceptance evidence + build pass
   - `#132` delivered (`Done`) with policy/approval gate evidence + build pass
   - `#136` delivered (`Done`) with workspace-bounded filesystem tools, traversal/symlink protections, binary policy checks, and policy-gated mutation execution
-  - remaining backlog chain `#133`, `#134`, `#135`, `#137`, `#138` (shell runtime, streaming/artifacts, runtime issue evidence, git ops, launch rehearsal)
-  - locked order from next execution: `#133 -> (#134 + #137) -> #135 -> #138`
+  - `#133` delivered (`Done`) with sandboxed shell runtime, policy-gated execution path, and deterministic timeout/cancel/error lifecycle handling
+  - remaining backlog chain `#134`, `#135`, `#137`, `#138` (streaming/artifacts, git ops, runtime issue evidence, launch rehearsal)
+  - locked order: `#133 -> (#134 + #137) -> #135 -> #138`
 - prompt package validator pass confirmed for launch cards `#130`-`#138`.
 - runtime umbrella `#75` is now closed (`Done`) with evidence linked to delivered child issues `#93` + `#94`.
 - additional foundation ideas captured in `IDEA BANK`: `#139`-`#143`, `#145`, `#146` (task controls, DLP, provenance, runtime SLOs, ephemeral workspace, portability gate parity, filesystem safety regression automation).
 - new idea intake lane is active: all speculative and emerging WarRoom ideas now enter `IDEA BANK` first before roadmap/backlog triage.
-- active executable item: none (`#133` is next candidate after Ready promotion).
+- active executable item: none (`#134` + `#137` are next after Ready promotion).
 - `#132` acceptance summary:
   - command policy classes/risk tiers and deny-by-default matching delivered
   - approval-token expiry/fingerprint/replay enforcement delivered
