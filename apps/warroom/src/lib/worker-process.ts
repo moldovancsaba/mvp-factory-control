@@ -18,7 +18,13 @@ export function isRuntimeRunnable(runtime: string | null | undefined) {
 }
 
 export function listRunningWorkers(): RunningWorker[] {
-  const out = execSync("ps -Ao pid=,command=", { encoding: "utf8" });
+  let out = "";
+  try {
+    // Portable across macOS + Linux/Alpine (BusyBox): avoid BSD-only "command" column.
+    out = execSync("ps -eo pid=,args=", { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+  } catch {
+    return [];
+  }
   const rows = out.split("\n");
   const workers: RunningWorker[] = [];
   for (const row of rows) {
