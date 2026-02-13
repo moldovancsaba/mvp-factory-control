@@ -17,10 +17,51 @@ body:
       label: Agent
       options:
         - Chappie
-        - Tribeca
-        - Katja
-        - Becca
         - Gwen
+        - Tribeca
+    validations:
+      required: true
+
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: Outcome when this refactor is done.
+    validations:
+      required: true
+
+  - type: textarea
+    id: execution_prompt
+    attributes:
+      label: Execution Prompt
+      description: Explicit implementation instructions.
+    validations:
+      required: true
+
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints
+      description: Boundaries and safety requirements.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_checks
+    attributes:
+      label: Acceptance Checks
+      description: Checklist of verifiable outcomes.
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: delivery_artifact
+    attributes:
+      label: Delivery Artifact
+      description: Exact expected output (PR/file/report).
     validations:
       required: true
 

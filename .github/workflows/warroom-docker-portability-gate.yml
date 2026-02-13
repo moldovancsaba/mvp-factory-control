@@ -1,0 +1,57 @@
+name: WarRoom Docker Portability Gate
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "apps/warroom/**"
+      - "docker-compose.yml"
+      - "scripts/warroom-docker-*.sh"
+      - "docs/WARROOM_SETUP.md"
+      - ".github/workflows/warroom-docker-portability-gate.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/warroom/**"
+      - "docker-compose.yml"
+      - "scripts/warroom-docker-*.sh"
+      - "docs/WARROOM_SETUP.md"
+      - ".github/workflows/warroom-docker-portability-gate.yml"
+
+jobs:
+  portability-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ensure scripts executable
+        run: |
+          chmod +x scripts/warroom-docker-preflight.sh
+          chmod +x scripts/warroom-docker-bootstrap.sh
+          chmod +x scripts/warroom-docker-portability-gate.sh
+
+      - name: Provision CI env file
+        run: |
+          cat > apps/warroom/.env <<'EOF'
+          NEXTAUTH_URL=http://localhost:3007
+          NEXTAUTH_SECRET=ci-nextauth-secret
+          GITHUB_CLIENT_ID=ci-github-client-id
+          GITHUB_CLIENT_SECRET=ci-github-client-secret
+          DATABASE_URL=postgresql://warroom:warroom@localhost:5432/warroom?schema=public
+          WARROOM_GITHUB_TOKEN=ci-placeholder-token
+          WARROOM_GITHUB_PROJECT_OWNER=moldovancsaba
+          WARROOM_GITHUB_PROJECT_NUMBER=1
+          WARROOM_TASK_REPO_OWNER=moldovancsaba
+          WARROOM_TASK_REPO_NAME=mvp-factory-control
+          EOF
+
+      - name: Run portability gate
+        env:
+          WARROOM_DB_PORT: "55432"
+          WARROOM_APP_PORT: "3107"
+          NEXTAUTH_URL: "http://localhost:3107"
+          WARROOM_DOCKER_HEALTH_TIMEOUT_SECONDS: "180"
+        run: ./scripts/warroom-docker-portability-gate.sh

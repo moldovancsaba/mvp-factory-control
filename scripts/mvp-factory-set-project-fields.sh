@@ -9,6 +9,7 @@
 set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEFAULTS_FILE="$SCRIPT_DIR/mvp-factory-defaults.env"
+PROMPT_VALIDATOR="$SCRIPT_DIR/mvp-factory-validate-prompt-package.js"
 PROJECT_OWNER="${MVP_PROJECT_OWNER:-moldovancsaba}"
 REPO_NAME="${MVP_REPO:-mvp-factory-control}"
 PROJECT_NUM="${MVP_PROJECT_NUMBER:-1}"
@@ -48,7 +49,8 @@ if [ -f "$DEFAULTS_FILE" ]; then
   set +a
 fi
 DEFAULT_STATUS="${MVP_STATUS:-Backlog}"
-DEFAULT_AGENT="${MVP_AGENT:-Tribeca}"
+# Intentionally no fallback agent to avoid leaking demo/default assignments.
+DEFAULT_AGENT="${MVP_AGENT-}"
 DEFAULT_PRODUCT="${MVP_PRODUCT:-amanoba}"
 DEFAULT_TYPE="${MVP_TYPE:-Feature}"
 DEFAULT_PRIORITY="${MVP_PRIORITY:-P0}"
@@ -60,10 +62,12 @@ if [ -z "$ISSUE_NUM" ] || ! [ "$ISSUE_NUM" -eq "$ISSUE_NUM" ] 2>/dev/null; then
 fi
 
 # Require project scope (one-time: see docs/SETUP.md)
-if ! gh auth status 2>/dev/null | grep -q 'project\|read:project'; then
-  echo "GitHub CLI needs project scope. Run once: gh auth refresh -h github.com -s read:project,project" >&2
-  echo "See docs/SETUP.md" >&2
-  exit 1
+if [ -z "${GH_TOKEN:-}" ] && [ -z "${GITHUB_TOKEN:-}" ] && [ -z "${MVP_PROJECT_TOKEN:-}" ]; then
+  if ! gh auth status 2>/dev/null | grep -q 'project\|read:project'; then
+    echo "GitHub CLI needs project scope. Run once: gh auth refresh -h github.com -s read:project,project" >&2
+    echo "See docs/SETUP.md" >&2
+    exit 1
+  fi
 fi
 
 # 1) Project ID (user project)
@@ -143,6 +147,20 @@ TYPE="${OVERRIDE_TYPE:-$(get_current_value "Type")}"
 TYPE="${TYPE:-$DEFAULT_TYPE}"
 PRIORITY="${OVERRIDE_PRIORITY:-$(get_current_value "Priority")}"
 PRIORITY="${PRIORITY:-$DEFAULT_PRIORITY}"
+
+# Hard Ready gate: issue must contain a valid Executable Prompt Package.
+CURRENT_STATUS="$(get_current_value "Status")"
+if [ "${MVP_SKIP_EXECUTABLE_PROMPT_GATE:-0}" != "1" ] && [ "$(echo "$STATUS" | tr '[:upper:]' '[:lower:]')" = "ready" ] && [ "$(echo "$CURRENT_STATUS" | tr '[:upper:]' '[:lower:]')" != "ready" ]; then
+  if [ ! -f "$PROMPT_VALIDATOR" ]; then
+    echo "Ready gate validator missing: $PROMPT_VALIDATOR" >&2
+    exit 1
+  fi
+  if ! node "$PROMPT_VALIDATOR" --issue "$ISSUE_NUM" --repo "$PROJECT_OWNER/$REPO_NAME"; then
+    echo "Refusing to move issue #$ISSUE_NUM to Ready: Executable Prompt Package is incomplete." >&2
+    echo "Add required sections (Objective, Execution Prompt, Scope/Non-goals, Constraints, Acceptance Checks, Delivery Artifact)." >&2
+    exit 1
+  fi
+fi
 
 echo "Issue: $REPO_NAME #$ISSUE_NUM -> Status=$STATUS, Agent=$AGENT, Product=$PRODUCT, Type=$TYPE, Priority=$PRIORITY"
 

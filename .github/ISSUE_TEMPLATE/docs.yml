@@ -17,10 +17,59 @@ body:
       label: Agent
       options:
         - Chappie
-        - Tribeca
-        - Katja
-        - Becca
         - Gwen
+        - Tribeca
+    validations:
+      required: true
+
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: Outcome when documentation work is complete.
+    validations:
+      required: true
+
+  - type: textarea
+    id: execution_prompt
+    attributes:
+      label: Execution Prompt
+      description: Explicit instructions an agent can execute immediately.
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope_non_goals
+    attributes:
+      label: Scope / Non-goals
+      description: What docs are in scope and what is out of scope.
+    validations:
+      required: true
+
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints
+      description: Constraints for tone, structure, safety, and references.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_checks
+    attributes:
+      label: Acceptance Checks
+      description: Checklist of verifiable outcomes.
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: delivery_artifact
+    attributes:
+      label: Delivery Artifact
+      description: Exact expected output (updated files/sections/links).
     validations:
       required: true
 
