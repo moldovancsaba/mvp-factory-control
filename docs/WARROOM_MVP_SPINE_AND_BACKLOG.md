@@ -83,7 +83,7 @@ gh issue list --state all --limit 400 --json number,title,projectItems \
 ## 5) Snapshot (as-of 2026-02-13)
 
 WarRoom status counts:
-- IDEA BANK: 17
+- IDEA BANK: 19
 - Roadmap: 6
 - Backlog: 5
 - Ready: 0
@@ -111,6 +111,8 @@ Current IdeaBank cards:
 - `#141` WarRoom: Execution identity and provenance chain (approver -> runtime -> git author)
 - `#142` WarRoom: Tool-runtime SLO dashboard (latency/failures/approval wait/dead-letter)
 - `#143` WarRoom: Ephemeral workspace provisioning and cleanup policy
+- `#145` [Bug] WarRoom: Portability gate parity + route-level runtime regression checks
+- `#146` [Feature] WarRoom: Automated filesystem safety regression harness for #136 invariants
 
 ## 6) Strategic initiative map
 

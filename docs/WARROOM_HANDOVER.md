@@ -72,6 +72,8 @@ Current `IDEA BANK` items (board as-of 2026-02-13):
 - `#141` execution identity/provenance chain
 - `#142` tool-runtime SLO dashboard
 - `#143` ephemeral workspace provisioning and cleanup policy
+- `#145` portability gate parity + route-level runtime regression checks
+- `#146` automated filesystem safety regression harness for `#136` invariants
 
 Active delivery kickoff (current window):
 - preflight dependency root `#111` is delivered (`Done`).

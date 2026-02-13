@@ -21,7 +21,7 @@ Live baseline delivered:
 - agent identity reconciliation + Ready gate enforcement (`#98`, `#99`, `#102`)
 
 Current WarRoom board posture (as-of 2026-02-13):
-- IDEA BANK: 17 (`#118`-`#129`, `#139`-`#143`)
+- IDEA BANK: 19 (`#118`-`#129`, `#139`-`#143`, `#145`-`#146`)
 - Roadmap: 6
 - Backlog: 5 (`#133`, `#134`, `#135`, `#137`, `#138`)
 - Ready: 0
@@ -52,7 +52,7 @@ Current delivery focus:
   - locked order from next execution: `#133 -> (#134 + #137) -> #135 -> #138`
 - prompt package validator pass confirmed for launch cards `#130`-`#138`.
 - runtime umbrella `#75` is now closed (`Done`) with evidence linked to delivered child issues `#93` + `#94`.
-- additional foundation ideas captured in `IDEA BANK`: `#139`-`#143` (task controls, DLP, provenance, runtime SLOs, ephemeral workspace).
+- additional foundation ideas captured in `IDEA BANK`: `#139`-`#143`, `#145`, `#146` (task controls, DLP, provenance, runtime SLOs, ephemeral workspace, portability gate parity, filesystem safety regression automation).
 - new idea intake lane is active: all speculative and emerging WarRoom ideas now enter `IDEA BANK` first before roadmap/backlog triage.
 - active executable item: none (`#133` is next candidate after Ready promotion).
 - `#132` acceptance summary:
