@@ -4,7 +4,7 @@
 **Product repo**: [moldovancsaba/amanoba](https://github.com/moldovancsaba/amanoba)  
 **This doc**: Stored in the **mvp-factory-control** unified knowledge center. It describes how agents work on the **Amanoba** product and how Amanoba ties into the [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1).  
 **Roles**: Sultan = Product Owner; Agent = AI Developer  
-**Last updated**: 2026-02-07 (project management: board, handoff, scripts, RULES, SETUP, SYNC).
+**Last updated**: 2026-02-13 (board discipline, prompt-package gate, and documentation audit refresh).
 
 ---
 
@@ -98,7 +98,7 @@ When you **lose context** while working on Amanoba:
 
 - **Create work as issues** in [mvp-factory-control](https://github.com/moldovancsaba/mvp-factory-control); use issue templates. Do not bypass templates.
 - **Approve work** by moving the card to **Ready** on the [MVP Factory Board](https://github.com/users/moldovancsaba/projects/1). Work starts only after Ready.
-- **Set Agent and Product:** On each card set **Agent** (Tribeca, Katja, Becca, Gwen, Chappie) and **Product** (e.g. amanoba). Use the board UI or this repo’s script:  
+- **Set Agent and Product:** On each card set **Agent** to a current board option (currently `Gwen`, `Chappie`, `Tribeca`) and **Product** (e.g. amanoba). Use the board UI or this repo’s script:  
   **`./scripts/mvp-factory-set-project-fields.sh ISSUE_NUMBER --agent YourName`**  
   (One-time: [SETUP.md](https://github.com/moldovancsaba/mvp-factory-control/blob/main/docs/SETUP.md) — `gh auth refresh -h github.com -s read:project,project`.)
 - **No overwrite:** The script reads current board state and only updates fields you pass; other fields stay unchanged.
@@ -108,11 +108,8 @@ When you **lose context** while working on Amanoba:
 
 # Team and where you work
 
-- **Chappie** — Architect (OpenAI ChatGPT)  
-- **Katja** — Content Creator, Developer (OpenAI CODEX via Cursor)  
-- **Tribeca** — Developer (Auto Agent via Cursor)  
-- **Becca, Gwen** — Agents (assign via board)  
 - **Sultan** — Product Owner  
+- **AI Developer Agents** — assigned from board Agent options (currently `Gwen`, `Chappie`, `Tribeca`)  
 
 **You work in the Amanoba repo** for code, TASKLIST, ROADMAP, RELEASE_NOTES, layout_grammar. **You use mvp-factory-control** for issues, board, and project rules (this doc, RULES, SETUP, SYNC, script).
 

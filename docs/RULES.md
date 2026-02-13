@@ -4,6 +4,21 @@ All agents and humans working with the [MVP Factory Board](https://github.com/us
 
 ---
 
+## 0. AI Developer Conduct (Mandatory)
+
+- Product Owner direction is authoritative for scope, priority, and acceptance.
+- Execute autonomously, but do not assume missing facts. If uncertain, ask.
+- Documentation is part of delivery:
+  - if code/logic changes, update related docs in the same work window.
+  - if it is not documented and reflected on the board, it is not done.
+- Keep changes production-grade:
+  - no placeholders (`TBD`, `TODO` without owner/issue), no unverified statements.
+  - no secrets in code/docs/logs/UI.
+  - no unapproved dependencies; prefer minimal, maintained, security-audited packages.
+- Keep build quality strict: no errors, no warnings introduced by your change, no deprecated paths introduced.
+
+---
+
 ## 1. Work is tracked as issues in this repo
 
 - **This repo:** [moldovancsaba/mvp-factory-control](https://github.com/moldovancsaba/mvp-factory-control)
@@ -24,13 +39,48 @@ All agents and humans working with the [MVP Factory Board](https://github.com/us
 
 - **Product / you approve** by moving the card to **Ready** on the board.
 - **Work starts only when the card is in Ready.** Do not start implementation until the card is in Ready.
-- Status flow: `Roadmap` (vision) | `Backlog` (not yet broken down) → `Ready` (start work) → `In Progress` → `Review` → `Done` (and optionally `Blocked`).
+- Status flow: `IDEA BANK` (raw ideas, pre-triage) → `Roadmap` (vision) | `Backlog` (not yet broken down) → `Ready` (start work) → `In Progress` → `Review` → `Done` (and optionally `Blocked`).
+- **Ready gate is strict:** cards can move to `Ready` only if issue body has a complete Executable Prompt Package (v1): [docs/EXECUTABLE_PROMPT_PACKAGE.md](EXECUTABLE_PROMPT_PACKAGE.md).
+- If a card is found in `Ready` without a valid prompt package, demote it from `Ready` immediately in the same session and post validator evidence on the issue.
+- Idea intake rule: every new idea (including speculative/crazy ideas) is captured first in `IDEA BANK`; only triaged ideas move to `Roadmap` or `Backlog`.
+
+---
+
+## 3.1 Mandatory Board Sync After Every Action Step
+
+- GitHub Project is the SSOT for all actionable work state.
+- After each meaningful execution step, update board and issue evidence immediately:
+  1. move Status to `In Progress` when implementation starts.
+  2. keep Agent/Product/Type/Priority accurate while working.
+  3. after validation, post concise issue evidence comment.
+  4. move Status to `Done` as part of completion (same window).
+- Do not defer board updates to a later session.
+- A completed code change without board/status update is non-compliant.
+
+## 3.2 Incident Learning Loop (Mandatory)
+
+- Any runtime failure discovered during delivery (for example server-component render error, container boot/runtime error, portability failure) must be recorded as a board-tracked issue in the same session.
+- Incident issue minimum evidence:
+  - exact symptom/error text,
+  - root cause,
+  - fix summary with file references,
+  - verification commands and observed outcomes.
+- Incident closure requires all of:
+  1. issue evidence comment on GitHub,
+  2. status transition to `Done`,
+  3. handover/status docs updated with the learning snapshot,
+  4. starter prompt updates when the failure reveals a missing mandatory check.
+- For Docker/runtime-affecting changes, include route-level portability checks in evidence:
+  - `/signin`
+  - `/products`
+  - `/agents`
+- If incident learning is not documented in board evidence + doctrine docs, work is incomplete.
 
 ---
 
 ## 4. Set Agent and Product on the card
 
-- **Agent** = who does the work: Tribeca, Katja, Becca, Gwen, or Chappie.
+- **Agent** = who does the work: Gwen, Chappie, or Tribeca (current board options).
 - **Product** = which product/repo the work belongs to (e.g. amanoba, doneisbetter, messmass).
 - Set these on the card (in the GitHub UI or via the script) so the board reflects ownership and context.
 
@@ -38,7 +88,7 @@ All agents and humans working with the [MVP Factory Board](https://github.com/us
 
 ## 5. Do not overwrite other agents’ fields
 
-- **When using the script** (`scripts/mvp-factory-set-project-fields.sh`): the script **reads the current board state first**. Only the fields you pass (e.g. `--agent Becca` or `--priority P2`) are updated; **all other fields are left unchanged**.
+- **When using the script** (`scripts/mvp-factory-set-project-fields.sh`): the script **reads the current board state first**. Only the fields you pass (e.g. `--agent Gwen` or `--priority P2`) are updated; **all other fields are left unchanged**.
 - Do not run the script with full defaults if you only intend to change one field. Pass only the flags you want to change (e.g. `--priority P2` only).
 - In the UI, only change the fields you are responsible for.
 
@@ -48,8 +98,8 @@ All agents and humans working with the [MVP Factory Board](https://github.com/us
 
 | Field       | Purpose           | Example values |
 |------------|-------------------|----------------|
-| **Status** | Workflow state    | Roadmap, Backlog, Ready, In Progress, Review, Done, Blocked |
-| **Agent**  | Who does the work | Tribeca, Katja, Becca, Gwen, Chappie |
+| **Status** | Workflow state    | IDEA BANK, Roadmap, Backlog, Ready, In Progress, Review, Done, Blocked |
+| **Agent**  | Who does the work | Gwen, Chappie, Tribeca |
 | **Product**| Which product     | amanoba, doneisbetter, messmass, etc. |
 | **Type**   | Kind of work      | Feature, Bug, Refactor, Docs, Audit, Release, Plan |
 | **Priority** | Urgency         | P0, P1, P2, P3 |
@@ -59,6 +109,7 @@ All agents and humans working with the [MVP Factory Board](https://github.com/us
 ## 7. Script usage (from this repo)
 
 - **One-time:** Complete [docs/SETUP.md](SETUP.md) (grant `gh` project scope).
+- **Issue package spec:** [docs/EXECUTABLE_PROMPT_PACKAGE.md](EXECUTABLE_PROMPT_PACKAGE.md)
 - **Set yourself on a card:**  
   `./scripts/mvp-factory-set-project-fields.sh ISSUE_NUMBER --agent YourName`
 - **Change only one field:**  
@@ -66,6 +117,7 @@ All agents and humans working with the [MVP Factory Board](https://github.com/us
   (other fields stay as on the board.)
 - **Defaults** (used only when a field has no override and no current value):  
   `scripts/mvp-factory-defaults.env`. Override with `--status`, `--agent`, `--product`, `--type`, `--priority` or env vars `MVP_STATUS`, `MVP_AGENT`, etc.
+- **Ready gate enforcement:** script blocks `--status Ready` when Executable Prompt Package is incomplete (unless `MVP_SKIP_EXECUTABLE_PROMPT_GATE=1` is explicitly set for emergency/manual override).
 
 ---
 
@@ -105,6 +157,7 @@ When you move **project-related agent docs** (e.g. agent operating documents for
 | Work = issues here | All work is an issue in mvp-factory-control; cards on the board. |
 | Use templates | Create issues with the repo’s issue templates; never bypass. |
 | Ready = start | Do not start work until the card is in **Ready**. |
+| Sync every step | Update board + issue evidence after each meaningful step; completion requires `Done` status update. |
 | Set Agent & Product | Every card has Agent and Product set. |
 | No overwrite | Script and behaviour: only change what you pass; leave the rest as on the board. |
 | **Doc references (knowledge center)** | When adding project/agent docs to this repo: use GitHub URLs + local paths; include a “Where documents are” section; one product doc per product; keep product dev docs (TASKLIST, ROADMAP, etc.) in the product repo. |

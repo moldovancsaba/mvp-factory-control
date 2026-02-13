@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+:root {
+  --bg0: #0b1020;
+  --bg1: #0e1630;
+  --panel: rgba(255, 255, 255, 0.06);
+  --panel2: rgba(255, 255, 255, 0.09);
+  --stroke: rgba(255, 255, 255, 0.12);
+  --text: rgba(255, 255, 255, 0.92);
+  --muted: rgba(255, 255, 255, 0.68);
+  --good: #31d0aa;
+  --warn: #ffcc66;
+  --bad: #ff6b6b;
+  --accent: #86a8ff;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  color: var(--text);
+  background:
+    radial-gradient(800px 500px at 18% 12%, rgba(134, 168, 255, 0.20), transparent 55%),
+    radial-gradient(900px 550px at 78% 18%, rgba(49, 208, 170, 0.16), transparent 60%),
+    linear-gradient(180deg, var(--bg0), var(--bg1));
+  font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system,
+    Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+::selection {
+  background: rgba(134, 168, 255, 0.35);
+}

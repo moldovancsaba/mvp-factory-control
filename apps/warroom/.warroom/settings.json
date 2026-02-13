@@ -1,0 +1,38 @@
+{
+  "localProjectFolder": "/Users/moldovancsaba/Projects",
+  "agents": [],
+  "projects": [
+    {
+      "projectId": "d0c1f0fbb0da4c84abf15916ed046cd6",
+      "projectName": "amanoba",
+      "projectUrl": "https://amanoba.com",
+      "projectGithub": "https://github.com/moldovancsaba/amanoba.git",
+      "vars": []
+    },
+    {
+      "projectId": "9b12a78784c8470ab9dc32e9f667a05b",
+      "projectName": "WarRoom",
+      "projectUrl": "http://localhost:3007",
+      "projectGithub": "https://github.com/moldovancsaba/mvp-factory-control.git",
+      "vars": [
+        {
+          "key": "APP_PATH",
+          "value": "/Users/moldovancsaba/Projects/mvp-factory-control/apps/warroom"
+        },
+        {
+          "key": "ROADMAP_DOC",
+          "value": "/Users/moldovancsaba/Projects/mvp-factory-control/docs/WARROOM_STATUS_BRAINDUMP.md"
+        },
+        {
+          "key": "HANDOVER_DOC",
+          "value": "/Users/moldovancsaba/Projects/mvp-factory-control/docs/WARROOM_HANDOVER.md"
+        },
+        {
+          "key": "SETUP_DOC",
+          "value": "/Users/moldovancsaba/Projects/mvp-factory-control/docs/WARROOM_SETUP.md"
+        }
+      ]
+    }
+  ],
+  "updatedAt": "2026-02-12T20:11:44.763Z"
+}

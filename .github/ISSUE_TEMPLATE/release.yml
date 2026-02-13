@@ -17,10 +17,59 @@ body:
       label: Agent
       options:
         - Chappie
-        - Tribeca
-        - Katja
-        - Becca
         - Gwen
+        - Tribeca
+    validations:
+      required: true
+
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: Outcome when the release task is complete.
+    validations:
+      required: true
+
+  - type: textarea
+    id: execution_prompt
+    attributes:
+      label: Execution Prompt
+      description: Explicit release execution instructions.
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope_non_goals
+    attributes:
+      label: Scope / Non-goals
+      description: What the release includes and excludes.
+    validations:
+      required: true
+
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints
+      description: Safety, freeze, and release policy constraints.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_checks
+    attributes:
+      label: Acceptance Checks
+      description: Checklist of verifiable outcomes.
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: delivery_artifact
+    attributes:
+      label: Delivery Artifact
+      description: Exact output (tag, notes, links, deploy evidence).
     validations:
       required: true
 
