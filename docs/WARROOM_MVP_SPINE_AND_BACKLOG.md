@@ -84,14 +84,14 @@ gh issue list --state all --limit 400 --json number,title,projectItems \
 
 WarRoom status counts:
 - IDEA BANK: 19
-- Roadmap: 6
-- Backlog: 4
+- Roadmap: 5
+- Backlog: 0
 - Ready: 0
 - In Progress: 0
-- Done: 35
+- Done: 40
 
 Current Ready cards:
-- (none; next candidate pair is `#134` + `#137` after Ready promotion gate)
+- (none; launch lane complete)
 
 Current IdeaBank cards:
 - `#118` WarRoom: Policy simulation and replay harness for governance changes
@@ -144,16 +144,16 @@ Initiative C: Scale-out and multi-agent expansion (deferred/future)
 - `#86` multi-orchestrator control
 
 Initiative D: Dev-operator cockpit launch enablement (current)
-- `#130` launch umbrella (Roadmap)
+- `#130` launch umbrella (`Done`)
 - `#131` tool-call protocol (`Done`)
 - `#132` command policy + approval gates (`Done`, P0)
 - `#136` filesystem tool suite (`Done`, P0)
 - `#133` sandboxed shell execution engine (`Done`, P0)
-- `#134` streaming terminal output + artifact capture (`Backlog`)
-- `#137` runtime issue-evidence posting (`Backlog`, P0)
-- `#135` git operations toolkit (`Backlog`, P1)
-- `#138` end-to-end launch rehearsal (`Backlog`)
-- execution order lock from next item: `(#134 + #137) -> #135 -> #138`
+- `#134` streaming terminal output + artifact capture (`Done`)
+- `#137` runtime issue-evidence posting (`Done`, P0)
+- `#135` git operations toolkit (`Done`, P1)
+- `#138` end-to-end launch rehearsal (`Done`)
+- execution order lock completed: `#133 -> (#134 + #137) -> #135 -> #138`
 
 ## 7) Re-entry and drop rules
 

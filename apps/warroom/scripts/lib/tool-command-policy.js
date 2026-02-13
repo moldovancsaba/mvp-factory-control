@@ -104,21 +104,22 @@ function classifyCall(call) {
       policyClass: "GIT_READ",
       effectiveRiskClass,
       requiresApproval,
-      allowed: false,
-      reason: "Policy class GIT_READ is defined but runtime tool is not enabled in this phase."
+      allowed: true,
+      reason: requiresApproval
+        ? "git read operation escalated to approval-required execution."
+        : "git read operation allowed by policy."
     };
   }
 
-  if (/^git\.(add|commit|push|checkout|merge|rebase|pr\.create)$/.test(call.tool)) {
+  if (/^git\.(add|commit|push|checkout|pr\.create)$/.test(call.tool)) {
     const effectiveRiskClass = maxRisk("HIGH", call.riskClass);
     return {
       ...base,
       policyClass: "GIT_MUTATION",
       effectiveRiskClass,
       requiresApproval: true,
-      allowed: false,
-      reason:
-        "Policy class GIT_MUTATION is defined and approval-gated, but runtime execution is disabled in this phase."
+      allowed: true,
+      reason: "git mutation allowed only with explicit approval token and branch safety checks."
     };
   }
 

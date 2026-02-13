@@ -22,6 +22,11 @@ const {
   resolveFilesystemToolContext
 } = require("./lib/tool-filesystem");
 const {
+  ToolGitError,
+  executeGitToolCall,
+  resolveGitToolContext
+} = require("./lib/tool-git");
+const {
   ToolShellError,
   executeShellToolCall,
   resolveShellToolContext
@@ -52,6 +57,10 @@ const GITHUB_TOKEN =
   null;
 const GITHUB_PROJECT_OWNER =
   process.env.WARROOM_GITHUB_PROJECT_OWNER || "moldovancsaba";
+const GITHUB_REPO_OWNER =
+  process.env.WARROOM_GITHUB_REPO_OWNER || "moldovancsaba";
+const GITHUB_REPO_NAME =
+  process.env.WARROOM_GITHUB_REPO_NAME || "mvp-factory-control";
 const GITHUB_PROJECT_NUMBER = Number(
   process.env.WARROOM_GITHUB_PROJECT_NUMBER || "1"
 );
@@ -71,6 +80,42 @@ const RETRY_MAX_MS = Number(process.env.WARROOM_TASK_RETRY_MAX_MS || "300000");
 const RETRY_JITTER_MS = Number(process.env.WARROOM_TASK_RETRY_JITTER_MS || "750");
 const REQUEST_TIMEOUT_MS = Number(
   process.env.WARROOM_WORKER_REQUEST_TIMEOUT_MS || "60000"
+);
+const SHELL_STREAM_FLUSH_CHARS = clampInt(
+  process.env.WARROOM_SHELL_STREAM_FLUSH_CHARS || "1200",
+  1200,
+  200,
+  4000
+);
+const SHELL_STREAM_MESSAGE_MAX_CHARS = clampInt(
+  process.env.WARROOM_SHELL_STREAM_MESSAGE_MAX_CHARS || "1600",
+  1600,
+  200,
+  6000
+);
+const SHELL_ARTIFACT_SNIPPET_MAX_CHARS = clampInt(
+  process.env.WARROOM_SHELL_ARTIFACT_SNIPPET_MAX_CHARS || "4000",
+  4000,
+  500,
+  24000
+);
+const ISSUE_EVIDENCE_MAX_ATTEMPTS = clampInt(
+  process.env.WARROOM_ISSUE_EVIDENCE_MAX_ATTEMPTS || "3",
+  3,
+  1,
+  6
+);
+const ISSUE_EVIDENCE_RETRY_BASE_MS = clampInt(
+  process.env.WARROOM_ISSUE_EVIDENCE_RETRY_BASE_MS || "1000",
+  1000,
+  250,
+  60_000
+);
+const ISSUE_EVIDENCE_RETRY_MAX_MS = clampInt(
+  process.env.WARROOM_ISSUE_EVIDENCE_RETRY_MAX_MS || "15000",
+  15_000,
+  ISSUE_EVIDENCE_RETRY_BASE_MS,
+  300_000
 );
 const ORCHESTRATOR_LEASE_ID =
   process.env.WARROOM_ORCHESTRATOR_LEASE_ID || "warroom-primary-orchestrator";
@@ -148,6 +193,77 @@ function asRecord(value) {
 
 function normalizeText(value) {
   return String(value || "").trim();
+}
+
+const SHELL_OUTPUT_REDACTION_RULES = [
+  {
+    pattern: /\bgh[pousr]_[A-Za-z0-9_]{20,}\b/g,
+    replacement: "[REDACTED_GITHUB_TOKEN]"
+  },
+  {
+    pattern: /\bgithub_pat_[A-Za-z0-9_]{20,}\b/g,
+    replacement: "[REDACTED_GITHUB_TOKEN]"
+  },
+  {
+    pattern: /\bsk-[A-Za-z0-9]{16,}\b/g,
+    replacement: "[REDACTED_API_KEY]"
+  },
+  {
+    pattern: /-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----/g,
+    replacement: "[REDACTED_PRIVATE_KEY]"
+  }
+];
+
+function redactSensitiveOutput(text) {
+  let output = String(text || "");
+  let redacted = false;
+  for (const rule of SHELL_OUTPUT_REDACTION_RULES) {
+    output = output.replace(rule.pattern, () => {
+      redacted = true;
+      return rule.replacement;
+    });
+  }
+  output = output.replace(
+    /((?:password|passwd|token|secret|api[_-]?key)\s*[:=]\s*)([^\s,;]+)/gi,
+    (_, prefix) => {
+      redacted = true;
+      return `${prefix}[REDACTED]`;
+    }
+  );
+  return {
+    text: output,
+    redacted
+  };
+}
+
+function appendBoundedText(current, incoming, limit) {
+  const base = String(current || "");
+  const addition = String(incoming || "");
+  if (!addition) return { text: base, truncated: false };
+  if (base.length >= limit) return { text: base, truncated: true };
+  const next = `${base}${addition}`;
+  if (next.length <= limit) return { text: next, truncated: false };
+  const clipped = next.slice(0, limit);
+  return {
+    text: `${clipped}\n[TRUNCATED]`,
+    truncated: true
+  };
+}
+
+function sanitizeShellMetadata(metadata) {
+  const record = asRecord(metadata);
+  if (!record) return null;
+  const out = { ...record };
+  if (typeof out.command === "string") {
+    out.command = redactSensitiveOutput(out.command).text;
+  }
+  if (typeof out.stdoutPreview === "string") {
+    out.stdoutPreview = redactSensitiveOutput(out.stdoutPreview).text;
+  }
+  if (typeof out.stderrPreview === "string") {
+    out.stderrPreview = redactSensitiveOutput(out.stderrPreview).text;
+  }
+  return out;
 }
 
 function readTaskToolCallApprovalToken(payload) {
@@ -1321,6 +1437,274 @@ async function ghGraphQL(query, variables) {
   return json.data;
 }
 
+function computeIssueEvidenceBackoffMs(attempt) {
+  const step = Math.max(attempt - 1, 0);
+  const raw = Math.min(ISSUE_EVIDENCE_RETRY_BASE_MS * 2 ** step, ISSUE_EVIDENCE_RETRY_MAX_MS);
+  const jitter = Math.floor(Math.random() * 250);
+  return Math.min(raw + jitter, ISSUE_EVIDENCE_RETRY_MAX_MS);
+}
+
+function isTransientIssueEvidenceStatus(status) {
+  if (status === 408 || status === 425 || status === 429) return true;
+  return status >= 500;
+}
+
+function summarizeIssueEvidenceArtifacts(meta) {
+  const toolCalls = Array.isArray(meta?.toolCalls) ? meta.toolCalls : [];
+  if (!toolCalls.length) {
+    return {
+      summary: "none",
+      items: []
+    };
+  }
+  const items = toolCalls.slice(0, 8).map((call) => {
+    const id = normalizeText(call?.id) || "call";
+    const tool = normalizeText(call?.tool) || "tool";
+    const exit =
+      call?.exitCode == null || Number.isNaN(Number(call.exitCode))
+        ? ""
+        : ` exit=${Number(call.exitCode)}`;
+    const artifact = normalizeText(call?.artifactId);
+    return `${id}:${tool}${exit}${artifact ? ` artifact=${artifact}` : ""}`;
+  });
+  return {
+    summary: items.join("; "),
+    items
+  };
+}
+
+function buildIssueEvidenceCommentBody(params) {
+  const task = params.task || {};
+  const outcome = normalizeText(params.outcome).toUpperCase() || "UNKNOWN";
+  const evidenceKey = `${task.id}:${outcome}`;
+  const summarySource =
+    params.resultAnswer || params.failureMessage || task.error || task.title || "no summary";
+  const summary = trimText(redactSensitiveOutput(summarySource).text, 320);
+  const artifactSummary = summarizeIssueEvidenceArtifacts(params.resultMeta);
+  const attempt =
+    params.attemptCount == null || Number.isNaN(Number(params.attemptCount))
+      ? "n/a"
+      : Number(params.attemptCount);
+  const maxAttempts =
+    params.maxAttempts == null || Number.isNaN(Number(params.maxAttempts))
+      ? "n/a"
+      : Number(params.maxAttempts);
+  return [
+    `<!-- warroom-evidence:${evidenceKey} -->`,
+    "WarRoom runtime evidence",
+    `- task: \`${task.id}\``,
+    `- outcome: \`${outcome}\``,
+    `- agent: \`@${task.agentKey}\``,
+    `- attempt: \`${attempt}/${maxAttempts}\``,
+    `- artifacts: ${artifactSummary.summary}`,
+    `- summary: ${summary}`
+  ].join("\n");
+}
+
+async function postGitHubIssueComment(issueNumber, body) {
+  const response = await fetchWithTimeout(
+    `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/issues/${issueNumber}/comments`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: "application/vnd.github+json",
+        "Content-Type": "application/json",
+        "X-GitHub-Api-Version": "2022-11-28"
+      },
+      body: JSON.stringify({ body })
+    },
+    "GitHub issue evidence publisher",
+    20_000
+  );
+  const responseText = await response.text();
+  let json = null;
+  try {
+    json = responseText ? JSON.parse(responseText) : null;
+  } catch {
+    json = null;
+  }
+  return {
+    ok: response.ok,
+    status: response.status,
+    json,
+    responseText
+  };
+}
+
+async function publishRuntimeIssueEvidence(params) {
+  const task = params?.task;
+  const outcome = normalizeText(params?.outcome).toUpperCase() || "UNKNOWN";
+  if (!task?.id) return { posted: false, skipped: true, reason: "TASK_MISSING" };
+  const evidenceKey = `${task.id}:${outcome}`;
+  const issueNumber = Number(task.issueNumber);
+  const metadataBase = {
+    taskId: task.id,
+    issueNumber: Number.isFinite(issueNumber) ? issueNumber : null,
+    outcome,
+    evidenceKey
+  };
+
+  if (!Number.isInteger(issueNumber) || issueNumber <= 0) {
+    await recordLifecycleAudit({
+      entityType: "TASK_ISSUE_EVIDENCE",
+      entityId: evidenceKey,
+      actorRole: "ORCHESTRATOR",
+      action: "POST_ISSUE_COMMENT",
+      fromState: task.status,
+      toState: task.status,
+      allowed: false,
+      reason: "Issue evidence skipped: task has no linked issue number.",
+      metadata: {
+        ...metadataBase,
+        code: "ISSUE_NUMBER_MISSING"
+      }
+    });
+    return { posted: false, skipped: true, reason: "ISSUE_NUMBER_MISSING" };
+  }
+
+  const alreadyPosted = await prisma.lifecycleAuditEvent.findFirst({
+    where: {
+      entityType: "TASK_ISSUE_EVIDENCE",
+      entityId: evidenceKey,
+      action: "POST_ISSUE_COMMENT",
+      allowed: true
+    },
+    select: { id: true }
+  });
+  if (alreadyPosted) {
+    await recordLifecycleAudit({
+      entityType: "TASK_ISSUE_EVIDENCE",
+      entityId: evidenceKey,
+      actorRole: "ORCHESTRATOR",
+      action: "SKIP_ISSUE_COMMENT_DUPLICATE",
+      fromState: task.status,
+      toState: task.status,
+      allowed: true,
+      reason: "Issue evidence comment already posted for this task outcome key.",
+      metadata: metadataBase
+    });
+    return { posted: false, skipped: true, reason: "DUPLICATE" };
+  }
+
+  if (!GITHUB_TOKEN) {
+    await recordLifecycleAudit({
+      entityType: "TASK_ISSUE_EVIDENCE",
+      entityId: evidenceKey,
+      actorRole: "ORCHESTRATOR",
+      action: "POST_ISSUE_COMMENT",
+      fromState: task.status,
+      toState: task.status,
+      allowed: false,
+      reason: "Issue evidence posting failed: WARROOM_GITHUB_TOKEN is missing.",
+      metadata: {
+        ...metadataBase,
+        code: "TOKEN_MISSING"
+      }
+    });
+    return { posted: false, skipped: false, reason: "TOKEN_MISSING" };
+  }
+
+  const commentBody = buildIssueEvidenceCommentBody({
+    task,
+    outcome,
+    resultMeta: params?.resultMeta,
+    resultAnswer: params?.resultAnswer,
+    failureMessage: params?.failureMessage,
+    attemptCount: params?.attemptCount,
+    maxAttempts: params?.maxAttempts
+  });
+
+  let finalErrorReason = "Issue evidence posting failed.";
+  for (let attempt = 1; attempt <= ISSUE_EVIDENCE_MAX_ATTEMPTS; attempt += 1) {
+    try {
+      const posted = await postGitHubIssueComment(issueNumber, commentBody);
+      if (posted.ok) {
+        await recordLifecycleAudit({
+          entityType: "TASK_ISSUE_EVIDENCE",
+          entityId: evidenceKey,
+          actorRole: "ORCHESTRATOR",
+          action: "POST_ISSUE_COMMENT",
+          fromState: task.status,
+          toState: task.status,
+          allowed: true,
+          reason: "Issue evidence comment posted successfully.",
+          metadata: {
+            ...metadataBase,
+            attempt,
+            commentId: posted.json?.id || null,
+            commentUrl: posted.json?.html_url || null
+          }
+        });
+        return { posted: true, skipped: false, reason: null };
+      }
+
+      const bodyText = trimText(redactSensitiveOutput(posted.responseText).text, 500);
+      const transient = isTransientIssueEvidenceStatus(posted.status);
+      finalErrorReason = `Issue evidence comment HTTP ${posted.status}${
+        bodyText ? `: ${bodyText}` : ""
+      }`;
+      await recordLifecycleAudit({
+        entityType: "TASK_ISSUE_EVIDENCE",
+        entityId: evidenceKey,
+        actorRole: "ORCHESTRATOR",
+        action: "POST_ISSUE_COMMENT_ATTEMPT",
+        fromState: task.status,
+        toState: task.status,
+        allowed: false,
+        reason: finalErrorReason,
+        metadata: {
+          ...metadataBase,
+          attempt,
+          status: posted.status,
+          transient
+        }
+      });
+      if (!transient || attempt >= ISSUE_EVIDENCE_MAX_ATTEMPTS) break;
+      await sleep(computeIssueEvidenceBackoffMs(attempt));
+      continue;
+    } catch (error) {
+      const normalized = normalizeFailure(error);
+      const transient = normalized.retryable;
+      finalErrorReason = `Issue evidence posting error: ${normalized.message}`;
+      await recordLifecycleAudit({
+        entityType: "TASK_ISSUE_EVIDENCE",
+        entityId: evidenceKey,
+        actorRole: "ORCHESTRATOR",
+        action: "POST_ISSUE_COMMENT_ATTEMPT",
+        fromState: task.status,
+        toState: task.status,
+        allowed: false,
+        reason: finalErrorReason,
+        metadata: {
+          ...metadataBase,
+          attempt,
+          code: normalized.code,
+          transient
+        }
+      });
+      if (!transient || attempt >= ISSUE_EVIDENCE_MAX_ATTEMPTS) break;
+      await sleep(computeIssueEvidenceBackoffMs(attempt));
+    }
+  }
+
+  await recordLifecycleAudit({
+    entityType: "TASK_ISSUE_EVIDENCE",
+    entityId: evidenceKey,
+    actorRole: "ORCHESTRATOR",
+    action: "POST_ISSUE_COMMENT",
+    fromState: task.status,
+    toState: task.status,
+    allowed: false,
+    reason: finalErrorReason,
+    metadata: {
+      ...metadataBase,
+      attempts: ISSUE_EVIDENCE_MAX_ATTEMPTS
+    }
+  });
+  return { posted: false, skipped: false, reason: finalErrorReason };
+}
+
 async function getProjectMeta() {
   if (cachedProjectMeta) return cachedProjectMeta;
   const data = await ghGraphQL(
@@ -1677,6 +2061,7 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
     (policyEvaluation.decisions || []).map((decision) => [decision.callId, decision])
   );
   let filesystemContext = null;
+  let gitContext = null;
   let shellContext = null;
 
   async function ensureWorkspaceContext() {
@@ -1688,6 +2073,18 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
       });
     }
     return filesystemContext;
+  }
+
+  async function ensureGitContext() {
+    if (!gitContext) {
+      const workspaceContext = await ensureWorkspaceContext();
+      gitContext = await resolveGitToolContext({
+        workspaceRoots: workspaceContext.workspaceRoots,
+        primaryWorkspaceRoot: workspaceContext.primaryWorkspaceRoot,
+        env: process.env
+      });
+    }
+    return gitContext;
   }
 
   for (let index = 0; index < envelope.calls.length; index += 1) {
@@ -1748,43 +2145,26 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
       continue;
     }
 
-    if (call.tool === "shell.exec") {
-      const workspaceContext = await ensureWorkspaceContext();
-      if (!shellContext) {
-        shellContext = await resolveShellToolContext({
-          sessionId: `task-${task.id}`,
-          workspaceRoots: workspaceContext.workspaceRoots,
-          defaultCwd: workspaceContext.primaryWorkspaceRoot,
-          env: process.env
-        });
-      }
+    if (call.tool.startsWith("git.")) {
+      const resolvedGitContext = await ensureGitContext();
       try {
-        const shellResult = await executeShellToolCall(call, shellContext, {
-          shouldCancel: async () => {
-            const current = await prisma.agentTask.findUnique({
-              where: { id: task.id },
-              select: { status: true }
-            });
-            return current?.status === "CANCELED";
-          }
-        });
-
+        const gitResult = await executeGitToolCall(call, resolvedGitContext);
         await recordLifecycleAudit({
           entityType: "TASK",
           entityId: task.id,
           actorRole: "ORCHESTRATOR",
-          action: "TOOL_SHELL_EXECUTE",
+          action: "TOOL_GIT_INVOKE",
           fromState: task.status,
           toState: task.status,
           allowed: true,
-          reason: `${callPrefix} shell command executed.`,
+          reason: `${callPrefix} git operation executed.`,
           metadata: {
             callId: call.id,
             tool: call.tool,
             riskClass: call.riskClass,
             approval: call.approval,
             policyClass: policyDecision.policyClass,
-            ...(shellResult.audit || {})
+            ...(gitResult.audit || {})
           }
         });
         await recordLifecycleAudit({
@@ -1807,28 +2187,27 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
         });
 
         responses.push(
-          envelope.calls.length === 1 ? shellResult.answer : `[${call.id}] ${shellResult.answer}`
+          envelope.calls.length === 1 ? gitResult.answer : `[${call.id}] ${gitResult.answer}`
         );
         callMeta.push({
           id: call.id,
           tool: call.tool,
           policyClass: policyDecision.policyClass,
-          sessionId: shellResult.audit?.sessionId || shellContext.sessionId,
-          cwd: shellResult.audit?.relativeCwd || ".",
-          exitCode: shellResult.audit?.exitCode,
-          durationMs: shellResult.audit?.durationMs
+          repoRoot: gitResult.audit?.repoRoot || null,
+          branch: gitResult.audit?.branch || null,
+          prNumber: gitResult.audit?.prNumber || null
         });
         continue;
       } catch (error) {
         const reason =
-          error instanceof ToolShellError
-            ? error.message
-            : `${callPrefix} failed with unexpected shell runtime error.`;
+          error instanceof ToolGitError
+            ? redactSensitiveOutput(error.message).text
+            : `${callPrefix} failed with unexpected git runtime error.`;
         await recordLifecycleAudit({
           entityType: "TASK",
           entityId: task.id,
           actorRole: "ORCHESTRATOR",
-          action: "TOOL_SHELL_EXECUTE",
+          action: "TOOL_GIT_INVOKE",
           fromState: task.status,
           toState: task.status,
           allowed: false,
@@ -1839,8 +2218,8 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
             riskClass: call.riskClass,
             approval: call.approval,
             policyClass: policyDecision.policyClass,
-            code: error instanceof ToolShellError ? error.code : "UNKNOWN",
-            details: error instanceof ToolShellError ? error.metadata : null
+            code: error instanceof ToolGitError ? error.code : "UNKNOWN",
+            details: error instanceof ToolGitError ? sanitizeShellMetadata(error.metadata) : null
           }
         });
         await recordLifecycleAudit({
@@ -1859,24 +2238,328 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
             approval: call.approval,
             policyClass: policyDecision.policyClass,
             dryRun: false,
+            code: error instanceof ToolGitError ? error.code : "UNKNOWN"
+          }
+        });
+        throw new WorkerTaskError("TOOL_GIT_DENIED", reason, false);
+      }
+    }
+
+    if (call.tool === "shell.exec") {
+      const workspaceContext = await ensureWorkspaceContext();
+      if (!shellContext) {
+        shellContext = await resolveShellToolContext({
+          sessionId: `task-${task.id}`,
+          workspaceRoots: workspaceContext.workspaceRoots,
+          defaultCwd: workspaceContext.primaryWorkspaceRoot,
+          env: process.env
+        });
+      }
+      const artifactId = `${task.id}:${call.id}:${Date.now().toString(36)}`;
+      const streamState = {
+        queue: Promise.resolve(),
+        pendingBuffer: "",
+        pendingRedacted: false,
+        pendingStreams: new Set(),
+        streamSequence: 0
+      };
+      const artifactState = {
+        id: artifactId,
+        chunkCount: 0,
+        streamMessageCount: 0,
+        redactedChunkCount: 0,
+        stdoutSnippet: "",
+        stderrSnippet: "",
+        stdoutSnippetTruncated: false,
+        stderrSnippetTruncated: false
+      };
+
+      const enqueueStreamOp = (op) => {
+        streamState.queue = streamState.queue
+          .then(() => op())
+          .catch((err) => {
+            console.warn(
+              `[warroom-worker] shell stream publish failed task=${task.id} call=${call.id}`,
+              shortError(err)
+            );
+          });
+        return streamState.queue;
+      };
+
+      const flushStreamBuffer = (force = false) => {
+        if (!streamState.pendingBuffer) return;
+        if (!force && streamState.pendingBuffer.length < SHELL_STREAM_FLUSH_CHARS) return;
+        const text = streamState.pendingBuffer.slice(0, SHELL_STREAM_MESSAGE_MAX_CHARS);
+        const truncated = streamState.pendingBuffer.length > SHELL_STREAM_MESSAGE_MAX_CHARS;
+        const body = truncated ? `${text}\n[TRUNCATED]` : text;
+        const redacted = streamState.pendingRedacted;
+        const streams = Array.from(streamState.pendingStreams);
+        const seq = streamState.streamSequence + 1;
+        streamState.streamSequence = seq;
+        streamState.pendingBuffer = "";
+        streamState.pendingRedacted = false;
+        streamState.pendingStreams = new Set();
+        artifactState.streamMessageCount += 1;
+
+        enqueueStreamOp(async () => {
+          await postMessage(
+            task.threadId,
+            "SYSTEM",
+            null,
+            `[stream ${call.id}#${seq}]\n${body}`,
+            {
+              kind: "worker_tool_stream",
+              taskId: task.id,
+              callId: call.id,
+              artifactId,
+              sequence: seq,
+              streams,
+              redacted,
+              truncated
+            }
+          );
+          await recordLifecycleAudit({
+            entityType: "TASK_ARTIFACT",
+            entityId: artifactId,
+            actorRole: "ORCHESTRATOR",
+            action: "TOOL_SHELL_STREAM",
+            fromState: task.status,
+            toState: task.status,
+            allowed: true,
+            reason: `${callPrefix} streamed output to issue thread.`,
+            metadata: {
+              taskId: task.id,
+              callId: call.id,
+              sequence: seq,
+              streams,
+              redacted,
+              truncated,
+              chars: body.length
+            }
+          });
+        });
+      };
+
+      try {
+        const shellResult = await executeShellToolCall(call, shellContext, {
+          onOutput: (event) => {
+            const streamName = normalizeText(event?.stream).toLowerCase() || "stdout";
+            const safe = redactSensitiveOutput(event?.text || "");
+            const boundedChunk = appendBoundedText("", safe.text, SHELL_STREAM_MESSAGE_MAX_CHARS);
+            const chunkBody = boundedChunk.text || "";
+            if (!chunkBody) return;
+
+            artifactState.chunkCount += 1;
+            if (safe.redacted) artifactState.redactedChunkCount += 1;
+            if (streamName === "stderr") {
+              const next = appendBoundedText(
+                artifactState.stderrSnippet,
+                chunkBody,
+                SHELL_ARTIFACT_SNIPPET_MAX_CHARS
+              );
+              artifactState.stderrSnippet = next.text;
+              artifactState.stderrSnippetTruncated =
+                artifactState.stderrSnippetTruncated || next.truncated;
+            } else {
+              const next = appendBoundedText(
+                artifactState.stdoutSnippet,
+                chunkBody,
+                SHELL_ARTIFACT_SNIPPET_MAX_CHARS
+              );
+              artifactState.stdoutSnippet = next.text;
+              artifactState.stdoutSnippetTruncated =
+                artifactState.stdoutSnippetTruncated || next.truncated;
+            }
+
+            streamState.pendingBuffer += `[${streamName}] ${chunkBody}\n`;
+            streamState.pendingRedacted =
+              streamState.pendingRedacted || safe.redacted || Boolean(event?.truncated);
+            streamState.pendingStreams.add(streamName);
+            flushStreamBuffer(false);
+          },
+          shouldCancel: async () => {
+            const current = await prisma.agentTask.findUnique({
+              where: { id: task.id },
+              select: { status: true }
+            });
+            return current?.status === "CANCELED";
+          }
+        });
+        flushStreamBuffer(true);
+        await streamState.queue;
+        const shellAudit = sanitizeShellMetadata(shellResult.audit) || {};
+        const sanitizedAnswer = redactSensitiveOutput(shellResult.answer).text;
+
+        await recordLifecycleAudit({
+          entityType: "TASK",
+          entityId: task.id,
+          actorRole: "ORCHESTRATOR",
+          action: "TOOL_SHELL_EXECUTE",
+          fromState: task.status,
+          toState: task.status,
+          allowed: true,
+          reason: `${callPrefix} shell command executed.`,
+          metadata: {
+            callId: call.id,
+            tool: call.tool,
+            riskClass: call.riskClass,
+            approval: call.approval,
+            policyClass: policyDecision.policyClass,
+            ...shellAudit
+          }
+        });
+        await recordLifecycleAudit({
+          entityType: "TASK_ARTIFACT",
+          entityId: artifactId,
+          actorRole: "ORCHESTRATOR",
+          action: "TOOL_SHELL_ARTIFACT",
+          fromState: task.status,
+          toState: task.status,
+          allowed: true,
+          reason: `${callPrefix} persisted shell artifact snapshot.`,
+          metadata: {
+            taskId: task.id,
+            callId: call.id,
+            artifactId,
+            status: "SUCCESS",
+            chunkCount: artifactState.chunkCount,
+            streamMessageCount: artifactState.streamMessageCount,
+            redactedChunkCount: artifactState.redactedChunkCount,
+            stdoutSnippet: artifactState.stdoutSnippet || null,
+            stderrSnippet: artifactState.stderrSnippet || null,
+            stdoutSnippetTruncated: artifactState.stdoutSnippetTruncated,
+            stderrSnippetTruncated: artifactState.stderrSnippetTruncated,
+            ...shellAudit
+          }
+        });
+        await recordLifecycleAudit({
+          entityType: "TASK",
+          entityId: task.id,
+          actorRole: "ORCHESTRATOR",
+          action: "TOOL_CALL_PROTOCOL_EXECUTE",
+          fromState: task.status,
+          toState: task.status,
+          allowed: true,
+          reason: `${callPrefix} executed.`,
+          metadata: {
+            callId: call.id,
+            tool: call.tool,
+            riskClass: call.riskClass,
+            approval: call.approval,
+            policyClass: policyDecision.policyClass,
+            dryRun: false
+          }
+        });
+
+        const artifactSummary =
+          `artifact=${artifactId} chunks=${artifactState.chunkCount} ` +
+          `streamMessages=${artifactState.streamMessageCount} ` +
+          `redacted=${artifactState.redactedChunkCount} ` +
+          `exit=${shellAudit.exitCode ?? "unknown"}`;
+        const responseText = `${sanitizedAnswer}\n${artifactSummary}`;
+        responses.push(
+          envelope.calls.length === 1 ? responseText : `[${call.id}] ${responseText}`
+        );
+        callMeta.push({
+          id: call.id,
+          tool: call.tool,
+          policyClass: policyDecision.policyClass,
+          sessionId: shellAudit.sessionId || shellContext.sessionId,
+          cwd: shellAudit.relativeCwd || ".",
+          exitCode: shellAudit.exitCode,
+          durationMs: shellAudit.durationMs,
+          artifactId,
+          streamMessageCount: artifactState.streamMessageCount
+        });
+        continue;
+      } catch (error) {
+        flushStreamBuffer(true);
+        await streamState.queue;
+        const reason =
+          error instanceof ToolShellError
+            ? error.message
+            : `${callPrefix} failed with unexpected shell runtime error.`;
+        const safeReason = redactSensitiveOutput(reason).text;
+        const errorDetails =
+          error instanceof ToolShellError ? sanitizeShellMetadata(error.metadata) : null;
+        await recordLifecycleAudit({
+          entityType: "TASK_ARTIFACT",
+          entityId: artifactId,
+          actorRole: "ORCHESTRATOR",
+          action: "TOOL_SHELL_ARTIFACT",
+          fromState: task.status,
+          toState: task.status,
+          allowed: false,
+          reason: safeReason,
+          metadata: {
+            taskId: task.id,
+            callId: call.id,
+            artifactId,
+            status: "FAILED",
+            chunkCount: artifactState.chunkCount,
+            streamMessageCount: artifactState.streamMessageCount,
+            redactedChunkCount: artifactState.redactedChunkCount,
+            stdoutSnippet: artifactState.stdoutSnippet || null,
+            stderrSnippet: artifactState.stderrSnippet || null,
+            stdoutSnippetTruncated: artifactState.stdoutSnippetTruncated,
+            stderrSnippetTruncated: artifactState.stderrSnippetTruncated,
+            code: error instanceof ToolShellError ? error.code : "UNKNOWN",
+            details: errorDetails
+          }
+        });
+        await recordLifecycleAudit({
+          entityType: "TASK",
+          entityId: task.id,
+          actorRole: "ORCHESTRATOR",
+          action: "TOOL_SHELL_EXECUTE",
+          fromState: task.status,
+          toState: task.status,
+          allowed: false,
+          reason: safeReason,
+          metadata: {
+            callId: call.id,
+            tool: call.tool,
+            riskClass: call.riskClass,
+            approval: call.approval,
+            policyClass: policyDecision.policyClass,
+            code: error instanceof ToolShellError ? error.code : "UNKNOWN",
+            details: errorDetails
+          }
+        });
+        await recordLifecycleAudit({
+          entityType: "TASK",
+          entityId: task.id,
+          actorRole: "ORCHESTRATOR",
+          action: "TOOL_CALL_PROTOCOL_EXECUTE",
+          fromState: task.status,
+          toState: task.status,
+          allowed: false,
+          reason: safeReason,
+          metadata: {
+            callId: call.id,
+            tool: call.tool,
+            riskClass: call.riskClass,
+            approval: call.approval,
+            policyClass: policyDecision.policyClass,
+            dryRun: false,
             code: error instanceof ToolShellError ? error.code : "UNKNOWN"
           }
         });
         if (error instanceof ToolShellError) {
           if (error.code === "TASK_CANCELED") {
-            throw new WorkerTaskError("TASK_CANCELED", reason, false);
+            throw new WorkerTaskError("TASK_CANCELED", safeReason, false);
           }
           if (error.code === "TIMEOUT") {
-            throw new WorkerTaskError("TOOL_SHELL_TIMEOUT", reason, false);
+            throw new WorkerTaskError("TOOL_SHELL_TIMEOUT", safeReason, false);
           }
           if (error.code === "OUTPUT_LIMIT_EXCEEDED") {
-            throw new WorkerTaskError("TOOL_SHELL_OUTPUT_LIMIT", reason, false);
+            throw new WorkerTaskError("TOOL_SHELL_OUTPUT_LIMIT", safeReason, false);
           }
           if (error.code === "EXIT_NON_ZERO") {
-            throw new WorkerTaskError("TOOL_SHELL_EXIT_NON_ZERO", reason, false);
+            throw new WorkerTaskError("TOOL_SHELL_EXIT_NON_ZERO", safeReason, false);
           }
         }
-        throw new WorkerTaskError("TOOL_SHELL_DENIED", reason, false);
+        throw new WorkerTaskError("TOOL_SHELL_DENIED", safeReason, false);
       }
     }
 
@@ -2273,6 +2956,14 @@ async function processTask(task) {
         tx
       );
     });
+    await publishRuntimeIssueEvidence({
+      task,
+      outcome: "DONE",
+      resultMeta: result.meta,
+      resultAnswer: result.answer,
+      attemptCount: attemptCount + 1,
+      maxAttempts
+    });
   } catch (e) {
     const failure = normalizeFailure(e);
     if (failure.code === "LEASE_NOT_HELD" || failure.code === "TRANSITION_DENIED") {
@@ -2356,6 +3047,13 @@ async function processTask(task) {
           },
           tx
         );
+      });
+      await publishRuntimeIssueEvidence({
+        task,
+        outcome: "CANCELED",
+        failureMessage: failure.message,
+        attemptCount: nextAttemptCount,
+        maxAttempts
       });
       return;
     }
@@ -2529,6 +3227,13 @@ async function processTask(task) {
         },
         tx
       );
+    });
+    await publishRuntimeIssueEvidence({
+      task,
+      outcome: "DEAD_LETTER",
+      failureMessage: failure.message,
+      attemptCount: nextAttemptCount,
+      maxAttempts
     });
   }
 }

@@ -22,11 +22,11 @@ Live baseline delivered:
 
 Current WarRoom board posture (as-of 2026-02-13):
 - IDEA BANK: 19 (`#118`-`#129`, `#139`-`#143`, `#145`-`#146`)
-- Roadmap: 6
-- Backlog: 4 (`#134`, `#135`, `#137`, `#138`)
+- Roadmap: 5
+- Backlog: 0
 - Ready: 0
 - In Progress: 0
-- Done: 35
+- Done: 40
 
 Current delivery focus:
 - `#111` Docker portability preflight contract is delivered.
@@ -44,18 +44,21 @@ Current delivery focus:
 - `#93` runtime config ingestion is delivered (`Done`) with deterministic project/context resolution, source-chain digesting, and execution audit logging.
 - `#94` runtime mutability policy is delivered (`Done`) with immutable/mutable write enforcement, runtime-load policy enforcement, and mutation audit events.
 - launch-enablement planning from gap audit is now on board:
-  - roadmap umbrella `#130`
+  - umbrella `#130` delivered (`Done`) with dependency-chain closure evidence
   - `#131` delivered (`Done`) with acceptance evidence + build pass
   - `#132` delivered (`Done`) with policy/approval gate evidence + build pass
   - `#136` delivered (`Done`) with workspace-bounded filesystem tools, traversal/symlink protections, binary policy checks, and policy-gated mutation execution
   - `#133` delivered (`Done`) with sandboxed shell runtime, policy-gated execution path, and deterministic timeout/cancel/error lifecycle handling
-  - remaining backlog chain `#134`, `#135`, `#137`, `#138` (streaming/artifacts, git ops, runtime issue evidence, launch rehearsal)
+  - `#134` delivered (`Done`) with streamed shell output to issue thread and redacted/bounded artifact persistence
+  - `#137` delivered (`Done`) with runtime issue-evidence posting to GitHub + idempotent/audited lifecycle integration
+  - `#135` delivered (`Done`) with policy-safe git runtime operations and protected-branch mutation safeguards
+  - `#138` delivered (`Done`) with launch rehearsal report and GO decision
   - locked order: `#133 -> (#134 + #137) -> #135 -> #138`
 - prompt package validator pass confirmed for launch cards `#130`-`#138`.
 - runtime umbrella `#75` is now closed (`Done`) with evidence linked to delivered child issues `#93` + `#94`.
 - additional foundation ideas captured in `IDEA BANK`: `#139`-`#143`, `#145`, `#146` (task controls, DLP, provenance, runtime SLOs, ephemeral workspace, portability gate parity, filesystem safety regression automation).
 - new idea intake lane is active: all speculative and emerging WarRoom ideas now enter `IDEA BANK` first before roadmap/backlog triage.
-- active executable item: none (`#134` + `#137` are next after Ready promotion).
+- active executable item: none (launch lane complete).
 - `#132` acceptance summary:
   - command policy classes/risk tiers and deny-by-default matching delivered
   - approval-token expiry/fingerprint/replay enforcement delivered

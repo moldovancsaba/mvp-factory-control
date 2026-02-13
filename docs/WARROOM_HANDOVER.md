@@ -51,8 +51,8 @@ Implemented and live in code:
 Current execution lane (board as-of 2026-02-13):
 - `In Progress`: (none)
 - `Ready`: (none)
-- `Backlog`: `#134`, `#135`, `#137`, `#138`
-- `Done`: `#131`, `#132`, `#133`, `#136`, `#75`, `#144`
+- `Backlog`: (none)
+- `Done`: `#130`, `#131`, `#132`, `#133`, `#134`, `#135`, `#136`, `#137`, `#138`, `#75`, `#144`
 
 Current `IDEA BANK` items (board as-of 2026-02-13):
 - `#118` policy simulation and replay harness for governance changes
@@ -92,17 +92,21 @@ Active delivery kickoff (current window):
 - `#93` runtime config ingestion is delivered (`Done`) with deterministic project/context resolution, source-chain digesting, and execution audit logging.
 - `#94` runtime mutability policy is delivered (`Done`) with write-time/runtime-load enforcement and mutable/denied mutation audit events.
 - launch-enablement chain for dev-operator cockpit is created:
-  - roadmap umbrella `#130`
-  - `Done`: `#131`, `#132`, `#133`, `#136`
-  - `Backlog`: `#134`, `#135`, `#137`, `#138`
-  - locked order: `#133 -> (#134 + #137) -> #135 -> #138` (`#133` complete)
+  - umbrella `#130` is delivered (`Done`) with closure evidence comment.
+  - `Done`: `#131`, `#132`, `#133`, `#134`, `#135`, `#136`, `#137`, `#138`
+  - locked order completed: `#133 -> (#134 + #137) -> #135 -> #138`
 - prompt package validator pass evidence confirmed for `#130` -> `#138`.
 - `#131` is delivered (`Done`) with acceptance evidence comment and build gate pass (`cd apps/warroom && npm run build`).
 - `#132` is delivered (`Done`) with policy/approval gates + replay/expiry/fingerprint enforcement and build pass (`cd apps/warroom && npm run build`).
 - `#133` is delivered (`Done`) with dedicated sandboxed shell runtime, workspace/cwd boundary enforcement, timeout/output guardrails, and deterministic cancel/error lifecycle handling.
+- `#134` is delivered (`Done`) with incremental shell output streaming to issue thread, redacted+bounded artifact persistence, and final artifact summary in completion response.
+- `#137` is delivered (`Done`) with runtime GitHub issue-evidence posting, deterministic template metadata, idempotency keying, and audited retry/final-failure trace.
+- `#135` is delivered (`Done`) with policy-safe git runtime tools (`status/add/commit/checkout/push/pr.create`), protected-branch safety checks, and auditable operation metadata.
+- `#138` is delivered (`Done`) with launch rehearsal report, pass/fail matrix, rollback evidence, and GO decision.
+- `#130` umbrella is delivered (`Done`) with dependency-order closure evidence linking all child deliverables.
 - runtime settings umbrella `#75` is closed (`Done`) with closure evidence linked to delivered children `#93` + `#94`.
 - context-pressure checkpoint: continuation context is treated as near 70%; scope expansion remains bounded to ordered execution with handover-first updates.
-- current gate state: `#133` accepted and closed; next executable pair after Ready promotion is `#134` + `#137`.
+- current gate state: launch lane `#130` -> `#138` is fully delivered and closed.
 
 New dependency-ordered backlog initiative:
 - Docker portability delivery chain (`#111` -> `#116`) was added to close the bring-anywhere runtime gap.
@@ -348,12 +352,16 @@ Constraints:
 - Additive/reversible changes only; do not revert unrelated local changes.
 
 Current launch lane:
-- #130 Roadmap (Type=Plan umbrella only).
+- #130 Done (Plan umbrella), closed.
 - #131 Done (P0), closed.
 - #132 Done (P0), closed.
 - #133 Done (P0), closed.
+- #134 Done (P1), closed.
+- #135 Done (P1), closed.
+- #137 Done (P0), closed.
 - #136 Done (P0), closed.
-- Backlog chain: (#134 + #137) -> #135 (P1) -> #138 (P1).
+- #138 Done (P1), closed.
+- Backlog chain: (none).
 - Locked order: #133 -> (#134 + #137) -> #135 -> #138.
 
 Per-issue execution loop:
@@ -372,7 +380,6 @@ Per-issue execution loop:
 9) Refresh handover/status/backlog snapshot before next issue.
 
 Next action:
-- Promote #134 and #137 to Ready (after prompt-package revalidation) and execute in locked order.
-- Keep locked order for remaining launch chain ((#134 + #137) -> #135 -> #138).
+- Execute post-launch hardening triage from IDEA BANK (`#145`, `#146`, `#139`-`#143`) under standard Ready-gate discipline.
 - If context pressure rises again, stop scope expansion and refresh handover/status before continuing.
 ```

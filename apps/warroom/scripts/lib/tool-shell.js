@@ -317,6 +317,15 @@ function finalizeOutput(buffers, truncated) {
   };
 }
 
+function emitOutputChunk(options, payload) {
+  if (typeof options?.onOutput !== "function") return;
+  try {
+    options.onOutput(payload);
+  } catch {
+    // Streaming callback errors must not crash shell execution.
+  }
+}
+
 function mapShellErrorCode(code) {
   if (code === "TASK_CANCELED") return code;
   if (code === "TIMEOUT") return code;
@@ -412,6 +421,15 @@ async function executeShellToolCall(call, context, options = {}) {
       if (accepted.length < buf.length) stderrTruncated = true;
     }
     totalBytes += accepted.length;
+    if (accepted.length > 0) {
+      emitOutputChunk(options, {
+        stream: streamName,
+        text: accepted.toString("utf8"),
+        bytes: accepted.length,
+        totalBytes,
+        truncated: accepted.length < buf.length
+      });
+    }
     if (accepted.length < buf.length) {
       stopProcess("OUTPUT_LIMIT_EXCEEDED");
     }
@@ -520,7 +538,11 @@ async function executeShellToolCall(call, context, options = {}) {
     answer:
       `shell.exec cwd=${cwdInfo.relativeCwd} exit=0 stdout=${stdout.preview || "(empty)"} ` +
       `stderr=${stderr.preview || "(empty)"}`,
-    audit: metadata
+    audit: metadata,
+    output: {
+      stdout: stdout.text,
+      stderr: stderr.text
+    }
   };
 }
 
