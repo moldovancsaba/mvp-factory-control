@@ -18,10 +18,39 @@ body:
       label: Agent
       options:
         - Chappie
-        - Tribeca
-        - Katja
-        - Becca
         - Gwen
+        - Tribeca
+    validations:
+      required: true
+
+  - type: textarea
+    id: execution_prompt
+    attributes:
+      label: Execution Prompt
+      description: Explicit instructions an agent can execute immediately.
+      placeholder: |
+        Implement by...
+        Update tests for...
+        Deliver as...
+    validations:
+      required: true
+
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints
+      description: Hard boundaries and requirements for execution.
+      placeholder: |
+        - no secrets
+        - preserve existing behavior X
+    validations:
+      required: true
+
+  - type: textarea
+    id: delivery_artifact
+    attributes:
+      label: Delivery Artifact
+      description: Exact expected output (PR/file/report/deploy evidence).
     validations:
       required: true
 
@@ -44,11 +73,11 @@ body:
   - type: textarea
     id: acceptance
     attributes:
-      label: Acceptance criteria
+      label: Acceptance Checks
       description: Bullet list. Observable behaviour only.
       placeholder: |
-        - ...
-        - ...
+        - [ ] ...
+        - [ ] ...
     validations:
       required: true
 
