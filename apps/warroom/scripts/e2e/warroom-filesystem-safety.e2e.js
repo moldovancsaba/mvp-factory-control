@@ -209,7 +209,7 @@ async function stageSafetyDenials(context, workspaceRoot, outsideRoot) {
 }
 
 function stageMutationPolicyGate() {
-  const envelope = {
+  const missingApprovalEnvelope = {
     protocol: "warroom.tool-call",
     version: "1.0",
     mode: "SEQUENTIAL",
@@ -224,22 +224,55 @@ function stageMutationPolicyGate() {
     ]
   };
 
-  const policy = evaluateToolCommandPolicy(envelope);
-  const decision = policy.decisions.find((entry) => entry.callId === "fs-mutation");
-  assert(policy.allowed, "tool-command policy unexpectedly denied filesystem mutation test call");
-  assert(policy.requiresApproval, "filesystem mutation should require approval token by policy");
-  assert(Boolean(decision), "filesystem mutation policy decision missing");
-  assert(
-    decision.policyClass === "FILESYSTEM_MUTATION",
-    `unexpected policy class: ${decision.policyClass}`
+  const missingApprovalPolicy = evaluateToolCommandPolicy(missingApprovalEnvelope);
+  const missingApprovalDecision = missingApprovalPolicy.decisions.find(
+    (entry) => entry.callId === "fs-mutation"
   );
-  assert(decision.requiresApproval, "filesystem mutation decision did not require approval");
+  assert(
+    !missingApprovalPolicy.allowed,
+    "filesystem mutation without HUMAN_APPROVAL should be denied by baseline policy"
+  );
+  assert(Boolean(missingApprovalDecision), "filesystem mutation policy decision missing");
+  assert(
+    missingApprovalDecision.reason.includes("call.approval must be HUMAN_APPROVAL"),
+    "filesystem mutation deny reason should require explicit HUMAN_APPROVAL declaration"
+  );
+
+  const approvedEnvelope = {
+    protocol: "warroom.tool-call",
+    version: "1.0",
+    mode: "SEQUENTIAL",
+    calls: [
+      {
+        id: "fs-mutation-approved",
+        tool: "filesystem.write",
+        args: { path: "sandbox/notes/readme.txt", content: "mutate" },
+        riskClass: "LOW",
+        approval: "HUMAN_APPROVAL"
+      }
+    ]
+  };
+
+  const approvedPolicy = evaluateToolCommandPolicy(approvedEnvelope);
+  const approvedDecision = approvedPolicy.decisions.find(
+    (entry) => entry.callId === "fs-mutation-approved"
+  );
+  assert(approvedPolicy.allowed, "approved filesystem mutation should pass policy evaluation");
+  assert(approvedPolicy.requiresApproval, "filesystem mutation should require approval token by policy");
+  assert(Boolean(approvedDecision), "approved filesystem mutation policy decision missing");
+  assert(
+    approvedDecision.policyClass === "FILESYSTEM_MUTATION",
+    `unexpected policy class: ${approvedDecision.policyClass}`
+  );
+  assert(approvedDecision.requiresApproval, "filesystem mutation decision did not require approval");
 
   return {
-    policyAllowed: policy.allowed,
-    requiresApproval: policy.requiresApproval,
-    policyClass: decision.policyClass,
-    reason: decision.reason
+    missingApprovalAllowed: missingApprovalPolicy.allowed,
+    missingApprovalReason: missingApprovalDecision.reason,
+    approvedAllowed: approvedPolicy.allowed,
+    requiresApproval: approvedPolicy.requiresApproval,
+    policyClass: approvedDecision.policyClass,
+    reason: approvedDecision.reason
   };
 }
 

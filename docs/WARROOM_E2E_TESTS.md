@@ -27,6 +27,13 @@ cd /Users/moldovancsaba/Projects/mvp-factory-control/apps/warroom
 npm run e2e:dlp-guardrail
 ```
 
+Security policy baseline harness command:
+
+```bash
+cd /Users/moldovancsaba/Projects/mvp-factory-control/apps/warroom
+npm run e2e:security-policy
+```
+
 Recovery readiness harness command:
 
 ```bash
@@ -58,6 +65,12 @@ DLP safety script (`apps/warroom/scripts/e2e/warroom-dlp-guardrail.e2e.js`) runs
 3. off mode pass-through checks.
 4. deterministic output/match/rule-id checks for repeated input.
 
+Security policy script (`apps/warroom/scripts/e2e/warroom-security-policy-baseline.e2e.js`) runs:
+
+1. unknown-tool deny-by-default checks (`UNKNOWN_TOOL` policy class).
+2. explicit approval declaration checks (approval-required calls must set `approval=HUMAN_APPROVAL`).
+3. shell denylist checks for network pipe-to-shell and privilege escalation patterns.
+
 Recovery readiness script (`apps/warroom/scripts/e2e/warroom-recovery-readiness.e2e.js`) runs:
 
 1. backup snapshot + manifest generation with hash inventory.
@@ -81,6 +94,8 @@ Output is emitted as structured JSON and command exits non-zero on failure.
   - `.github/workflows/warroom-filesystem-safety-gate.yml`
 - DLP guardrail harness is CI-wired via:
   - `.github/workflows/warroom-dlp-guardrail-gate.yml`
+- security policy harness is CI-wired via:
+  - `.github/workflows/warroom-security-policy-gate.yml`
 - recovery readiness harness is CI-wired via:
   - `.github/workflows/warroom-recovery-readiness-gate.yml`
 - runtime GitHub PR publishing and runtime issue-evidence network posting remain separately validated through operational issue evidence in the launch lane (`#137`, `#138`).
@@ -88,7 +103,7 @@ Output is emitted as structured JSON and command exits non-zero on failure.
 ## Latest run evidence
 
 Latest verified run (local):
-- run id: `warroom-e2e-2026-02-18T09:56:33.277Z`
+- run id: `warroom-e2e-2026-02-18T10:14:13.515Z`
 - command: `npm run e2e:warroom`
 - result: PASS
 - stage highlights:
@@ -98,12 +113,21 @@ Latest verified run (local):
   - rollback cleanup: `workspaceRemoved=true`, `gitRootRemoved=true`
 
 Latest filesystem safety run (local):
-- run id: `warroom-filesystem-safety-e2e-2026-02-13T20:54:11.204Z`
+- run id: `warroom-filesystem-safety-e2e-2026-02-18T10:14:08.903Z`
 - command: `npm run e2e:filesystem-safety`
 - result: PASS
 - highlights:
   - traversal/symlink/binary denials: `OUTSIDE_WORKSPACE`, `SYMLINK_DENIED`, `SYMLINK_ESCAPE`, `BINARY_DENIED`
-  - mutation policy: `FILESYSTEM_MUTATION` requires approval
+  - mutation policy baseline: missing `HUMAN_APPROVAL` declaration is denied
+
+Latest security policy baseline run (local):
+- run id: `warroom-security-policy-baseline-e2e-2026-02-18T10:14:05.579Z`
+- command: `npm run e2e:security-policy`
+- result: PASS
+- highlights:
+  - unknown tool deny-by-default verified
+  - explicit `HUMAN_APPROVAL` declaration enforcement verified
+  - shell denylist rules (`NETWORK_PIPE_EXEC_DENY`, `PRIVILEGE_ESCALATION_DENY`) verified
 
 Latest DLP guardrail run (local):
 - run id: `warroom-dlp-guardrail-e2e-2026-02-13T21:00:48.529Z`

@@ -1,0 +1,48 @@
+name: WarRoom Security Policy Baseline Gate
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "apps/warroom/src/lib/tool-command-policy.ts"
+      - "apps/warroom/scripts/lib/tool-command-policy.js"
+      - "apps/warroom/scripts/e2e/warroom-security-policy-baseline.e2e.js"
+      - "apps/warroom/scripts/e2e/warroom-filesystem-safety.e2e.js"
+      - "apps/warroom/package.json"
+      - "apps/warroom/package-lock.json"
+      - ".github/workflows/warroom-security-policy-gate.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/warroom/src/lib/tool-command-policy.ts"
+      - "apps/warroom/scripts/lib/tool-command-policy.js"
+      - "apps/warroom/scripts/e2e/warroom-security-policy-baseline.e2e.js"
+      - "apps/warroom/scripts/e2e/warroom-filesystem-safety.e2e.js"
+      - "apps/warroom/package.json"
+      - "apps/warroom/package-lock.json"
+      - ".github/workflows/warroom-security-policy-gate.yml"
+
+jobs:
+  security-policy-baseline-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/warroom
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: apps/warroom/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run security policy baseline regression harness
+        run: npm run e2e:security-policy

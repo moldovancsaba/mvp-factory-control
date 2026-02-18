@@ -11,13 +11,47 @@ const RISK_RANK: Record<ToolCallRiskClass, number> = {
   CRITICAL: 4
 };
 
-const DANGEROUS_SHELL_PATTERNS: RegExp[] = [
-  /\brm\s+-rf\s+\/\b/i,
-  /\bmkfs\b/i,
-  /\bdd\s+if=/i,
-  /\bshutdown\b/i,
-  /\breboot\b/i,
-  /:\(\)\s*\{\s*:\|:\s*&\s*\}\s*;?\s*:?/
+const DANGEROUS_SHELL_RULES: Array<{ id: string; pattern: RegExp; reason: string }> = [
+  {
+    id: "ROOT_DELETE_DENY",
+    pattern: /\brm\s+-rf\s+\/\b/i,
+    reason: "root filesystem deletion pattern"
+  },
+  {
+    id: "DISK_FORMAT_DENY",
+    pattern: /\bmkfs\b/i,
+    reason: "disk format pattern"
+  },
+  {
+    id: "RAW_DISK_WRITE_DENY",
+    pattern: /\bdd\s+if=/i,
+    reason: "raw disk write pattern"
+  },
+  {
+    id: "SHUTDOWN_REBOOT_DENY",
+    pattern: /\b(shutdown|reboot)\b/i,
+    reason: "host shutdown/reboot pattern"
+  },
+  {
+    id: "FORK_BOMB_DENY",
+    pattern: /:\(\)\s*\{\s*:\|:\s*&\s*\}\s*;?\s*:?/i,
+    reason: "fork-bomb signature"
+  },
+  {
+    id: "PRIVILEGE_ESCALATION_DENY",
+    pattern: /\bsudo\b/i,
+    reason: "privilege escalation command"
+  },
+  {
+    id: "NETWORK_PIPE_EXEC_DENY",
+    pattern: /\b(curl|wget)\b[^\n|;]*\|\s*(bash|sh)\b/i,
+    reason: "network download piped to shell execution"
+  },
+  {
+    id: "REMOTE_SHELL_COPY_DENY",
+    pattern: /\b(ssh|scp|sftp|telnet|ftp|rsync|nc|netcat)\b/i,
+    reason: "remote shell/copy/network transport command"
+  }
 ];
 
 export type ToolCommandPolicyClass =
@@ -77,6 +111,21 @@ function denyUnknownTool(call: ToolCallDefinition): ToolCommandPolicyDecision {
   };
 }
 
+function enforceExplicitApprovalDeclaration(
+  call: ToolCallDefinition,
+  decision: ToolCommandPolicyDecision
+): ToolCommandPolicyDecision {
+  if (!decision.requiresApproval) return decision;
+  if (call.approval === "HUMAN_APPROVAL") return decision;
+  return {
+    ...decision,
+    allowed: false,
+    reason:
+      `${decision.policyClass} denied: call.approval must be HUMAN_APPROVAL ` +
+      "when policy requires approval."
+  };
+}
+
 function classifyCall(call: ToolCallDefinition): ToolCommandPolicyDecision {
   const base: Omit<ToolCommandPolicyDecision, "policyClass" | "allowed" | "reason"> = {
     callId: call.id,
@@ -90,7 +139,7 @@ function classifyCall(call: ToolCallDefinition): ToolCommandPolicyDecision {
     const effectiveRiskClass = maxRisk("LOW", call.riskClass);
     const requiresApproval =
       base.requiresApproval || effectiveRiskClass === "HIGH" || effectiveRiskClass === "CRITICAL";
-    return {
+    return enforceExplicitApprovalDeclaration(call, {
       ...base,
       policyClass: "CHAT_RESPONSE",
       effectiveRiskClass,
@@ -99,14 +148,14 @@ function classifyCall(call: ToolCallDefinition): ToolCommandPolicyDecision {
       reason: requiresApproval
         ? "chat.respond escalated to approval-required execution."
         : "chat.respond allowed by policy."
-    };
+    });
   }
 
   if (/^filesystem\.(read|list|stat|search)$/.test(call.tool)) {
     const effectiveRiskClass = maxRisk("MEDIUM", call.riskClass);
     const requiresApproval =
       base.requiresApproval || effectiveRiskClass === "HIGH" || effectiveRiskClass === "CRITICAL";
-    return {
+    return enforceExplicitApprovalDeclaration(call, {
       ...base,
       policyClass: "FILESYSTEM_READ",
       effectiveRiskClass,
@@ -115,26 +164,26 @@ function classifyCall(call: ToolCallDefinition): ToolCommandPolicyDecision {
       reason: requiresApproval
         ? "filesystem read/search escalated to approval-required execution."
         : "filesystem read/search allowed by policy."
-    };
+    });
   }
 
   if (/^filesystem\.(write|patch|edit|delete|move|mkdir|copy)$/.test(call.tool)) {
     const effectiveRiskClass = maxRisk("HIGH", call.riskClass);
-    return {
+    return enforceExplicitApprovalDeclaration(call, {
       ...base,
       policyClass: "FILESYSTEM_MUTATION",
       effectiveRiskClass,
       requiresApproval: true,
       allowed: true,
       reason: "filesystem mutation allowed only with explicit approval token."
-    };
+    });
   }
 
   if (/^git\.(status|diff|log|show|branch\.list)$/.test(call.tool)) {
     const effectiveRiskClass = maxRisk("MEDIUM", call.riskClass);
     const requiresApproval =
       base.requiresApproval || effectiveRiskClass === "HIGH" || effectiveRiskClass === "CRITICAL";
-    return {
+    return enforceExplicitApprovalDeclaration(call, {
       ...base,
       policyClass: "GIT_READ",
       effectiveRiskClass,
@@ -143,43 +192,45 @@ function classifyCall(call: ToolCallDefinition): ToolCommandPolicyDecision {
       reason: requiresApproval
         ? "git read operation escalated to approval-required execution."
         : "git read operation allowed by policy."
-    };
+    });
   }
 
   if (/^git\.(add|commit|push|checkout|pr\.create)$/.test(call.tool)) {
     const effectiveRiskClass = maxRisk("HIGH", call.riskClass);
-    return {
+    return enforceExplicitApprovalDeclaration(call, {
       ...base,
       policyClass: "GIT_MUTATION",
       effectiveRiskClass,
       requiresApproval: true,
       allowed: true,
       reason: "git mutation allowed only with explicit approval token and branch safety checks."
-    };
+    });
   }
 
   if (call.tool === "shell.exec") {
     const command = readShellCommand(call);
     const effectiveRiskClass = maxRisk("CRITICAL", call.riskClass);
-    const dangerousPattern = DANGEROUS_SHELL_PATTERNS.find((pattern) => pattern.test(command));
-    if (dangerousPattern) {
+    const blockedRule = DANGEROUS_SHELL_RULES.find((rule) => rule.pattern.test(command));
+    if (blockedRule) {
       return {
         ...base,
         policyClass: "SHELL_EXECUTION",
         effectiveRiskClass,
         requiresApproval: true,
         allowed: false,
-        reason: "shell.exec matches a blocked high-risk pattern (deny-by-default)."
+        reason:
+          `shell.exec denied by ${blockedRule.id}: ${blockedRule.reason} ` +
+          "(deny-by-default)."
       };
     }
-    return {
+    return enforceExplicitApprovalDeclaration(call, {
       ...base,
       policyClass: "SHELL_EXECUTION",
       effectiveRiskClass,
       requiresApproval: true,
       allowed: true,
       reason: "shell.exec allowed only with explicit approval token and runtime safeguards."
-    };
+    });
   }
 
   return denyUnknownTool(call);

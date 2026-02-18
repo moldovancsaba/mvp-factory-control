@@ -10,6 +10,7 @@
     "e2e:warroom": "node scripts/e2e/warroom-postmvp.e2e.js",
     "e2e:filesystem-safety": "node scripts/e2e/warroom-filesystem-safety.e2e.js",
     "e2e:dlp-guardrail": "node scripts/e2e/warroom-dlp-guardrail.e2e.js",
+    "e2e:security-policy": "node scripts/e2e/warroom-security-policy-baseline.e2e.js",
     "e2e:recovery-readiness": "node scripts/e2e/warroom-recovery-readiness.e2e.js",
     "recovery:incident-bundle": "node scripts/recovery/warroom-incident-bundle.js",
     "lint": "echo \"Lint not configured for this Next.js version\"",

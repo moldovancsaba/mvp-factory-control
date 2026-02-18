@@ -91,16 +91,15 @@ gh issue list --state all --limit 400 --json number,title,projectItems \
 WarRoom status counts:
 - IDEA BANK: 11
 - Roadmap: 5
-- Backlog: 4
+- Backlog: 3
 - Ready: 0
 - In Progress: 0
-- Done: 53
+- Done: 54
 
 Current Ready cards:
 - (none)
 
 Current Backlog cards:
-- `#203` WarRoom: Security policy + approval baseline hardening (OpenClaw-inspired)
 - `#204` WarRoom: Channel-aware provenance model for ingress identity
 - `#205` WarRoom: Secure memory index + retrieval controls
 - `#206` WarRoom: Omnichannel routing + human-gated NBA orchestration
@@ -172,7 +171,7 @@ Initiative E: Post-MVP hardening lane (current)
 - execution order lock completed: `#145 -> #146 -> #140 -> #139`
 
 Initiative F: OpenClaw-inspired WarRoom hardening intake (new backlog)
-- `#203` security policy + approval baseline hardening (`Backlog`, P1, Audit)
+- `#203` security policy + approval baseline hardening (`Done`, P1, Audit)
 - `#204` channel-aware provenance model for ingress identity (`Backlog`, P1)
 - `#205` secure memory index + retrieval controls (`Backlog`, P1)
 - `#206` omnichannel routing + human-gated NBA orchestration (`Backlog`, P1)

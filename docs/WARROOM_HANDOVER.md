@@ -51,8 +51,8 @@ Implemented and live in code:
 Current execution lane (board as-of 2026-02-18):
 - `In Progress`: (none)
 - `Ready`: (none)
-- `Backlog`: `#203`, `#204`, `#205`, `#206`
-- `Done`: `#130`, `#131`, `#132`, `#133`, `#134`, `#135`, `#136`, `#137`, `#138`, `#75`, `#144`, `#145`, `#146`, `#140`, `#139`, `#148`, `#149`, `#150`, `#151`, `#152`, `#119`, `#141`, `#142`, `#120`
+- `Backlog`: `#204`, `#205`, `#206`
+- `Done`: `#130`, `#131`, `#132`, `#133`, `#134`, `#135`, `#136`, `#137`, `#138`, `#75`, `#144`, `#145`, `#146`, `#140`, `#139`, `#148`, `#149`, `#150`, `#151`, `#152`, `#119`, `#141`, `#142`, `#120`, `#203`
 
 Current `IDEA BANK` items (board as-of 2026-02-18):
 - `#118` policy simulation and replay harness for governance changes
@@ -76,10 +76,11 @@ De-dupe note (board hygiene):
   - `#152` -> canonical `#142`
 
 Recommended next promotions (prompt packages validate; pick 1):
-- `#203` (P1) security policy + approval baseline hardening (OpenClaw-inspired)
 - `#204` (P1) channel-aware provenance model for ingress identity
+- `#205` (P1) secure memory index + retrieval controls
 
 Current active preflight:
+- `#203` delivery complete (`Done`) with acceptance evidence and validation pass.
 - `#119` delivery complete (`Done`) with acceptance evidence and validation pass.
 - `#141` delivery complete (`Done`) with acceptance evidence and validation pass.
 - `#142` delivery complete (`Done`) with acceptance evidence and validation pass.
@@ -126,10 +127,16 @@ Active delivery kickoff (current window):
 - `#139` is delivered (`Done`) with acceptance evidence comment and board status closure.
 - post-MVP hardening queue has no remaining `Ready` cards.
 - WarRoom backlog intake is expanded with OpenClaw-inspired hardening cards:
-  - `#203` security policy + approval baseline hardening
   - `#204` channel-aware provenance model for ingress identity
   - `#205` secure memory index + retrieval controls
   - `#206` omnichannel routing + human-gated NBA orchestration
+- `#203` is delivered (`Done`) with:
+  - explicit `HUMAN_APPROVAL` declaration enforcement for approval-required calls
+  - expanded shell denylist signatures with rule-id audit reasons
+  - new security-policy baseline regression harness + CI gate
+  - acceptance evidence:
+    - start comment: `https://github.com/moldovancsaba/mvp-factory-control/issues/203#issuecomment-3919974581`
+    - acceptance comment: `https://github.com/moldovancsaba/mvp-factory-control/issues/203#issuecomment-3919976813`
 - context-pressure checkpoint: continuation context is treated as near 70%; scope expansion remains bounded to ordered execution with handover-first updates.
 - current gate state: MVP launch lane and post-MVP hardening lane are fully closed.
 

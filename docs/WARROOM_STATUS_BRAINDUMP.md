@@ -23,10 +23,10 @@ Live baseline delivered:
 Current WarRoom board posture (as-of 2026-02-18):
 - IDEA BANK: 11
 - Roadmap: 5
-- Backlog: 4
+- Backlog: 3
 - Ready: 0
 - In Progress: 0
-- Done: 53
+- Done: 54
 
 Current delivery focus:
 - `#111` Docker portability preflight contract is delivered.
@@ -57,10 +57,13 @@ Current delivery focus:
 - post-MVP hardening queue prepared in Ready:
   - (none remaining)
 - OpenClaw-inspired WarRoom hardening intake is now tracked in Backlog:
-  - `#203` security policy + approval baseline hardening (Audit, P1)
   - `#204` channel-aware provenance model for ingress identity (Feature, P1)
   - `#205` secure memory index + retrieval controls (Feature, P1)
   - `#206` omnichannel routing + human-gated NBA orchestration (Feature, P1)
+- `#203` is delivered (`Done`) with:
+  - explicit `HUMAN_APPROVAL` declaration enforcement for approval-required call classes
+  - expanded shell denylist signatures with deterministic rule-id reasons
+  - new security-policy baseline harness + CI gate
 - `#139` is delivered (`Done`) with:
   - operator task-session controls (`interrupt`, `cancel`, `resume`) on issue task cards
   - lifecycle policy transitions for `CANCEL_TASK` / `INTERRUPT_TASK` / `RESUME_TASK`
@@ -102,7 +105,11 @@ Current delivery focus:
 - baseline e2e harness is now available and passing:
   - script: `apps/warroom/scripts/e2e/warroom-postmvp.e2e.js`
   - command: `cd apps/warroom && npm run e2e:warroom`
-  - latest run id: `warroom-e2e-2026-02-18T09:56:33.277Z` (PASS)
+  - latest run id: `warroom-e2e-2026-02-18T10:14:13.515Z` (PASS)
+- security-policy baseline harness is available and passing:
+  - script: `apps/warroom/scripts/e2e/warroom-security-policy-baseline.e2e.js`
+  - command: `cd apps/warroom && npm run e2e:security-policy`
+  - latest run id: `warroom-security-policy-baseline-e2e-2026-02-18T10:14:05.579Z` (PASS)
 - prompt package validator pass confirmed for launch cards `#130`-`#138`.
 - runtime umbrella `#75` is now closed (`Done`) with evidence linked to delivered child issues `#93` + `#94`.
 - additional foundation ideas in `IDEA BANK`: `#118`, `#121`-`#129`, and `#143`.
@@ -110,15 +117,15 @@ Current delivery focus:
 - active executable item: (none; next promotion required from Backlog to Ready)
 
 Next triage priorities (promote 1 to `Ready` before implementation):
-- `#203` security policy + approval baseline hardening (P1; re-establishes security-default posture as first promotion target).
 - `#204` channel-aware provenance model for ingress identity (P1; extends existing provenance chain for multi-channel input paths).
 - `#205` secure memory index + retrieval controls (P1; introduces bounded retrieval + audit-visible policy checks).
+- `#206` omnichannel routing + human-gated NBA orchestration (P1; queue after #204/#205).
 
 De-dupe update (completed):
 - duplicate cards `#148`/`#149`/`#150`/`#151`/`#152` are now closed and project-status set to `Done` with triage rationale comments linking canonical cards.
 
 Current active next-card preflight:
-- selected next card candidate: `#203` (pending prompt package validation + status promotion to `Ready`)
+- selected next card candidate: `#204` (pending prompt package validation + status promotion to `Ready`)
 - `#119` completion evidence captured:
   - start comment: `https://github.com/moldovancsaba/mvp-factory-control/issues/119#issuecomment-3919375249`
   - acceptance comment: `https://github.com/moldovancsaba/mvp-factory-control/issues/119#issuecomment-3919394770`
@@ -148,6 +155,10 @@ Current active next-card preflight:
   - acceptance comment: `https://github.com/moldovancsaba/mvp-factory-control/issues/145#issuecomment-3899368674`
   - board status moved to `Done`
   - revalidation evidence refresh: `https://github.com/moldovancsaba/mvp-factory-control/issues/145#issuecomment-3919822309`
+- `#203` completion evidence captured:
+  - start comment: `https://github.com/moldovancsaba/mvp-factory-control/issues/203#issuecomment-3919974581`
+  - acceptance comment: `https://github.com/moldovancsaba/mvp-factory-control/issues/203#issuecomment-3919976813`
+  - board status moved to `Done`, issue closed
 - `#132` acceptance summary:
   - command policy classes/risk tiers and deny-by-default matching delivered
   - approval-token expiry/fingerprint/replay enforcement delivered
@@ -176,7 +187,7 @@ Execution rules:
 
 Backlog gaps still open:
 - post-MVP hardening lane (none; fully delivered)
-- OpenClaw-inspired WarRoom hardening intake (`#203`-`#206`) pending promotion/execution.
+- OpenClaw-inspired WarRoom hardening intake (`#204`-`#206`) pending promotion/execution.
 - Docker portability dependency chain:
   - preflight contract (`#111`) done
   - app containerization (`#112`) done
