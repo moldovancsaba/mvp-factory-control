@@ -16,6 +16,25 @@ function countBy(items: Array<{ fields: Record<string, string> }>, field: string
   return Object.entries(out).sort((a, b) => b[1] - a[1]);
 }
 
+function percentile(values: number[], p: number) {
+  if (!values.length) return null;
+  const sorted = [...values].sort((a, b) => a - b);
+  const idx = Math.min(
+    sorted.length - 1,
+    Math.max(0, Math.ceil((p / 100) * sorted.length) - 1)
+  );
+  return sorted[idx];
+}
+
+function formatMs(value: number | null) {
+  if (value == null || !Number.isFinite(value)) return "n/a";
+  if (value < 1000) return `${Math.round(value)}ms`;
+  const seconds = value / 1000;
+  if (seconds < 60) return `${seconds.toFixed(1)}s`;
+  const minutes = seconds / 60;
+  return `${minutes.toFixed(1)}m`;
+}
+
 export default async function DashboardPage() {
   const session = await requireSession();
   if (!session) redirect("/signin");
@@ -31,11 +50,46 @@ export default async function DashboardPage() {
     lastFailureCode: string | null;
     createdAt: Date;
   }> = [];
+  let driftEvents: Array<{
+    id: string;
+    entityId: string | null;
+    reason: string;
+    metadata: unknown;
+    createdAt: Date;
+  }> = [];
+  let provenanceEvents: Array<{
+    id: string;
+    entityId: string | null;
+    action: string;
+    reason: string;
+    metadata: unknown;
+    createdAt: Date;
+  }> = [];
+  let recentTasks: Array<{
+    id: string;
+    status: string;
+    createdAt: Date;
+    startedAt: Date | null;
+    finishedAt: Date | null;
+    deadLetteredAt: Date | null;
+    lastFailureCode: string | null;
+  }> = [];
+  let approvalConsumeEvents: Array<{
+    id: string;
+    metadata: unknown;
+    createdAt: Date;
+  }> = [];
+  let dlpEvents: Array<{
+    id: string;
+    metadata: unknown;
+    createdAt: Date;
+  }> = [];
   let activeAlphaLocks: Awaited<ReturnType<typeof listActiveProjectAlphaLocks>> = [];
   let introspection: Awaited<ReturnType<typeof getOrchestratorIntrospectionSnapshot>> | null = null;
   let introspectionError: string | null = null;
   let boardError: string | null = null;
   let localError: string | null = null;
+  const sloWindowStart = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
   try {
     [meta, items] = await Promise.all([
@@ -47,7 +101,7 @@ export default async function DashboardPage() {
   }
 
   try {
-    [emailEvents, activeAlphaLocks] = await Promise.all([
+    [emailEvents, activeAlphaLocks, driftEvents, provenanceEvents, recentTasks, approvalConsumeEvents, dlpEvents] = await Promise.all([
       prisma.inboundEmailEvent.findMany({
         orderBy: { createdAt: "desc" },
         take: 50,
@@ -60,7 +114,83 @@ export default async function DashboardPage() {
           createdAt: true
         }
       }),
-      listActiveProjectAlphaLocks(30)
+      listActiveProjectAlphaLocks(30),
+      prisma.lifecycleAuditEvent.findMany({
+        where: {
+          action: "BLOCK_TASK_ON_DRIFT"
+        },
+        orderBy: { createdAt: "desc" },
+        take: 12,
+        select: {
+          id: true,
+          entityId: true,
+          reason: true,
+          metadata: true,
+          createdAt: true
+        }
+      }),
+      prisma.lifecycleAuditEvent.findMany({
+        where: {
+          entityType: "TASK_PROVENANCE",
+          action: {
+            in: ["REGISTER_PROVENANCE_CHAIN", "BIND_APPROVER_TO_CHAIN", "EMIT_GIT_ARTIFACT"]
+          }
+        },
+        orderBy: { createdAt: "desc" },
+        take: 20,
+        select: {
+          id: true,
+          entityId: true,
+          action: true,
+          reason: true,
+          metadata: true,
+          createdAt: true
+        }
+      }),
+      prisma.agentTask.findMany({
+        where: {
+          createdAt: { gte: sloWindowStart }
+        },
+        orderBy: { createdAt: "desc" },
+        take: 500,
+        select: {
+          id: true,
+          status: true,
+          createdAt: true,
+          startedAt: true,
+          finishedAt: true,
+          deadLetteredAt: true,
+          lastFailureCode: true
+        }
+      }),
+      prisma.lifecycleAuditEvent.findMany({
+        where: {
+          entityType: "TOOL_APPROVAL_TOKEN",
+          action: "CONSUME_APPROVAL_TOKEN",
+          allowed: true,
+          createdAt: { gte: sloWindowStart }
+        },
+        orderBy: { createdAt: "desc" },
+        take: 400,
+        select: {
+          id: true,
+          metadata: true,
+          createdAt: true
+        }
+      }),
+      prisma.lifecycleAuditEvent.findMany({
+        where: {
+          action: "DLP_OUTPUT_FILTER",
+          createdAt: { gte: sloWindowStart }
+        },
+        orderBy: { createdAt: "desc" },
+        take: 400,
+        select: {
+          id: true,
+          metadata: true,
+          createdAt: true
+        }
+      })
     ]);
   } catch (e) {
     localError = e instanceof Error ? e.message : String(e);
@@ -72,6 +202,84 @@ export default async function DashboardPage() {
     } catch (e) {
       introspectionError = e instanceof Error ? e.message : String(e);
     }
+  }
+
+  const terminalTasks = recentTasks.filter((task) =>
+    ["DONE", "DEAD_LETTER", "MANUAL_REQUIRED", "CANCELED"].includes(task.status)
+  );
+  const taskLatencyMs = recentTasks
+    .filter((task) => task.startedAt && task.finishedAt)
+    .map((task) => Math.max(0, task.finishedAt!.getTime() - task.startedAt!.getTime()));
+  const doneCount = terminalTasks.filter((task) => task.status === "DONE").length;
+  const deadLetterCount = terminalTasks.filter((task) => task.status === "DEAD_LETTER").length;
+  const manualRequiredCount = terminalTasks.filter((task) => task.status === "MANUAL_REQUIRED").length;
+  const failureCount = deadLetterCount + manualRequiredCount;
+  const terminalCount = terminalTasks.length;
+  const failureRate = terminalCount ? failureCount / terminalCount : 0;
+  const deadLetterRate = terminalCount ? deadLetterCount / terminalCount : 0;
+  const p50TaskLatency = percentile(taskLatencyMs, 50);
+  const p95TaskLatency = percentile(taskLatencyMs, 95);
+
+  const approvalWaitMs = approvalConsumeEvents
+    .map((event) => {
+      const meta =
+        event.metadata && typeof event.metadata === "object" && !Array.isArray(event.metadata)
+          ? (event.metadata as Record<string, unknown>)
+          : null;
+      const issuedAtRaw = meta && typeof meta.issuedAt === "string" ? meta.issuedAt : "";
+      const issuedAt = Date.parse(issuedAtRaw);
+      if (!Number.isFinite(issuedAt)) return null;
+      return Math.max(0, event.createdAt.getTime() - issuedAt);
+    })
+    .filter((value): value is number => typeof value === "number");
+  const p50ApprovalWait = percentile(approvalWaitMs, 50);
+  const p95ApprovalWait = percentile(approvalWaitMs, 95);
+
+  const dlpRedactedCount = dlpEvents.filter((event) => {
+    const meta =
+      event.metadata && typeof event.metadata === "object" && !Array.isArray(event.metadata)
+        ? (event.metadata as Record<string, unknown>)
+        : null;
+    return meta && typeof meta.action === "string" && meta.action === "REDACT";
+  }).length;
+  const dlpBlockedCount = dlpEvents.filter((event) => {
+    const meta =
+      event.metadata && typeof event.metadata === "object" && !Array.isArray(event.metadata)
+        ? (event.metadata as Record<string, unknown>)
+        : null;
+    return meta && typeof meta.action === "string" && meta.action === "BLOCK";
+  }).length;
+
+  const alertHints: Array<{ level: "HIGH" | "MEDIUM" | "INFO"; text: string }> = [];
+  if (deadLetterRate >= 0.05) {
+    alertHints.push({
+      level: "HIGH",
+      text: `Dead-letter rate is ${(deadLetterRate * 100).toFixed(1)}% (>= 5%). Remediation: inspect top failure codes and unblock policy/runtime causes.`
+    });
+  }
+  if (failureRate >= 0.2) {
+    alertHints.push({
+      level: "MEDIUM",
+      text: `Terminal failure rate is ${(failureRate * 100).toFixed(1)}% (>= 20%). Remediation: review manual-required transitions and retry policy outcomes.`
+    });
+  }
+  if (p95TaskLatency != null && p95TaskLatency >= 120_000) {
+    alertHints.push({
+      level: "MEDIUM",
+      text: `Task latency p95 is ${formatMs(p95TaskLatency)} (>= 2m). Remediation: inspect slow tool calls and queue pressure.`
+    });
+  }
+  if (p95ApprovalWait != null && p95ApprovalWait >= 300_000) {
+    alertHints.push({
+      level: "MEDIUM",
+      text: `Approval wait p95 is ${formatMs(p95ApprovalWait)} (>= 5m). Remediation: improve approval routing or reduce high-risk command bursts.`
+    });
+  }
+  if (dlpBlockedCount > 0) {
+    alertHints.push({
+      level: "INFO",
+      text: `DLP blocked ${dlpBlockedCount} output events in the last 7 days. Remediation: review blocked samples and adjust command/data handling.`
+    });
   }
 
   return (
@@ -164,6 +372,60 @@ export default async function DashboardPage() {
                       <div className="font-mono text-xs text-white/70">{v}</div>
                     </div>
                 ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 rounded-2xl border border-white/12 bg-white/5 p-5">
+            <div className="text-sm font-semibold">Tool-runtime SLOs (last 7 days)</div>
+            <div className="mt-1 text-xs text-white/60">
+              Execution latency, terminal outcomes, approval wait, and DLP event posture.
+            </div>
+            <div className="mt-3 grid gap-2 text-xs md:grid-cols-4">
+              <div className="rounded-xl border border-white/10 bg-black/20 px-3 py-2">
+                <div className="font-semibold text-white/80">Task latency</div>
+                <div className="mt-1 text-white/65">
+                  p50={formatMs(p50TaskLatency)} · p95={formatMs(p95TaskLatency)}
+                </div>
+                <div className="mt-1 text-white/50">samples={taskLatencyMs.length}</div>
+              </div>
+              <div className="rounded-xl border border-white/10 bg-black/20 px-3 py-2">
+                <div className="font-semibold text-white/80">Terminal outcomes</div>
+                <div className="mt-1 text-white/65">
+                  done={doneCount} · dead={deadLetterCount} · manual={manualRequiredCount}
+                </div>
+                <div className="mt-1 text-white/50">
+                  failure={(failureRate * 100).toFixed(1)}% · dead={(deadLetterRate * 100).toFixed(1)}%
+                </div>
+              </div>
+              <div className="rounded-xl border border-white/10 bg-black/20 px-3 py-2">
+                <div className="font-semibold text-white/80">Approval wait</div>
+                <div className="mt-1 text-white/65">
+                  p50={formatMs(p50ApprovalWait)} · p95={formatMs(p95ApprovalWait)}
+                </div>
+                <div className="mt-1 text-white/50">samples={approvalWaitMs.length}</div>
+              </div>
+              <div className="rounded-xl border border-white/10 bg-black/20 px-3 py-2">
+                <div className="font-semibold text-white/80">DLP output filter</div>
+                <div className="mt-1 text-white/65">
+                  redacted={dlpRedactedCount} · blocked={dlpBlockedCount}
+                </div>
+                <div className="mt-1 text-white/50">events={dlpEvents.length}</div>
+              </div>
+              <div className="md:col-span-4 rounded-xl border border-white/10 bg-black/20 px-3 py-2">
+                <div className="font-semibold text-white/80">Alert hints</div>
+                <div className="mt-2 space-y-1 text-white/65">
+                  {alertHints.map((hint, idx) => (
+                    <div key={`${hint.level}-${idx}`} className="rounded border border-white/10 bg-white/5 px-2 py-1">
+                      <span className="font-mono text-white/80">{hint.level}</span> · {hint.text}
+                    </div>
+                  ))}
+                  {alertHints.length === 0 ? (
+                    <div className="text-white/55">
+                      No threshold breaches in the current 7-day SLO window.
+                    </div>
+                  ) : null}
+                </div>
               </div>
             </div>
           </div>
@@ -322,6 +584,110 @@ export default async function DashboardPage() {
               ))}
               {emailEvents.length === 0 ? (
                 <div className="text-white/55">(no inbound email events yet)</div>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="mt-4 rounded-2xl border border-white/12 bg-white/5 p-5">
+            <div className="text-sm font-semibold">Board-runtime drift diagnostics</div>
+            <div className="mt-1 text-xs text-white/60">
+              Tasks blocked by drift sentinel when board state and runtime state diverge.
+            </div>
+            <div className="mt-3 space-y-1.5 text-xs">
+              {driftEvents.map((event) => {
+                const metadata =
+                  event.metadata && typeof event.metadata === "object" && !Array.isArray(event.metadata)
+                    ? (event.metadata as Record<string, unknown>)
+                    : null;
+                const issueNumber =
+                  metadata && typeof metadata.issueNumber === "number"
+                    ? metadata.issueNumber
+                    : null;
+                const boardStatus =
+                  metadata && typeof metadata.boardStatus === "string"
+                    ? metadata.boardStatus
+                    : "(missing)";
+                const driftCode =
+                  metadata && typeof metadata.driftCode === "string"
+                    ? metadata.driftCode
+                    : "BOARD_RUNTIME_DRIFT";
+                return (
+                  <div
+                    key={event.id}
+                    className="rounded-lg border border-rose-300/20 bg-rose-200/10 px-3 py-2"
+                  >
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="rounded-full border border-rose-300/30 bg-rose-300/10 px-1.5 py-0.5 text-rose-100">
+                        BLOCKED
+                      </span>
+                      <span className="font-mono text-white/80">
+                        task={event.entityId || "(unknown)"}
+                      </span>
+                      <span className="text-white/65">
+                        issue={issueNumber ? `#${issueNumber}` : "(none)"} · boardStatus={boardStatus}
+                      </span>
+                      <span className="text-white/45">{new Date(event.createdAt).toLocaleString()}</span>
+                    </div>
+                    <div className="mt-1 text-white/60">{event.reason}</div>
+                    <div className="mt-1 text-white/45">code={driftCode}</div>
+                  </div>
+                );
+              })}
+              {driftEvents.length === 0 ? (
+                <div className="text-white/55">(no drift blocks recorded)</div>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="mt-4 rounded-2xl border border-white/12 bg-white/5 p-5">
+            <div className="text-sm font-semibold">Execution provenance chain</div>
+            <div className="mt-1 text-xs text-white/60">
+              Approver, runtime execution, and git artifact lineage events.
+            </div>
+            <div className="mt-3 space-y-1.5 text-xs">
+              {provenanceEvents.map((event) => {
+                const metadata =
+                  event.metadata && typeof event.metadata === "object" && !Array.isArray(event.metadata)
+                    ? (event.metadata as Record<string, unknown>)
+                    : null;
+                const taskId =
+                  metadata && typeof metadata.taskId === "string" ? metadata.taskId : "(unknown)";
+                const approver =
+                  metadata && typeof metadata.approverUserId === "string"
+                    ? metadata.approverUserId
+                    : "(n/a)";
+                const prNumber =
+                  metadata && typeof metadata.prNumber === "number"
+                    ? metadata.prNumber
+                    : null;
+                const commitSha =
+                  metadata && typeof metadata.commitSha === "string"
+                    ? metadata.commitSha
+                    : null;
+                return (
+                  <div
+                    key={event.id}
+                    className="rounded-lg border border-cyan-300/20 bg-cyan-200/10 px-3 py-2"
+                  >
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="rounded-full border border-cyan-300/30 bg-cyan-300/10 px-1.5 py-0.5 text-cyan-100">
+                        {event.action}
+                      </span>
+                      <span className="font-mono text-white/80">chain={event.entityId || "(none)"}</span>
+                      <span className="text-white/65">task={taskId}</span>
+                      <span className="text-white/65">approver={approver}</span>
+                      {prNumber ? <span className="text-white/65">pr=#{prNumber}</span> : null}
+                      {commitSha ? (
+                        <span className="text-white/65">sha={commitSha.slice(0, 12)}</span>
+                      ) : null}
+                      <span className="text-white/45">{new Date(event.createdAt).toLocaleString()}</span>
+                    </div>
+                    <div className="mt-1 text-white/60">{event.reason}</div>
+                  </div>
+                );
+              })}
+              {provenanceEvents.length === 0 ? (
+                <div className="text-white/55">(no provenance events recorded)</div>
               ) : null}
             </div>
           </div>

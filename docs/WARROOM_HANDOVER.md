@@ -1,6 +1,6 @@
 # WAR ROOM HANDOVER (Operational Continuation Pack)
 
-Last updated: 2026-02-13
+Last updated: 2026-02-18
 Owner: Sultan (Product Owner) + War Room agent team
 Primary repo: `mvp-factory-control`
 Primary app: `apps/warroom`
@@ -48,16 +48,14 @@ Implemented and live in code:
 - `#117` dashboard product scoping + source-correct error reporting
 - `#75` runtime scoped settings umbrella closed (`Done`) after delivered child items `#93` + `#94`
 
-Current execution lane (board as-of 2026-02-13):
+Current execution lane (board as-of 2026-02-18):
 - `In Progress`: (none)
-- `Ready`: `#145`, `#146`, `#140`, `#139`
-- `Backlog`: (none)
-- `Done`: `#130`, `#131`, `#132`, `#133`, `#134`, `#135`, `#136`, `#137`, `#138`, `#75`, `#144`
+- `Ready`: (none)
+- `Backlog`: `#203`, `#204`, `#205`, `#206`
+- `Done`: `#130`, `#131`, `#132`, `#133`, `#134`, `#135`, `#136`, `#137`, `#138`, `#75`, `#144`, `#145`, `#146`, `#140`, `#139`, `#148`, `#149`, `#150`, `#151`, `#152`, `#119`, `#141`, `#142`, `#120`
 
-Current `IDEA BANK` items (board as-of 2026-02-13):
+Current `IDEA BANK` items (board as-of 2026-02-18):
 - `#118` policy simulation and replay harness for governance changes
-- `#119` board-runtime drift sentinel and safe block policy
-- `#120` recovery readiness drills and incident evidence bundle
 - `#121` continuous tech-intelligence ingestion agent
 - `#122` fit-analysis agent for discovered technologies
 - `#123` policy-gated auto-onboarding pipeline for approved new agents
@@ -67,15 +65,28 @@ Current `IDEA BANK` items (board as-of 2026-02-13):
 - `#127` canary rollout framework for newly onboarded agents
 - `#128` benchmark dataset governance for reproducible A/B/C/D evaluation
 - `#129` cost-aware routing policy (quality/latency/spend tradeoff)
-- `#141` execution identity/provenance chain
-- `#142` tool-runtime SLO dashboard
 - `#143` ephemeral workspace provisioning and cleanup policy
 
+De-dupe note (board hygiene):
+- duplicate IDEA BANK cards are now closed + moved to `Done` with rationale comments:
+  - `#148` -> canonical `#141`
+  - `#149` -> delivered `#140`
+  - `#150` -> delivered `#139`
+  - `#151` -> canonical `#143`
+  - `#152` -> canonical `#142`
+
+Recommended next promotions (prompt packages validate; pick 1):
+- `#203` (P1) security policy + approval baseline hardening (OpenClaw-inspired)
+- `#204` (P1) channel-aware provenance model for ingress identity
+
+Current active preflight:
+- `#119` delivery complete (`Done`) with acceptance evidence and validation pass.
+- `#141` delivery complete (`Done`) with acceptance evidence and validation pass.
+- `#142` delivery complete (`Done`) with acceptance evidence and validation pass.
+- `#120` delivery complete (`Done`) with acceptance evidence and validation pass.
+
 Post-MVP priority queue (Ready, execution order):
-1. `#145` portability gate parity + route-level runtime regression checks (`P0`)
-2. `#146` automated filesystem safety regression harness for `#136` invariants (`P0`)
-3. `#140` secrets/DLP guardrail for terminal/file/chat output (`P0`)
-4. `#139` task cancel/interrupt/resume semantics (`P1`)
+- (none)
 
 Active delivery kickoff (current window):
 - preflight dependency root `#111` is delivered (`Done`).
@@ -107,9 +118,20 @@ Active delivery kickoff (current window):
 - `#138` is delivered (`Done`) with launch rehearsal report, pass/fail matrix, rollback evidence, and GO decision.
 - `#130` umbrella is delivered (`Done`) with dependency-order closure evidence linking all child deliverables.
 - runtime settings umbrella `#75` is closed (`Done`) with closure evidence linked to delivered children `#93` + `#94`.
-- post-MVP hardening queue prepared (`Ready`): `#145`, `#146`, `#140`, `#139`.
+- `#145` is delivered (`Done`) with acceptance evidence comment and board status closure.
+  - revalidation evidence refresh comment:
+    - `https://github.com/moldovancsaba/mvp-factory-control/issues/145#issuecomment-3919822309`
+- `#146` is delivered (`Done`) with acceptance evidence comment and board status closure.
+- `#140` is delivered (`Done`) with acceptance evidence comment and board status closure.
+- `#139` is delivered (`Done`) with acceptance evidence comment and board status closure.
+- post-MVP hardening queue has no remaining `Ready` cards.
+- WarRoom backlog intake is expanded with OpenClaw-inspired hardening cards:
+  - `#203` security policy + approval baseline hardening
+  - `#204` channel-aware provenance model for ingress identity
+  - `#205` secure memory index + retrieval controls
+  - `#206` omnichannel routing + human-gated NBA orchestration
 - context-pressure checkpoint: continuation context is treated as near 70%; scope expansion remains bounded to ordered execution with handover-first updates.
-- current gate state: MVP launch lane is closed; next execution starts from `#145` -> `#146` -> `#140` -> `#139`.
+- current gate state: MVP launch lane and post-MVP hardening lane are fully closed.
 
 New dependency-ordered backlog initiative:
 - Docker portability delivery chain (`#111` -> `#116`) was added to close the bring-anywhere runtime gap.
@@ -347,6 +369,7 @@ Read first:
 4) /Users/moldovancsaba/Projects/mvp-factory-control/docs/WARROOM_WHY_AND_HOW.md
 5) /Users/moldovancsaba/Projects/mvp-factory-control/docs/WARROOM_MANIFESTO.md
 6) /Users/moldovancsaba/Projects/mvp-factory-control/docs/WARROOM_DELIVERY_STORY.md
+7) /Users/moldovancsaba/Projects/mvp-factory-control/docs/WARROOM_E2E_TESTS.md
 
 Constraints:
 - Board is SSOT. Keep board fields + issue evidence updated after each meaningful step.
@@ -367,11 +390,11 @@ Current launch lane:
 - #138 Done (P1), closed.
 
 Current post-MVP hardening lane:
-- #145 Ready (P0) portability gate parity + runtime regression checks.
-- #146 Ready (P0) filesystem safety regression harness.
-- #140 Ready (P0) secrets/DLP guardrail.
-- #139 Ready (P1) cancel/interrupt/resume semantics.
-- Locked order: #145 -> #146 -> #140 -> #139.
+- #139 Done (P1) cancel/interrupt/resume semantics.
+- #140 Done (P0) secrets/DLP guardrail.
+- #146 Done (P0) filesystem safety regression harness.
+- #145 Done (P0) portability gate parity + runtime regression checks.
+- Locked order complete: #145 -> #146 -> #140 -> #139.
 
 Per-issue execution loop:
 1) Confirm board status is Ready.
@@ -382,13 +405,14 @@ Per-issue execution loop:
    - /Users/moldovancsaba/Projects/mvp-factory-control/docs/WARROOM_STATUS_BRAINDUMP.md
 4) Move issue to In Progress and post start comment.
 5) Implement scope with invariants intact.
-6) Validate build:
+6) Validate:
+   cd /Users/moldovancsaba/Projects/mvp-factory-control/apps/warroom && npm run e2e:warroom
    cd /Users/moldovancsaba/Projects/mvp-factory-control/apps/warroom && npm run build
 7) Post concise acceptance evidence comment.
 8) Move issue to Done.
 9) Refresh handover/status/backlog snapshot before next issue.
 
 Next action:
-- Execute post-MVP hardening lane in locked order (`#145` -> `#146` -> `#140` -> `#139`) with standard Ready-gate discipline.
+- Post-MVP hardening lane is complete. Triage IDEA BANK / Roadmap items and promote the next executable card to `Ready` with a valid prompt package.
 - If context pressure rises again, stop scope expansion and refresh handover/status before continuing.
 ```

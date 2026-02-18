@@ -21,6 +21,8 @@ import {
   enqueueIssueTask,
   overrideIssueGuardrailAction,
   recordIssueHandoverPackageAction,
+  requestIssueTaskControlAction,
+  resumeIssueTaskAction,
   sendIssueMessage,
   transferIssueAlphaContextAction,
   updateIssueFields
@@ -94,6 +96,24 @@ function readTaskHandoffTrace(payload: unknown): null | {
 
   if (!requestedByAgent || !sourceThreadId || !sourceMessageId) return null;
   return { requestedByAgent, sourceThreadId, sourceMessageId };
+}
+
+function readTaskControlState(payload: unknown): null | {
+  lastAction: string | null;
+  reason: string | null;
+  requestedAt: string | null;
+  resumeAllowed: boolean;
+} {
+  const record = asRecord(payload);
+  const taskControl = asRecord(record?.taskControl);
+  const state = asRecord(taskControl?.state);
+  if (!state) return null;
+  return {
+    lastAction: typeof state.lastAction === "string" ? state.lastAction : null,
+    reason: typeof state.reason === "string" ? state.reason : null,
+    requestedAt: typeof state.requestedAt === "string" ? state.requestedAt : null,
+    resumeAllowed: state.resumeAllowed === true
+  };
 }
 
 export default async function IssuePage(props: {
@@ -178,7 +198,11 @@ export default async function IssuePage(props: {
       })
     : [];
   const tasks = activeAgentForTasks
-    ? await listAgentTasks({ agentKey: activeAgentForTasks, limit: 20 })
+    ? await listAgentTasks({
+        agentKey: activeAgentForTasks,
+        issueNumber,
+        limit: 20
+      })
     : [];
   const taskPromptInvariants = await listIssueTaskPromptPackageInvariants({
     issueNumber,
@@ -871,12 +895,14 @@ export default async function IssuePage(props: {
             {activeAgentForTasks ? (
               <div className="mt-6">
                 <div className="text-sm font-semibold">
-                  Recent tasks for {activeAgentForTasks}
+                  Recent issue tasks for {activeAgentForTasks}
                 </div>
                 <div className="mt-3 space-y-2">
                   {tasks.map((t) => (
                     (() => {
                       const handoff = readTaskHandoffTrace(t.payload);
+                      const control = readTaskControlState(t.payload);
+                      const resumeAllowed = Boolean(control?.resumeAllowed && t.status === "CANCELED");
                       return (
                         <div
                           key={t.id}
@@ -897,16 +923,96 @@ export default async function IssuePage(props: {
                           {t.error ? (
                             <div className="mt-1 text-xs text-amber-100/90">{t.error}</div>
                           ) : null}
+                          {control ? (
+                            <div className="mt-1 text-xs text-cyan-100/85">
+                              Control: {control.lastAction || "unknown"}
+                              {control.reason ? ` (${control.reason})` : ""}
+                              {control.requestedAt
+                                ? ` · ${new Date(control.requestedAt).toLocaleString()}`
+                                : ""}
+                            </div>
+                          ) : null}
                           <div className="mt-1 font-mono text-[11px] text-white/55">
                             {new Date(t.createdAt).toLocaleString()}
                           </div>
+                          {t.status === "RUNNING" ? (
+                            <div className="mt-2 flex flex-wrap items-center gap-2">
+                              <form
+                                action={async (fd) => {
+                                  "use server";
+                                  await requestIssueTaskControlAction(issueNumber, fd);
+                                }}
+                                className="flex items-center gap-2"
+                              >
+                                <input type="hidden" name="taskId" value={t.id} />
+                                <input type="hidden" name="control" value="INTERRUPT" />
+                                <input
+                                  type="text"
+                                  name="reason"
+                                  placeholder="interrupt reason (optional)"
+                                  className="w-56 rounded-lg border border-white/15 bg-black/20 px-2 py-1 text-xs text-white/85 outline-none focus:border-white/25"
+                                />
+                                <button
+                                  type="submit"
+                                  className="rounded-lg border border-amber-300/35 bg-amber-300/15 px-2 py-1 text-xs text-amber-100 hover:bg-amber-300/25"
+                                >
+                                  Interrupt
+                                </button>
+                              </form>
+                              <form
+                                action={async (fd) => {
+                                  "use server";
+                                  await requestIssueTaskControlAction(issueNumber, fd);
+                                }}
+                                className="flex items-center gap-2"
+                              >
+                                <input type="hidden" name="taskId" value={t.id} />
+                                <input type="hidden" name="control" value="CANCEL" />
+                                <input
+                                  type="text"
+                                  name="reason"
+                                  placeholder="cancel reason (optional)"
+                                  className="w-52 rounded-lg border border-white/15 bg-black/20 px-2 py-1 text-xs text-white/85 outline-none focus:border-white/25"
+                                />
+                                <button
+                                  type="submit"
+                                  className="rounded-lg border border-rose-300/35 bg-rose-300/15 px-2 py-1 text-xs text-rose-100 hover:bg-rose-300/25"
+                                >
+                                  Cancel
+                                </button>
+                              </form>
+                            </div>
+                          ) : null}
+                          {resumeAllowed ? (
+                            <form
+                              action={async (fd) => {
+                                "use server";
+                                await resumeIssueTaskAction(issueNumber, fd);
+                              }}
+                              className="mt-2 flex flex-wrap items-center gap-2"
+                            >
+                              <input type="hidden" name="taskId" value={t.id} />
+                              <input
+                                type="text"
+                                name="resumeNote"
+                                placeholder="resume note (optional)"
+                                className="w-56 rounded-lg border border-white/15 bg-black/20 px-2 py-1 text-xs text-white/85 outline-none focus:border-white/25"
+                              />
+                              <button
+                                type="submit"
+                                className="rounded-lg border border-emerald-300/35 bg-emerald-300/15 px-2 py-1 text-xs text-emerald-100 hover:bg-emerald-300/25"
+                              >
+                                Resume
+                              </button>
+                            </form>
+                          ) : null}
                         </div>
                       );
                     })()
                   ))}
                   {tasks.length === 0 ? (
                     <div className="text-sm text-white/70">
-                      No queued tasks for this agent yet.
+                      No issue-scoped tasks for this agent yet.
                     </div>
                   ) : null}
                 </div>

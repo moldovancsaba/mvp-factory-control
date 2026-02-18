@@ -269,6 +269,13 @@ What the automated gate enforces:
 - `docker compose -f docker-compose.yml config -q` passes
 - bootstrap path passes (`scripts/warroom-docker-bootstrap.sh`)
 - expected healthy condition: `warroom-db` and `warroom-app` health are both `healthy`
+- route contract checks:
+  - `GET /signin` returns `200`
+  - `GET /products` redirects to `/signin` (302/303/307/308)
+  - `GET /agents` redirects to `/signin` (302/303/307/308)
+- regression signature checks on `docker logs --tail 200 warroom-app`:
+  - fail on `EACCES: permission denied, mkdir '/app/.warroom'`
+  - fail on non-portable `ps` signature (`bad -o argument 'command'`)
 - expected unhealthy condition: an invalid endpoint probe fails (non-success), confirming gate is not silently permissive
 
 Delivery readiness interpretation:

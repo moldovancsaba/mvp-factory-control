@@ -8,6 +8,9 @@ export type TaskLifecycleAction =
   | "ROUTE_HANDOFF_TASK"
   | "CLAIM_TASK"
   | "COMPLETE_TASK"
+  | "CANCEL_TASK"
+  | "INTERRUPT_TASK"
+  | "RESUME_TASK"
   | "RETRY_TASK"
   | "DEAD_LETTER_TASK"
   | "RECOVER_STALE_RUNNING"
@@ -58,6 +61,21 @@ export function evaluateTaskTransition(params: {
         ? ok("Orchestrator completion transition allowed.")
         : deny("Completion transition requires RUNNING -> DONE.");
     }
+    if (action === "CANCEL_TASK" || action === "INTERRUPT_TASK") {
+      if (fromState === "RUNNING" && toState === "CANCELED") {
+        return ok("Orchestrator cancel/interrupt transition allowed.");
+      }
+      if (fromState === "CANCELED" && toState === "CANCELED") {
+        return ok("Orchestrator cancel/interrupt idempotent transition allowed.");
+      }
+      return deny("Cancel/interrupt transition requires RUNNING -> CANCELED.");
+    }
+    if (action === "RESUME_TASK") {
+      return fromState === "CANCELED" &&
+        (toState === "QUEUED" || toState === "MANUAL_REQUIRED")
+        ? ok("Orchestrator resume transition allowed.")
+        : deny("Resume transition requires CANCELED -> QUEUED|MANUAL_REQUIRED.");
+    }
     if (action === "RETRY_TASK") {
       return fromState === "RUNNING" && toState === "QUEUED"
         ? ok("Orchestrator retry transition allowed.")
@@ -77,15 +95,26 @@ export function evaluateTaskTransition(params: {
   }
 
   if (actorRole === "HUMAN_OPERATOR") {
-    if (action !== "ENQUEUE_TASK") {
-      return deny(`Human operator cannot perform task action ${action}.`);
+    if (action === "ENQUEUE_TASK") {
+      if (fromState !== null) {
+        return deny("Human enqueue requires fromState=null.");
+      }
+      return toState === "QUEUED" || toState === "MANUAL_REQUIRED"
+        ? ok("Human enqueue transition allowed.")
+        : deny("Human enqueue can only target QUEUED or MANUAL_REQUIRED.");
     }
-    if (fromState !== null) {
-      return deny("Human enqueue requires fromState=null.");
+    if (action === "CANCEL_TASK" || action === "INTERRUPT_TASK") {
+      return fromState === "RUNNING" && toState === "CANCELED"
+        ? ok("Human task control transition allowed.")
+        : deny("Human task control requires RUNNING -> CANCELED.");
     }
-    return toState === "QUEUED" || toState === "MANUAL_REQUIRED"
-      ? ok("Human enqueue transition allowed.")
-      : deny("Human enqueue can only target QUEUED or MANUAL_REQUIRED.");
+    if (action === "RESUME_TASK") {
+      return fromState === "CANCELED" &&
+        (toState === "QUEUED" || toState === "MANUAL_REQUIRED")
+        ? ok("Human resume transition allowed.")
+        : deny("Human resume requires CANCELED -> QUEUED|MANUAL_REQUIRED.");
+    }
+    return deny(`Human operator cannot perform task action ${action}.`);
   }
 
   if (actorRole === "ADMIN_OVERRIDE") {
@@ -129,7 +158,7 @@ export function evaluateAgentReadinessTransition(params: {
 }
 
 export async function recordLifecycleAudit(params: {
-  entityType: "TASK" | "AGENT";
+  entityType: "TASK" | "AGENT" | "TASK_PROVENANCE";
   entityId?: string | null;
   actorRole: ActorRole;
   action: string;
@@ -170,8 +199,9 @@ export function permissionMatrixRows() {
     },
     {
       role: "HUMAN_OPERATOR",
-      allowed: "Enqueue tasks and set readiness through normal controls.",
-      denied: "Direct RUNNING/DONE/DEAD_LETTER lifecycle writes."
+      allowed:
+        "Enqueue tasks, request cancel/interrupt (RUNNING -> CANCELED), resume canceled tasks, and set readiness through normal controls.",
+      denied: "Direct RUNNING/DONE/DEAD_LETTER lifecycle writes outside the allowed control paths."
     },
     {
       role: "WORKER",

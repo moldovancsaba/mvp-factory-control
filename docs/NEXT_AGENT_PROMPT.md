@@ -11,29 +11,19 @@ Read first:
 4) /Users/moldovancsaba/Projects/mvp-factory-control/docs/WARROOM_WHY_AND_HOW.md
 5) /Users/moldovancsaba/Projects/mvp-factory-control/docs/WARROOM_MANIFESTO.md
 6) /Users/moldovancsaba/Projects/mvp-factory-control/docs/WARROOM_DELIVERY_STORY.md
+7) /Users/moldovancsaba/Projects/mvp-factory-control/docs/WARROOM_E2E_TESTS.md
 
-Constraints:
-- Board is SSOT. Keep board fields + issue evidence updated after each meaningful step.
-- Do not start implementation unless selected issue is in Ready and prompt package validates.
-- Preserve lease/role/lifecycle/email-ingress safety invariants.
-- No secrets in output/logs/UI.
-- Additive/reversible changes only; do not revert unrelated local changes.
-- Incident-learning loop is mandatory:
-  - if runtime/container failure is found, open/update a board issue in the same session,
-  - attach RCA + fix evidence + verification commands,
-  - update handover/status docs before closing the issue.
+Current board truth (WarRoom):
+- Launch lane #130 -> #138 is fully Done.
+- Post-MVP hardening lane is fully Done:
+  - #145 (Done) portability gate parity + route/runtime regression checks
+  - #146 (Done) filesystem safety regression harness
+  - #140 (Done) secrets/DLP guardrail
+  - #139 (Done) cancel/interrupt/resume semantics
+- WarRoom counts: Done 53, Ready 0, IDEA BANK 11, Roadmap 5
 
-Current launch lane:
-- #130 Roadmap (Type=Plan umbrella only).
-- #131 Done (P0), closed.
-- #132 Done (P0), closed.
-- #136 Done (P0), closed.
-- #133 Backlog (P0) and next executable item candidate.
-- Backlog chain: #133 (P0) -> (#134 + #137) -> #135 (P1) -> #138 (P1).
-- Locked order: #133 -> (#134 + #137) -> #135 -> #138.
-
-Per-issue execution loop:
-1) Confirm board status is Ready.
+Execution loop per issue:
+1) Confirm selected issue is Ready on board.
 2) Validate prompt package:
    node /Users/moldovancsaba/Projects/mvp-factory-control/scripts/mvp-factory-validate-prompt-package.js --issue <ISSUE_NUMBER> --repo moldovancsaba/mvp-factory-control
 3) Handover-first updates:
@@ -41,17 +31,23 @@ Per-issue execution loop:
    - /Users/moldovancsaba/Projects/mvp-factory-control/docs/WARROOM_STATUS_BRAINDUMP.md
 4) Move issue to In Progress and post start comment.
 5) Implement scope with invariants intact.
-6) Validate build:
+6) Validate:
+   cd /Users/moldovancsaba/Projects/mvp-factory-control/apps/warroom && npm run e2e:warroom
    cd /Users/moldovancsaba/Projects/mvp-factory-control/apps/warroom && npm run build
 7) Post concise acceptance evidence comment.
 8) Move issue to Done.
-9) Refresh handover/status/backlog snapshot before next issue.
-10) For runtime/Docker changes, include portability verification evidence:
-   - `docker compose ps`
-   - `docker logs --tail 200 warroom-app`
-   - route checks: `/signin`, `/products`, `/agents`
+9) Refresh handover/status/spine docs and board snapshot before next issue.
 
-Next action:
-- Promote #133 to Ready (after prompt-package validation), then execute.
-- Keep locked-order execution for remaining launch chain.
-- If context pressure rises again, stop scope expansion and refresh handover/status before continuing.
+Constraints:
+- Board is SSOT. Keep board fields + issue evidence updated after each meaningful step.
+- Preserve lease/role/lifecycle/email-ingress safety invariants.
+- No secrets in output/logs/UI/comments.
+- Additive/reversible changes only; do not revert unrelated local changes.
+
+Next action now:
+- De-dupe cleanup is complete (`#148`/`#149`/`#150`/`#151`/`#152` closed with rationale comments; status moved to `Done`).
+- `#119` is complete (`Done`) and closed with acceptance evidence.
+- `#141` is complete (`Done`) and closed with acceptance evidence.
+- `#142` is complete (`Done`) and closed with acceptance evidence.
+- `#120` is complete (`Done`) and closed with acceptance evidence.
+- Next executable focus: promote `#143` to `Ready` with prompt-package validation, then execute.

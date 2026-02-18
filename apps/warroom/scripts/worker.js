@@ -31,6 +31,10 @@ const {
   executeShellToolCall,
   resolveShellToolContext
 } = require("./lib/tool-shell");
+const {
+  applyOutputDlp,
+  resolveDlpMode
+} = require("./lib/output-dlp");
 
 const prisma = new PrismaClient();
 
@@ -67,6 +71,7 @@ const GITHUB_PROJECT_NUMBER = Number(
 const SETTINGS_FILE = path.join(__dirname, "..", ".warroom", "settings.json");
 
 let cachedProjectMeta = null;
+const cachedIssueBoardStatus = new Map();
 let WORKER_AGENT_KEY = RAW_AGENT_KEY;
 let WORKER_CONTROL_ROLE = null;
 let CLAIM_ALL_TASKS = false;
@@ -117,6 +122,7 @@ const ISSUE_EVIDENCE_RETRY_MAX_MS = clampInt(
   ISSUE_EVIDENCE_RETRY_BASE_MS,
   300_000
 );
+const OUTPUT_DLP_MODE = resolveDlpMode(process.env.WARROOM_DLP_MODE);
 const ORCHESTRATOR_LEASE_ID =
   process.env.WARROOM_ORCHESTRATOR_LEASE_ID || "warroom-primary-orchestrator";
 const ORCHESTRATOR_LEASE_TTL_MS = clampInt(
@@ -131,6 +137,13 @@ const ORCHESTRATOR_STALE_RUNNING_MS = clampInt(
   ORCHESTRATOR_LEASE_TTL_MS,
   3_600_000
 );
+const DRIFT_STATUS_CACHE_TTL_MS = clampInt(
+  process.env.WARROOM_DRIFT_STATUS_CACHE_TTL_MS || "15000",
+  15_000,
+  1_000,
+  300_000
+);
+const ALLOWED_RUNNING_BOARD_STATUSES = new Set(["in progress", "ready"]);
 const ORCHESTRATOR_OWNER_ID = [
   WORKER_HOST,
   process.pid,
@@ -195,44 +208,16 @@ function normalizeText(value) {
   return String(value || "").trim();
 }
 
-const SHELL_OUTPUT_REDACTION_RULES = [
-  {
-    pattern: /\bgh[pousr]_[A-Za-z0-9_]{20,}\b/g,
-    replacement: "[REDACTED_GITHUB_TOKEN]"
-  },
-  {
-    pattern: /\bgithub_pat_[A-Za-z0-9_]{20,}\b/g,
-    replacement: "[REDACTED_GITHUB_TOKEN]"
-  },
-  {
-    pattern: /\bsk-[A-Za-z0-9]{16,}\b/g,
-    replacement: "[REDACTED_API_KEY]"
-  },
-  {
-    pattern: /-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----/g,
-    replacement: "[REDACTED_PRIVATE_KEY]"
-  }
-];
-
-function redactSensitiveOutput(text) {
-  let output = String(text || "");
-  let redacted = false;
-  for (const rule of SHELL_OUTPUT_REDACTION_RULES) {
-    output = output.replace(rule.pattern, () => {
-      redacted = true;
-      return rule.replacement;
-    });
-  }
-  output = output.replace(
-    /((?:password|passwd|token|secret|api[_-]?key)\s*[:=]\s*)([^\s,;]+)/gi,
-    (_, prefix) => {
-      redacted = true;
-      return `${prefix}[REDACTED]`;
-    }
-  );
+function redactSensitiveOutput(text, channel = "generic") {
+  const dlp = applyOutputDlp(text, {
+    mode: OUTPUT_DLP_MODE,
+    channel
+  });
   return {
-    text: output,
-    redacted
+    text: dlp.text,
+    redacted: dlp.redacted,
+    blocked: dlp.blocked,
+    dlp
   };
 }
 
@@ -255,13 +240,13 @@ function sanitizeShellMetadata(metadata) {
   if (!record) return null;
   const out = { ...record };
   if (typeof out.command === "string") {
-    out.command = redactSensitiveOutput(out.command).text;
+    out.command = redactSensitiveOutput(out.command, "shell_metadata").text;
   }
   if (typeof out.stdoutPreview === "string") {
-    out.stdoutPreview = redactSensitiveOutput(out.stdoutPreview).text;
+    out.stdoutPreview = redactSensitiveOutput(out.stdoutPreview, "shell_metadata").text;
   }
   if (typeof out.stderrPreview === "string") {
-    out.stderrPreview = redactSensitiveOutput(out.stderrPreview).text;
+    out.stderrPreview = redactSensitiveOutput(out.stderrPreview, "shell_metadata").text;
   }
   return out;
 }
@@ -317,6 +302,29 @@ function readTaskRuntimeConfigResolution(payload) {
   };
 }
 
+function readTaskProvenance(payload, task) {
+  const payloadRecord = asRecord(payload);
+  const provenance = asRecord(payloadRecord?.provenance);
+  const chainId = normalizeText(provenance?.chainId) || normalizeText(task?.id) || null;
+  return {
+    chainId,
+    issueNumber:
+      Number.isInteger(Number(task?.issueNumber)) && Number(task?.issueNumber) > 0
+        ? Number(task.issueNumber)
+        : null,
+    taskId: normalizeText(task?.id) || null
+  };
+}
+
+function withProvenanceMetadata(provenance, metadata = {}) {
+  return {
+    ...metadata,
+    provenanceChainId: provenance?.chainId || null,
+    provenanceIssueNumber: provenance?.issueNumber ?? null,
+    provenanceTaskId: provenance?.taskId || null
+  };
+}
+
 function evaluateOrchestratorTaskTransition(action, fromState, toState) {
   if (action === "ROUTE_HANDOFF_TASK") {
     if (fromState !== null) {
@@ -341,9 +349,13 @@ function evaluateOrchestratorTaskTransition(action, fromState, toState) {
       : { allowed: false, reason: "Completion transition requires RUNNING -> DONE." };
   }
   if (action === "CANCEL_TASK") {
-    return fromState === "RUNNING" && toState === "CANCELED"
-      ? { allowed: true, reason: "Orchestrator cancel transition allowed." }
-      : { allowed: false, reason: "Cancel transition requires RUNNING -> CANCELED." };
+    if (fromState === "RUNNING" && toState === "CANCELED") {
+      return { allowed: true, reason: "Orchestrator cancel transition allowed." };
+    }
+    if (fromState === "CANCELED" && toState === "CANCELED") {
+      return { allowed: true, reason: "Orchestrator cancel idempotent transition allowed." };
+    }
+    return { allowed: false, reason: "Cancel transition requires RUNNING -> CANCELED." };
   }
   if (action === "RETRY_TASK") {
     return fromState === "RUNNING" && toState === "QUEUED"
@@ -364,6 +376,14 @@ function evaluateOrchestratorTaskTransition(action, fromState, toState) {
       : {
           allowed: false,
           reason: "Stale-running recovery requires RUNNING -> QUEUED."
+        };
+  }
+  if (action === "BLOCK_TASK_ON_DRIFT") {
+    return fromState === "RUNNING" && toState === "MANUAL_REQUIRED"
+      ? { allowed: true, reason: "Board/runtime drift block transition allowed." }
+      : {
+          allowed: false,
+          reason: "Drift block transition requires RUNNING -> MANUAL_REQUIRED."
         };
   }
   return { allowed: false, reason: `Unsupported orchestrator task action: ${action}.` };
@@ -387,6 +407,7 @@ async function recordLifecycleAudit(entry, db = prisma) {
 
 async function verifyAndConsumeToolCallApproval(params) {
   const { task, envelope, policyEvaluation, payload } = params;
+  const provenance = readTaskProvenance(payload, task);
   if (!policyEvaluation.requiresApproval) {
     return null;
   }
@@ -408,7 +429,8 @@ async function verifyAndConsumeToolCallApproval(params) {
       reason,
       metadata: {
         code: "TOKEN_MISSING",
-        actionFingerprint
+        actionFingerprint,
+        ...withProvenanceMetadata(provenance)
       }
     });
     throw new WorkerTaskError("TOOL_CALL_APPROVAL_REQUIRED", reason, false);
@@ -431,7 +453,8 @@ async function verifyAndConsumeToolCallApproval(params) {
       metadata: {
         code: verification.code,
         tokenId: verification.tokenId,
-        actionFingerprint
+        actionFingerprint,
+        ...withProvenanceMetadata(provenance)
       }
     });
     if (verification.tokenId) {
@@ -447,7 +470,8 @@ async function verifyAndConsumeToolCallApproval(params) {
         metadata: {
           code: verification.code,
           taskId: task.id,
-          actionFingerprint
+          actionFingerprint,
+          ...withProvenanceMetadata(provenance)
         }
       });
     }
@@ -477,7 +501,8 @@ async function verifyAndConsumeToolCallApproval(params) {
       metadata: {
         code: "TOKEN_REPLAY",
         tokenId: verification.payload.tokenId,
-        actionFingerprint
+        actionFingerprint,
+        ...withProvenanceMetadata(provenance)
       }
     });
     await recordLifecycleAudit({
@@ -492,7 +517,8 @@ async function verifyAndConsumeToolCallApproval(params) {
       metadata: {
         code: "TOKEN_REPLAY",
         taskId: task.id,
-        actionFingerprint
+        actionFingerprint,
+        ...withProvenanceMetadata(provenance)
       }
     });
     throw new WorkerTaskError("TOOL_CALL_APPROVAL_REPLAY", reason, false);
@@ -512,7 +538,9 @@ async function verifyAndConsumeToolCallApproval(params) {
       actionFingerprint,
       approverUserId: verification.payload.approverUserId,
       approverEmail: verification.payload.approverEmail,
-      expiresAt: verification.payload.expiresAt
+      issuedAt: verification.payload.issuedAt || null,
+      expiresAt: verification.payload.expiresAt,
+      ...withProvenanceMetadata(provenance)
     }
   });
 
@@ -530,9 +558,31 @@ async function verifyAndConsumeToolCallApproval(params) {
       approverUserId: verification.payload.approverUserId,
       approverEmail: verification.payload.approverEmail,
       actionFingerprint,
-      expiresAt: verification.payload.expiresAt
+      issuedAt: verification.payload.issuedAt || null,
+      expiresAt: verification.payload.expiresAt,
+      ...withProvenanceMetadata(provenance)
     }
   });
+
+  if (provenance.chainId) {
+    await recordLifecycleAudit({
+      entityType: "TASK_PROVENANCE",
+      entityId: provenance.chainId,
+      actorRole: "ORCHESTRATOR",
+      action: "BIND_APPROVER_TO_CHAIN",
+      fromState: task.status,
+      toState: task.status,
+      allowed: true,
+      reason: "Approver identity bound to provenance chain.",
+      metadata: withProvenanceMetadata(provenance, {
+        tokenId: verification.payload.tokenId,
+        approverUserId: verification.payload.approverUserId,
+        approverEmail: verification.payload.approverEmail,
+        issuedAt: verification.payload.issuedAt || null,
+        actionFingerprint
+      })
+    });
+  }
 
   return verification.payload;
 }
@@ -1124,13 +1174,53 @@ async function taskIntakeDecision(agentKey, db = prisma) {
 
 async function postMessage(threadId, authorType, authorKey, content, meta, db = prisma) {
   if (!threadId) return;
+  const dlpGuard = redactSensitiveOutput(content, "chat_message");
+  const safeMetaBase = asRecord(meta) ? { ...meta } : {};
+  if (dlpGuard.redacted) {
+    safeMetaBase.dlp = {
+      mode: dlpGuard.dlp.mode,
+      action: dlpGuard.dlp.action,
+      matchCount: dlpGuard.dlp.matchCount,
+      ruleIds: dlpGuard.dlp.ruleIds,
+      blocked: dlpGuard.blocked
+    };
+    const taskId = normalizeText(safeMetaBase.taskId) || null;
+    if (taskId) {
+      await recordLifecycleAudit(
+        {
+          entityType: "TASK",
+          entityId: taskId,
+          actorRole: "ORCHESTRATOR",
+          action: "DLP_OUTPUT_FILTER",
+          fromState: null,
+          toState: null,
+          allowed: true,
+          reason:
+            dlpGuard.dlp.action === "BLOCK"
+              ? "DLP guard blocked sensitive content before chat persistence."
+              : "DLP guard redacted sensitive content before chat persistence.",
+          metadata: {
+            channel: "chat_message",
+            mode: dlpGuard.dlp.mode,
+            action: dlpGuard.dlp.action,
+            matchCount: dlpGuard.dlp.matchCount,
+            ruleIds: dlpGuard.dlp.ruleIds,
+            messageKind: normalizeText(safeMetaBase.kind) || null,
+            callId: normalizeText(safeMetaBase.callId) || null,
+            artifactId: normalizeText(safeMetaBase.artifactId) || null
+          }
+        },
+        db
+      );
+    }
+  }
   return db.chatMessage.create({
     data: {
       threadId,
       authorType,
       authorKey: authorKey || null,
-      content,
-      meta: meta || undefined
+      content: dlpGuard.text,
+      meta: Object.keys(safeMetaBase).length ? safeMetaBase : undefined
     }
   });
 }
@@ -1437,6 +1527,235 @@ async function ghGraphQL(query, variables) {
   return json.data;
 }
 
+async function readIssueBoardStatus(issueNumber) {
+  const issueNum = Number(issueNumber);
+  if (!Number.isInteger(issueNum) || issueNum <= 0) {
+    return { ok: false, code: "ISSUE_NUMBER_INVALID", statusName: null, reason: "Task has no linked issue." };
+  }
+  if (!GITHUB_TOKEN) {
+    return {
+      ok: false,
+      code: "TOKEN_MISSING",
+      statusName: null,
+      reason: "WARROOM_GITHUB_TOKEN is required for board/runtime drift checks."
+    };
+  }
+
+  const cacheKey = String(issueNum);
+  const now = Date.now();
+  const cached = cachedIssueBoardStatus.get(cacheKey);
+  if (cached && now - cached.at <= DRIFT_STATUS_CACHE_TTL_MS) {
+    return cached.value;
+  }
+
+  try {
+    const meta = await getProjectMeta();
+    const data = await ghGraphQL(
+      `query($owner:String!, $repo:String!, $num:Int!) {
+        repository(owner:$owner, name:$repo) {
+          issue(number:$num) {
+            projectItems(first:20, includeArchived:false) {
+              nodes {
+                id
+                project { id title }
+                fieldValueByName(name:"Status") {
+                  __typename
+                  ... on ProjectV2ItemFieldSingleSelectValue { name }
+                }
+              }
+            }
+          }
+        }
+      }`,
+      { owner: GITHUB_REPO_OWNER, repo: GITHUB_REPO_NAME, num: issueNum }
+    );
+
+    const items = data?.repository?.issue?.projectItems?.nodes || [];
+    const currentProjectItem = items.find((node) => normalizeText(node?.project?.id) === normalizeText(meta?.id));
+    if (!currentProjectItem) {
+      const value = {
+        ok: false,
+        code: "PROJECT_ITEM_MISSING",
+        statusName: null,
+        reason: `Issue #${issueNum} is not linked to WarRoom project ${meta?.title || "(unknown project)"}`
+      };
+      cachedIssueBoardStatus.set(cacheKey, { at: now, value });
+      return value;
+    }
+
+    const statusName =
+      normalizeText(currentProjectItem?.fieldValueByName?.name) || null;
+    if (!statusName) {
+      const value = {
+        ok: false,
+        code: "STATUS_MISSING",
+        statusName: null,
+        reason: `Issue #${issueNum} has no board Status value.`
+      };
+      cachedIssueBoardStatus.set(cacheKey, { at: now, value });
+      return value;
+    }
+
+    const value = {
+      ok: true,
+      code: "OK",
+      statusName,
+      reason: `Issue #${issueNum} board Status is ${statusName}.`
+    };
+    cachedIssueBoardStatus.set(cacheKey, { at: now, value });
+    return value;
+  } catch (error) {
+    const value = {
+      ok: false,
+      code: "BOARD_READ_FAILED",
+      statusName: null,
+      reason: `Board status read failed for issue #${issueNum}: ${shortError(error)}`
+    };
+    cachedIssueBoardStatus.set(cacheKey, { at: now, value });
+    return value;
+  }
+}
+
+function toTitleCaseStatus(value) {
+  return normalizeText(value)
+    .split(" ")
+    .filter(Boolean)
+    .map((part) => part.slice(0, 1).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function evaluateBoardRuntimeDrift(taskStatus, boardStatusName) {
+  const normalizedTask = normalizeText(taskStatus).toUpperCase();
+  const normalizedBoard = normalizeLower(boardStatusName);
+  const expectedBoardStatuses = Array.from(ALLOWED_RUNNING_BOARD_STATUSES).map(toTitleCaseStatus);
+
+  if (normalizedTask === "RUNNING") {
+    if (!normalizedBoard) {
+      return { drifted: true, expectedBoardStatuses };
+    }
+    return {
+      drifted: !ALLOWED_RUNNING_BOARD_STATUSES.has(normalizedBoard),
+      expectedBoardStatuses
+    };
+  }
+  return { drifted: false, expectedBoardStatuses: [] };
+}
+
+async function enforceBoardRuntimeDriftGuard(task) {
+  const issueNumber = Number(task?.issueNumber);
+  if (!Number.isInteger(issueNumber) || issueNumber <= 0) {
+    return { allowed: true, reason: "Task has no linked issue number." };
+  }
+
+  const boardStatus = await readIssueBoardStatus(issueNumber);
+  const drift = evaluateBoardRuntimeDrift(task.status, boardStatus.statusName);
+  if (boardStatus.ok && !drift.drifted) {
+    return { allowed: true, reason: boardStatus.reason };
+  }
+
+  const expectedStatuses = drift.expectedBoardStatuses.length
+    ? drift.expectedBoardStatuses
+    : ["In Progress", "Ready"];
+  const reason = boardStatus.ok
+    ? `Board/runtime drift detected: issue #${issueNumber} Status="${boardStatus.statusName}" is incompatible with task state ${task.status}.`
+    : `Board/runtime drift check failed for issue #${issueNumber}: ${boardStatus.reason}`;
+  const remediation =
+    'Set issue Status to "In Progress" (or "Ready"), verify board/runtime alignment, then resume or rerun task manually.';
+
+  await withLeaseAuthority(`drift-block-task:${task.id}`, async (tx) => {
+    const current = await tx.agentTask.findUnique({
+      where: { id: task.id },
+      select: { status: true }
+    });
+    if (!current || current.status !== "RUNNING") {
+      return;
+    }
+
+    const decision = evaluateOrchestratorTaskTransition(
+      "BLOCK_TASK_ON_DRIFT",
+      current.status,
+      "MANUAL_REQUIRED"
+    );
+    if (!decision.allowed) {
+      await recordLifecycleAudit(
+        {
+          entityType: "TASK",
+          entityId: task.id,
+          actorRole: "ORCHESTRATOR",
+          action: "BLOCK_TASK_ON_DRIFT",
+          fromState: current.status,
+          toState: "MANUAL_REQUIRED",
+          allowed: false,
+          reason: decision.reason,
+          metadata: {
+            issueNumber,
+            boardStatus: boardStatus.statusName,
+            expectedBoardStatuses: expectedStatuses
+          }
+        },
+        tx
+      );
+      throw new WorkerTaskError("TRANSITION_DENIED", decision.reason, false);
+    }
+
+    await postMessage(
+      task.threadId,
+      "SYSTEM",
+      null,
+      `Task blocked by board/runtime drift guard for @${task.agentKey}: ${reason} Remediation: ${remediation}`,
+      {
+        kind: "worker_drift_blocked",
+        taskId: task.id,
+        issueNumber,
+        boardStatus: boardStatus.statusName,
+        expectedBoardStatuses: expectedStatuses,
+        driftCode: boardStatus.code
+      },
+      tx
+    );
+    await tx.agentTask.update({
+      where: { id: task.id },
+      data: {
+        status: "MANUAL_REQUIRED",
+        finishedAt: new Date(),
+        error: `[BOARD_RUNTIME_DRIFT] ${reason}`,
+        nextAttemptAt: new Date()
+      }
+    });
+    await recordLifecycleAudit(
+      {
+        entityType: "TASK",
+        entityId: task.id,
+        actorRole: "ORCHESTRATOR",
+        action: "BLOCK_TASK_ON_DRIFT",
+        fromState: current.status,
+        toState: "MANUAL_REQUIRED",
+        allowed: true,
+        reason,
+        metadata: {
+          issueNumber,
+          boardStatus: boardStatus.statusName,
+          expectedBoardStatuses: expectedStatuses,
+          driftCode: boardStatus.code,
+          remediation
+        }
+      },
+      tx
+    );
+  });
+
+  const { maxAttempts, attemptCount } = normalizeTaskLimits(task);
+  await publishRuntimeIssueEvidence({
+    task,
+    outcome: "MANUAL_REQUIRED",
+    failureMessage: reason,
+    attemptCount,
+    maxAttempts
+  });
+
+  return { allowed: false, reason };
+}
+
 function computeIssueEvidenceBackoffMs(attempt) {
   const step = Math.max(attempt - 1, 0);
   const raw = Math.min(ISSUE_EVIDENCE_RETRY_BASE_MS * 2 ** step, ISSUE_EVIDENCE_RETRY_MAX_MS);
@@ -1479,8 +1798,11 @@ function buildIssueEvidenceCommentBody(params) {
   const evidenceKey = `${task.id}:${outcome}`;
   const summarySource =
     params.resultAnswer || params.failureMessage || task.error || task.title || "no summary";
-  const summary = trimText(redactSensitiveOutput(summarySource).text, 320);
+  const summary = trimText(redactSensitiveOutput(summarySource, "issue_evidence").text, 320);
   const artifactSummary = summarizeIssueEvidenceArtifacts(params.resultMeta);
+  const provenanceChainId = normalizeText(params?.resultMeta?.provenanceChainId) || null;
+  const approvalTokenId = normalizeText(params?.resultMeta?.approvalTokenId) || null;
+  const approverUserId = normalizeText(params?.resultMeta?.approverUserId) || null;
   const attempt =
     params.attemptCount == null || Number.isNaN(Number(params.attemptCount))
       ? "n/a"
@@ -1497,6 +1819,7 @@ function buildIssueEvidenceCommentBody(params) {
     `- agent: \`@${task.agentKey}\``,
     `- attempt: \`${attempt}/${maxAttempts}\``,
     `- artifacts: ${artifactSummary.summary}`,
+    `- provenance: chain=\`${provenanceChainId || "n/a"}\`, approvalToken=\`${approvalTokenId || "n/a"}\`, approverUser=\`${approverUserId || "n/a"}\``,
     `- summary: ${summary}`
   ].join("\n");
 }
@@ -1614,11 +1937,35 @@ async function publishRuntimeIssueEvidence(params) {
     attemptCount: params?.attemptCount,
     maxAttempts: params?.maxAttempts
   });
+  const safeCommentBodyResult = redactSensitiveOutput(commentBody, "issue_evidence_comment");
+  const safeCommentBody = safeCommentBodyResult.text;
+  if (safeCommentBodyResult.redacted) {
+    await recordLifecycleAudit({
+      entityType: "TASK_ISSUE_EVIDENCE",
+      entityId: evidenceKey,
+      actorRole: "ORCHESTRATOR",
+      action: "DLP_OUTPUT_FILTER",
+      fromState: task.status,
+      toState: task.status,
+      allowed: true,
+      reason:
+        safeCommentBodyResult.dlp.action === "BLOCK"
+          ? "DLP guard blocked sensitive content before issue evidence publication."
+          : "DLP guard redacted sensitive content before issue evidence publication.",
+      metadata: {
+        ...metadataBase,
+        mode: safeCommentBodyResult.dlp.mode,
+        action: safeCommentBodyResult.dlp.action,
+        matchCount: safeCommentBodyResult.dlp.matchCount,
+        ruleIds: safeCommentBodyResult.dlp.ruleIds
+      }
+    });
+  }
 
   let finalErrorReason = "Issue evidence posting failed.";
   for (let attempt = 1; attempt <= ISSUE_EVIDENCE_MAX_ATTEMPTS; attempt += 1) {
     try {
-      const posted = await postGitHubIssueComment(issueNumber, commentBody);
+      const posted = await postGitHubIssueComment(issueNumber, safeCommentBody);
       if (posted.ok) {
         await recordLifecycleAudit({
           entityType: "TASK_ISSUE_EVIDENCE",
@@ -1639,7 +1986,7 @@ async function publishRuntimeIssueEvidence(params) {
         return { posted: true, skipped: false, reason: null };
       }
 
-      const bodyText = trimText(redactSensitiveOutput(posted.responseText).text, 500);
+      const bodyText = trimText(redactSensitiveOutput(posted.responseText, "issue_evidence").text, 500);
       const transient = isTransientIssueEvidenceStatus(posted.status);
       finalErrorReason = `Issue evidence comment HTTP ${posted.status}${
         bodyText ? `: ${bodyText}` : ""
@@ -2054,9 +2401,17 @@ function readToolPromptFromCallArgs(call) {
   return "";
 }
 
-async function executeToolCallProtocol(task, config, envelope, policyEvaluation, dryRun) {
+async function executeToolCallProtocol(
+  task,
+  config,
+  envelope,
+  policyEvaluation,
+  dryRun,
+  provenanceContext = null
+) {
   const responses = [];
   const callMeta = [];
+  const provenance = provenanceContext || readTaskProvenance(task?.payload, task);
   const policyByCallId = new Map(
     (policyEvaluation.decisions || []).map((decision) => [decision.callId, decision])
   );
@@ -2085,6 +2440,33 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
       });
     }
     return gitContext;
+  }
+
+  async function recordDlpDecisionForCall(call, dlpResult, channel, extra = {}) {
+    if (!dlpResult?.redacted) return;
+    await recordLifecycleAudit({
+      entityType: "TASK",
+      entityId: task.id,
+      actorRole: "ORCHESTRATOR",
+      action: "DLP_OUTPUT_FILTER",
+      fromState: task.status,
+      toState: task.status,
+      allowed: true,
+      reason:
+        dlpResult.dlp.action === "BLOCK"
+          ? `DLP guard blocked sensitive ${channel} output.`
+          : `DLP guard redacted sensitive ${channel} output.`,
+      metadata: {
+        callId: call.id,
+        tool: call.tool,
+        channel,
+        mode: dlpResult.dlp.mode,
+        action: dlpResult.dlp.action,
+        matchCount: dlpResult.dlp.matchCount,
+        ruleIds: dlpResult.dlp.ruleIds,
+        ...extra
+      }
+    });
   }
 
   for (let index = 0; index < envelope.calls.length; index += 1) {
@@ -2195,13 +2577,34 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
           policyClass: policyDecision.policyClass,
           repoRoot: gitResult.audit?.repoRoot || null,
           branch: gitResult.audit?.branch || null,
+          commitSha: gitResult.audit?.commitSha || null,
           prNumber: gitResult.audit?.prNumber || null
         });
+        if (provenance?.chainId) {
+          await recordLifecycleAudit({
+            entityType: "TASK_PROVENANCE",
+            entityId: provenance.chainId,
+            actorRole: "ORCHESTRATOR",
+            action: "EMIT_GIT_ARTIFACT",
+            fromState: task.status,
+            toState: task.status,
+            allowed: true,
+            reason: `${callPrefix} emitted git-linked provenance artifact.`,
+            metadata: withProvenanceMetadata(provenance, {
+              callId: call.id,
+              tool: call.tool,
+              branch: gitResult.audit?.branch || null,
+              commitSha: gitResult.audit?.commitSha || null,
+              prNumber: gitResult.audit?.prNumber || null,
+              pushRemote: gitResult.audit?.pushRemote || null
+            })
+          });
+        }
         continue;
       } catch (error) {
         const reason =
           error instanceof ToolGitError
-            ? redactSensitiveOutput(error.message).text
+            ? redactSensitiveOutput(error.message, "git_error").text
             : `${callPrefix} failed with unexpected git runtime error.`;
         await recordLifecycleAudit({
           entityType: "TASK",
@@ -2260,6 +2663,9 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
         queue: Promise.resolve(),
         pendingBuffer: "",
         pendingRedacted: false,
+        pendingBlocked: false,
+        pendingDlpMatchCount: 0,
+        pendingDlpRuleIds: new Set(),
         pendingStreams: new Set(),
         streamSequence: 0
       };
@@ -2268,6 +2674,9 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
         chunkCount: 0,
         streamMessageCount: 0,
         redactedChunkCount: 0,
+        blockedChunkCount: 0,
+        dlpMatchCount: 0,
+        dlpRuleIds: new Set(),
         stdoutSnippet: "",
         stderrSnippet: "",
         stdoutSnippetTruncated: false,
@@ -2293,11 +2702,17 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
         const truncated = streamState.pendingBuffer.length > SHELL_STREAM_MESSAGE_MAX_CHARS;
         const body = truncated ? `${text}\n[TRUNCATED]` : text;
         const redacted = streamState.pendingRedacted;
+        const blocked = streamState.pendingBlocked;
+        const dlpMatchCount = streamState.pendingDlpMatchCount;
+        const dlpRuleIds = Array.from(streamState.pendingDlpRuleIds);
         const streams = Array.from(streamState.pendingStreams);
         const seq = streamState.streamSequence + 1;
         streamState.streamSequence = seq;
         streamState.pendingBuffer = "";
         streamState.pendingRedacted = false;
+        streamState.pendingBlocked = false;
+        streamState.pendingDlpMatchCount = 0;
+        streamState.pendingDlpRuleIds = new Set();
         streamState.pendingStreams = new Set();
         artifactState.streamMessageCount += 1;
 
@@ -2315,6 +2730,9 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
               sequence: seq,
               streams,
               redacted,
+              blocked,
+              dlpMatchCount,
+              dlpRuleIds,
               truncated
             }
           );
@@ -2333,6 +2751,9 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
               sequence: seq,
               streams,
               redacted,
+              blocked,
+              dlpMatchCount,
+              dlpRuleIds,
               truncated,
               chars: body.length
             }
@@ -2344,13 +2765,18 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
         const shellResult = await executeShellToolCall(call, shellContext, {
           onOutput: (event) => {
             const streamName = normalizeText(event?.stream).toLowerCase() || "stdout";
-            const safe = redactSensitiveOutput(event?.text || "");
+            const safe = redactSensitiveOutput(event?.text || "", "shell_stream");
             const boundedChunk = appendBoundedText("", safe.text, SHELL_STREAM_MESSAGE_MAX_CHARS);
             const chunkBody = boundedChunk.text || "";
             if (!chunkBody) return;
 
             artifactState.chunkCount += 1;
             if (safe.redacted) artifactState.redactedChunkCount += 1;
+            if (safe.blocked) artifactState.blockedChunkCount += 1;
+            artifactState.dlpMatchCount += safe.dlp.matchCount;
+            for (const ruleId of safe.dlp.ruleIds || []) {
+              artifactState.dlpRuleIds.add(ruleId);
+            }
             if (streamName === "stderr") {
               const next = appendBoundedText(
                 artifactState.stderrSnippet,
@@ -2374,6 +2800,11 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
             streamState.pendingBuffer += `[${streamName}] ${chunkBody}\n`;
             streamState.pendingRedacted =
               streamState.pendingRedacted || safe.redacted || Boolean(event?.truncated);
+            streamState.pendingBlocked = streamState.pendingBlocked || safe.blocked;
+            streamState.pendingDlpMatchCount += safe.dlp.matchCount;
+            for (const ruleId of safe.dlp.ruleIds || []) {
+              streamState.pendingDlpRuleIds.add(ruleId);
+            }
             streamState.pendingStreams.add(streamName);
             flushStreamBuffer(false);
           },
@@ -2388,7 +2819,11 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
         flushStreamBuffer(true);
         await streamState.queue;
         const shellAudit = sanitizeShellMetadata(shellResult.audit) || {};
-        const sanitizedAnswer = redactSensitiveOutput(shellResult.answer).text;
+        const sanitizedAnswerResult = redactSensitiveOutput(shellResult.answer, "shell_answer");
+        const sanitizedAnswer = sanitizedAnswerResult.text;
+        await recordDlpDecisionForCall(call, sanitizedAnswerResult, "shell_answer", {
+          artifactId
+        });
 
         await recordLifecycleAudit({
           entityType: "TASK",
@@ -2425,6 +2860,10 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
             chunkCount: artifactState.chunkCount,
             streamMessageCount: artifactState.streamMessageCount,
             redactedChunkCount: artifactState.redactedChunkCount,
+            blockedChunkCount: artifactState.blockedChunkCount,
+            dlpMatchCount: artifactState.dlpMatchCount,
+            dlpRuleIds: Array.from(artifactState.dlpRuleIds),
+            dlpMode: OUTPUT_DLP_MODE,
             stdoutSnippet: artifactState.stdoutSnippet || null,
             stderrSnippet: artifactState.stderrSnippet || null,
             stdoutSnippetTruncated: artifactState.stdoutSnippetTruncated,
@@ -2454,7 +2893,7 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
         const artifactSummary =
           `artifact=${artifactId} chunks=${artifactState.chunkCount} ` +
           `streamMessages=${artifactState.streamMessageCount} ` +
-          `redacted=${artifactState.redactedChunkCount} ` +
+          `redacted=${artifactState.redactedChunkCount} blocked=${artifactState.blockedChunkCount} ` +
           `exit=${shellAudit.exitCode ?? "unknown"}`;
         const responseText = `${sanitizedAnswer}\n${artifactSummary}`;
         responses.push(
@@ -2479,7 +2918,7 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
           error instanceof ToolShellError
             ? error.message
             : `${callPrefix} failed with unexpected shell runtime error.`;
-        const safeReason = redactSensitiveOutput(reason).text;
+        const safeReason = redactSensitiveOutput(reason, "shell_error").text;
         const errorDetails =
           error instanceof ToolShellError ? sanitizeShellMetadata(error.metadata) : null;
         await recordLifecycleAudit({
@@ -2499,6 +2938,10 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
             chunkCount: artifactState.chunkCount,
             streamMessageCount: artifactState.streamMessageCount,
             redactedChunkCount: artifactState.redactedChunkCount,
+            blockedChunkCount: artifactState.blockedChunkCount,
+            dlpMatchCount: artifactState.dlpMatchCount,
+            dlpRuleIds: Array.from(artifactState.dlpRuleIds),
+            dlpMode: OUTPUT_DLP_MODE,
             stdoutSnippet: artifactState.stdoutSnippet || null,
             stderrSnippet: artifactState.stderrSnippet || null,
             stdoutSnippetTruncated: artifactState.stdoutSnippetTruncated,
@@ -2567,6 +3010,11 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
       const workspaceContext = await ensureWorkspaceContext();
       try {
         const fsResult = await executeFilesystemToolCall(call, workspaceContext);
+        const safeFsAnswerResult = redactSensitiveOutput(fsResult.answer, "filesystem_output");
+        const safeFsAnswer = safeFsAnswerResult.text;
+        await recordDlpDecisionForCall(call, safeFsAnswerResult, "filesystem_output", {
+          workspaceRoot: workspaceContext.primaryWorkspaceRoot
+        });
         await recordLifecycleAudit({
           entityType: "TASK",
           entityId: task.id,
@@ -2604,12 +3052,16 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
             dryRun: false
           }
         });
-        responses.push(envelope.calls.length === 1 ? fsResult.answer : `[${call.id}] ${fsResult.answer}`);
+        responses.push(
+          envelope.calls.length === 1 ? safeFsAnswer : `[${call.id}] ${safeFsAnswer}`
+        );
         callMeta.push({
           id: call.id,
           tool: call.tool,
           policyClass: policyDecision.policyClass,
-          workspaceRoot: workspaceContext.primaryWorkspaceRoot
+          workspaceRoot: workspaceContext.primaryWorkspaceRoot,
+          dlpAction: safeFsAnswerResult.dlp.action,
+          dlpMatchCount: safeFsAnswerResult.dlp.matchCount
         });
         continue;
       } catch (error) {
@@ -2709,6 +3161,12 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
       task.agent.runtime === "LOCAL"
         ? await runLocalRuntime(task, config, prompt)
         : await runCloudRuntime(task, config, prompt);
+    const safeRuntimeAnswerResult = redactSensitiveOutput(
+      runtimeResult.answer,
+      "chat_respond_output"
+    );
+    const safeRuntimeAnswer = safeRuntimeAnswerResult.text;
+    await recordDlpDecisionForCall(call, safeRuntimeAnswerResult, "chat_respond_output");
 
     await recordLifecycleAudit({
       entityType: "TASK",
@@ -2729,11 +3187,17 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
       }
     });
 
-    responses.push(envelope.calls.length === 1 ? runtimeResult.answer : `[${call.id}] ${runtimeResult.answer}`);
+    responses.push(
+      envelope.calls.length === 1
+        ? safeRuntimeAnswer
+        : `[${call.id}] ${safeRuntimeAnswer}`
+    );
     callMeta.push({
       id: call.id,
       tool: call.tool,
-      provider: runtimeResult.meta?.provider || null
+      provider: runtimeResult.meta?.provider || null,
+      dlpAction: safeRuntimeAnswerResult.dlp.action,
+      dlpMatchCount: safeRuntimeAnswerResult.dlp.matchCount
     });
   }
 
@@ -2746,6 +3210,11 @@ async function executeToolCallProtocol(task, config, envelope, policyEvaluation,
       toolCallProtocolVersion: envelope.version,
       toolCallCount: envelope.calls.length,
       toolCalls: callMeta,
+      provenanceChainId: provenance?.chainId || null,
+      provenanceIssueNumber: provenance?.issueNumber ?? null,
+      approvalTokenId: provenance?.approvalTokenId || null,
+      approverUserId: provenance?.approverUserId || null,
+      approverEmail: provenance?.approverEmail || null,
       runtimeConfigDigest: config.runtimeConfigDigest || null
     }
   };
@@ -2783,6 +3252,23 @@ async function executeTask(task) {
   }
   const config = resolveAgentExecutionConfig(agent, runtimeResolution);
   const payloadRecord = asRecord(task?.payload);
+  const provenance = readTaskProvenance(payloadRecord, task);
+  if (provenance.chainId) {
+    await recordLifecycleAudit({
+      entityType: "TASK_PROVENANCE",
+      entityId: provenance.chainId,
+      actorRole: "ORCHESTRATOR",
+      action: "LOAD_PROVENANCE_CHAIN",
+      fromState: task.status,
+      toState: task.status,
+      allowed: true,
+      reason: "Loaded task provenance chain for execution.",
+      metadata: withProvenanceMetadata(provenance, {
+        taskId: task.id,
+        agentKey: task.agentKey
+      })
+    });
+  }
   const toolCallPolicyInput = readTaskToolCallPolicy(payloadRecord);
   const toolCallProtocolValidation = validateToolCallProtocolEnvelope(
     payloadRecord?.toolCallProtocol
@@ -2833,19 +3319,26 @@ async function executeTask(task) {
       );
     }
 
-    await verifyAndConsumeToolCallApproval({
+    const approvalPayload = await verifyAndConsumeToolCallApproval({
       task,
       envelope: toolCallProtocolValidation.envelope,
       policyEvaluation,
       payload: payloadRecord
     });
+    const executionProvenance = {
+      ...provenance,
+      approvalTokenId: approvalPayload?.tokenId || null,
+      approverUserId: approvalPayload?.approverUserId || null,
+      approverEmail: approvalPayload?.approverEmail || null
+    };
 
     return executeToolCallProtocol(
       task,
       config,
       toolCallProtocolValidation.envelope,
       policyEvaluation,
-      toolCallPolicyInput.dryRun
+      toolCallPolicyInput.dryRun,
+      executionProvenance
     );
   }
 
@@ -2866,6 +3359,8 @@ async function processTask(task) {
   const agentKey = task.agentKey;
   const title = task.title;
   const { maxAttempts, attemptCount } = normalizeTaskLimits(task);
+  const driftGuard = await enforceBoardRuntimeDriftGuard(task);
+  if (!driftGuard.allowed) return;
 
   await postMessage(
     task.threadId,
@@ -2877,6 +3372,7 @@ async function processTask(task) {
 
   try {
     const result = await executeTask(task);
+    const safeResultAnswer = redactSensitiveOutput(result.answer, "task_result").text;
 
     await withLeaseAuthority(`complete-task:${task.id}`, async (tx) => {
       const current = await tx.agentTask.findUnique({
@@ -2912,7 +3408,7 @@ async function processTask(task) {
         throw new WorkerTaskError("TRANSITION_DENIED", decision.reason, false);
       }
 
-      const doneMessage = await postMessage(task.threadId, "AGENT", agentKey, result.answer, {
+      const doneMessage = await postMessage(task.threadId, "AGENT", agentKey, safeResultAnswer, {
         kind: "worker_done",
         taskId: task.id,
         ...result.meta
@@ -2923,7 +3419,7 @@ async function processTask(task) {
         requestedByRole: task.agent?.controlRole || "BETA",
         sourceThreadId: task.threadId,
         sourceMessageId: doneMessage?.id || null,
-        sourceContent: result.answer,
+        sourceContent: safeResultAnswer,
         sourceTaskId: task.id,
         sourceTaskTitle: task.title,
         issueNumber: task.issueNumber,
@@ -2960,7 +3456,7 @@ async function processTask(task) {
       task,
       outcome: "DONE",
       resultMeta: result.meta,
-      resultAnswer: result.answer,
+      resultAnswer: safeResultAnswer,
       attemptCount: attemptCount + 1,
       maxAttempts
     });
@@ -2974,10 +3470,12 @@ async function processTask(task) {
     }
     const nextAttemptCount = attemptCount + 1;
     if (failure.code === "TASK_CANCELED") {
+      let alreadyCanceled = false;
+      let cancellationWasInterrupt = false;
       await withLeaseAuthority(`cancel-task:${task.id}`, async (tx) => {
         const current = await tx.agentTask.findUnique({
           where: { id: task.id },
-          select: { status: true }
+          select: { status: true, payload: true }
         });
         if (!current) {
           throw new WorkerTaskError(
@@ -2985,6 +3483,29 @@ async function processTask(task) {
             `Cancel denied: task ${task.id} not found.`,
             false
           );
+        }
+        const currentPayload = asRecord(current.payload);
+        const taskControl = asRecord(currentPayload?.taskControl);
+        const controlState = asRecord(taskControl?.state);
+        cancellationWasInterrupt =
+          String(controlState?.lastAction || "").toUpperCase() === "INTERRUPT";
+
+        if (current.status === "CANCELED") {
+          alreadyCanceled = true;
+          await recordLifecycleAudit(
+            {
+              entityType: "TASK",
+              entityId: task.id,
+              actorRole: "ORCHESTRATOR",
+              action: "CANCEL_TASK",
+              fromState: current.status,
+              toState: "CANCELED",
+              allowed: true,
+              reason: "Task was already canceled by operator control path."
+            },
+            tx
+          );
+          return;
         }
         const decision = evaluateOrchestratorTaskTransition(
           "CANCEL_TASK",
@@ -3012,11 +3533,14 @@ async function processTask(task) {
           task.threadId,
           "SYSTEM",
           null,
-          `Task canceled for @${agentKey}: ${failure.message} (code=${failure.code}).`,
+          cancellationWasInterrupt
+            ? `Task interrupted for @${agentKey}: ${failure.message} (code=${failure.code}). Resume is allowed.`
+            : `Task canceled for @${agentKey}: ${failure.message} (code=${failure.code}).`,
           {
-            kind: "worker_canceled",
+            kind: cancellationWasInterrupt ? "worker_interrupted" : "worker_canceled",
             taskId: task.id,
             error: failure.message,
+            resumeAllowed: cancellationWasInterrupt,
             ...failureMeta(failure, nextAttemptCount, maxAttempts)
           },
           tx
@@ -3051,8 +3575,10 @@ async function processTask(task) {
       await publishRuntimeIssueEvidence({
         task,
         outcome: "CANCELED",
-        failureMessage: failure.message,
-        attemptCount: nextAttemptCount,
+        failureMessage: cancellationWasInterrupt
+          ? `Interrupted: ${failure.message}`
+          : failure.message,
+        attemptCount: alreadyCanceled ? attemptCount : nextAttemptCount,
         maxAttempts
       });
       return;

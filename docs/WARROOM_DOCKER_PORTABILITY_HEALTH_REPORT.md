@@ -23,7 +23,7 @@ All dependency issues are completed on the board (`Done`) with linked evidence:
 | L0 | Not portable | Docker CLI/daemon/compose unavailable or compose parse fails | Block delivery |
 | L1 | Partially portable | Image builds but stack startup/health is not deterministic | Block delivery |
 | L2 | Locally portable | Bootstrap path succeeds with deterministic `db/app healthy` + `/signin` check | Candidate only; still needs regression gate |
-| L3 | Gate-protected portable | Automated portability gate exists and passes deterministic healthy/unhealthy assertions | Eligible for delivery (with app build pass) |
+| L3 | Gate-protected portable | Automated portability gate exists and passes deterministic healthy/unhealthy assertions, route checks, and known runtime-regression signature checks | Eligible for delivery (with app build pass) |
 | L4 | Continuously verified | Gate is active in CI on PR/push and remains green for current change set | Preferred release posture |
 
 Minimum healthy-enough threshold for WarRoom delivery:
@@ -40,6 +40,7 @@ Basis:
 - automated gate exists as:
   - script: `scripts/warroom-docker-portability-gate.sh`
   - CI workflow: `.github/workflows/warroom-docker-portability-gate.yml`
+- gate defaults are aligned with runtime defaults (`WARROOM_DB_PORT=3579`, `WARROOM_APP_PORT=3577`).
 - latest local gate run passed:
   - `WARROOM_DB_PORT=55432 WARROOM_APP_PORT=3107 NEXTAUTH_URL=http://localhost:3107 ./scripts/warroom-docker-portability-gate.sh`
 - latest app build gate passed:
@@ -50,7 +51,8 @@ Basis:
 Expected healthy signals:
 - `warroom-db` container health = `healthy`
 - `warroom-app` container health = `healthy`
-- app endpoint `GET /signin` is reachable on mapped host port
+- app endpoint `GET /signin` returns `200` on mapped host port
+- protected routes `GET /products` and `GET /agents` return redirect status (`302/303/307/308`) with `Location` containing `/signin`
 
 Expected unhealthy signal:
 - invalid endpoint probe returns non-success (for example `404`), confirming the gate is not silently permissive.
@@ -59,6 +61,10 @@ Expected unhealthy signal:
 
 Regression protection is active via:
 - `.github/workflows/warroom-docker-portability-gate.yml`
+
+Known regression signatures blocked by the gate:
+- `EACCES: permission denied, mkdir '/app/.warroom'`
+- `ps: bad -o argument 'command'`
 
 This workflow runs portability checks on relevant WarRoom/container changes and fails fast with remediation-oriented diagnostics if portability expectations regress.
 

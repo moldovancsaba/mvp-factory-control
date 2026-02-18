@@ -1,6 +1,6 @@
 # MVP Factory War Room - Status + Brain Dump
 
-Last updated: 2026-02-13
+Last updated: 2026-02-18
 Scope: `apps/warroom`
 
 ## 1) Executive status
@@ -20,13 +20,13 @@ Live baseline delivered:
 - failure taxonomy + safe fallback policy (`#97`)
 - agent identity reconciliation + Ready gate enforcement (`#98`, `#99`, `#102`)
 
-Current WarRoom board posture (as-of 2026-02-13):
-- IDEA BANK: 15 (`#118`-`#129`, `#141`-`#143`)
+Current WarRoom board posture (as-of 2026-02-18):
+- IDEA BANK: 11
 - Roadmap: 5
-- Backlog: 0
-- Ready: 4 (`#145`, `#146`, `#140`, `#139`)
+- Backlog: 4
+- Ready: 0
 - In Progress: 0
-- Done: 40
+- Done: 53
 
 Current delivery focus:
 - `#111` Docker portability preflight contract is delivered.
@@ -55,20 +55,99 @@ Current delivery focus:
   - `#138` delivered (`Done`) with launch rehearsal report and GO decision
   - locked order: `#133 -> (#134 + #137) -> #135 -> #138`
 - post-MVP hardening queue prepared in Ready:
-  - `#145` (`P0`) portability gate parity + route/runtime regression checks
-  - `#146` (`P0`) filesystem safety regression harness
-  - `#140` (`P0`) secrets/DLP guardrail
-  - `#139` (`P1`) cancel/interrupt/resume semantics
-  - locked order: `#145 -> #146 -> #140 -> #139`
+  - (none remaining)
+- OpenClaw-inspired WarRoom hardening intake is now tracked in Backlog:
+  - `#203` security policy + approval baseline hardening (Audit, P1)
+  - `#204` channel-aware provenance model for ingress identity (Feature, P1)
+  - `#205` secure memory index + retrieval controls (Feature, P1)
+  - `#206` omnichannel routing + human-gated NBA orchestration (Feature, P1)
+- `#139` is delivered (`Done`) with:
+  - operator task-session controls (`interrupt`, `cancel`, `resume`) on issue task cards
+  - lifecycle policy transitions for `CANCEL_TASK` / `INTERRUPT_TASK` / `RESUME_TASK`
+  - worker idempotent cancel handling and interrupt-aware runtime evidence
+- `#140` is delivered (`Done`) with:
+  - deterministic DLP mode support (`OFF|REDACT|DENY`) for runtime outputs
+  - output filtering before chat persistence / issue-evidence publication
+  - audit-visible `DLP_OUTPUT_FILTER` traces (mode/action/ruleIds/matchCount)
+  - DLP regression harness + CI gate wiring
+- `#146` is delivered (`Done`) with:
+  - deterministic filesystem safety harness (`apps/warroom/scripts/e2e/warroom-filesystem-safety.e2e.js`)
+  - CI gate wiring (`.github/workflows/warroom-filesystem-safety-gate.yml`)
+  - policy and guardrail assertions for traversal/symlink/binary/approval invariants from `#136`
+- `#145` is delivered (`Done`) with:
+  - portability gate parity defaults aligned to `3579/3577`
+  - route-level regression checks (`/signin`, `/products`, `/agents`)
+  - runtime regression-signature log checks (`EACCES /app/.warroom`, non-portable `ps` signature)
+  - docs/workflow contract alignment (`WARROOM_SETUP.md`, `WARROOM_DOCKER_PORTABILITY_HEALTH_REPORT.md`, portability gate workflow)
+- `#119` is delivered (`Done`) with:
+  - board/runtime drift sentinel before task execution (`BLOCK_TASK_ON_DRIFT` gate)
+  - safe downgrade path (`RUNNING -> MANUAL_REQUIRED`) with deterministic remediation guidance
+  - audit-visible drift diagnostics and runtime issue-evidence publication for blocked tasks
+  - dashboard diagnostics panel sourced from `LifecycleAuditEvent(action=BLOCK_TASK_ON_DRIFT)`
+- `#141` is delivered (`Done`) with:
+  - deterministic provenance chain registration at task enqueue (`TASK_PROVENANCE/REGISTER_PROVENANCE_CHAIN`)
+  - approver binding to chain during approval verification (`TASK_PROVENANCE/BIND_APPROVER_TO_CHAIN`)
+  - git artifact lineage emission (`TASK_PROVENANCE/EMIT_GIT_ARTIFACT`) with branch/commit/pr references
+  - dashboard `Execution provenance chain` surface with recent lineage events
+- `#142` is delivered (`Done`) with:
+  - dashboard `Tool-runtime SLOs (last 7 days)` section
+  - task latency p50/p95, terminal outcome/failure/dead-letter rates
+  - approval wait p50/p95 and DLP redacted/blocked summary
+  - threshold-based alert hints with remediation guidance
+- `#120` is delivered (`Done`) with:
+  - deterministic recovery readiness harness (backup integrity + isolated restore drill + rubric checks)
+  - redacted incident evidence bundle generator + schema (`incident-bundle.schema.json`)
+  - recurring CI recovery readiness gate workflow
+  - recovery readiness runbook and operator checklist
 - baseline e2e harness is now available and passing:
   - script: `apps/warroom/scripts/e2e/warroom-postmvp.e2e.js`
   - command: `cd apps/warroom && npm run e2e:warroom`
-  - latest run id: `warroom-e2e-2026-02-13T18:06:33.097Z` (PASS)
+  - latest run id: `warroom-e2e-2026-02-18T09:56:33.277Z` (PASS)
 - prompt package validator pass confirmed for launch cards `#130`-`#138`.
 - runtime umbrella `#75` is now closed (`Done`) with evidence linked to delivered child issues `#93` + `#94`.
-- additional foundation ideas in `IDEA BANK`: `#141`-`#143` plus `#118`-`#129`.
+- additional foundation ideas in `IDEA BANK`: `#118`, `#121`-`#129`, and `#143`.
 - new idea intake lane is active: all speculative and emerging WarRoom ideas now enter `IDEA BANK` first before roadmap/backlog triage.
-- active executable item: `#145` (`Ready`) in post-MVP hardening lane.
+- active executable item: (none; next promotion required from Backlog to Ready)
+
+Next triage priorities (promote 1 to `Ready` before implementation):
+- `#203` security policy + approval baseline hardening (P1; re-establishes security-default posture as first promotion target).
+- `#204` channel-aware provenance model for ingress identity (P1; extends existing provenance chain for multi-channel input paths).
+- `#205` secure memory index + retrieval controls (P1; introduces bounded retrieval + audit-visible policy checks).
+
+De-dupe update (completed):
+- duplicate cards `#148`/`#149`/`#150`/`#151`/`#152` are now closed and project-status set to `Done` with triage rationale comments linking canonical cards.
+
+Current active next-card preflight:
+- selected next card candidate: `#203` (pending prompt package validation + status promotion to `Ready`)
+- `#119` completion evidence captured:
+  - start comment: `https://github.com/moldovancsaba/mvp-factory-control/issues/119#issuecomment-3919375249`
+  - acceptance comment: `https://github.com/moldovancsaba/mvp-factory-control/issues/119#issuecomment-3919394770`
+  - board status moved to `Done`, issue closed
+- `#141` completion evidence captured:
+  - start comment: `https://github.com/moldovancsaba/mvp-factory-control/issues/141#issuecomment-3919414439`
+  - acceptance comment: `https://github.com/moldovancsaba/mvp-factory-control/issues/141#issuecomment-3919431384`
+  - board status moved to `Done`, issue closed
+- `#142` completion evidence captured:
+  - start comment: `https://github.com/moldovancsaba/mvp-factory-control/issues/142#issuecomment-3919448951`
+  - acceptance comment: `https://github.com/moldovancsaba/mvp-factory-control/issues/142#issuecomment-3919460509`
+  - board status moved to `Done`, issue closed
+- `#120` completion evidence captured:
+  - start comment: `https://github.com/moldovancsaba/mvp-factory-control/issues/120#issuecomment-3919556648`
+  - acceptance comment: `https://github.com/moldovancsaba/mvp-factory-control/issues/120#issuecomment-3919575598`
+  - board status moved to `Done`, issue closed
+- `#139` completion evidence captured:
+  - acceptance comment: `https://github.com/moldovancsaba/mvp-factory-control/issues/139#issuecomment-3899470139`
+  - board status moved to `Done`
+- `#140` completion evidence captured:
+  - acceptance comment: `https://github.com/moldovancsaba/mvp-factory-control/issues/140#issuecomment-3899436749`
+  - board status moved to `Done`
+- `#146` completion evidence captured:
+  - acceptance comment: `https://github.com/moldovancsaba/mvp-factory-control/issues/146#issuecomment-3899407504`
+  - board status moved to `Done`
+- `#145` completion evidence captured:
+  - acceptance comment: `https://github.com/moldovancsaba/mvp-factory-control/issues/145#issuecomment-3899368674`
+  - board status moved to `Done`
+  - revalidation evidence refresh: `https://github.com/moldovancsaba/mvp-factory-control/issues/145#issuecomment-3919822309`
 - `#132` acceptance summary:
   - command policy classes/risk tiers and deny-by-default matching delivered
   - approval-token expiry/fingerprint/replay enforcement delivered
@@ -96,7 +175,8 @@ Execution rules:
 ## 3) Known gaps (intentional backlog)
 
 Backlog gaps still open:
-- post-MVP hardening lane (`#145`, `#146`, `#140`, `#139`)
+- post-MVP hardening lane (none; fully delivered)
+- OpenClaw-inspired WarRoom hardening intake (`#203`-`#206`) pending promotion/execution.
 - Docker portability dependency chain:
   - preflight contract (`#111`) done
   - app containerization (`#112`) done
@@ -138,6 +218,7 @@ npm run build
 - `docs/WARROOM_MVP_SPINE_AND_BACKLOG.md`: invariants, lane contract, initiative map.
 - `docs/WARROOM_DOCKER_PORTABILITY_HEALTH_REPORT.md`: Docker portability rubric and current healthy-level assessment.
 - `docs/WARROOM_E2E_TESTS.md`: e2e harness command pack and latest run evidence.
+- `docs/WARROOM_RECOVERY_READINESS_RUNBOOK.md`: recovery drill workflow, incident bundle schema contract, and readiness rubric.
 - `docs/WARROOM_HANDOVER.md`: operational continuation pack.
 - this file: concise status digest and command pack only.
 

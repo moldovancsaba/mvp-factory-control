@@ -36,11 +36,11 @@ jobs:
       - name: Provision CI env file
         run: |
           cat > apps/warroom/.env <<'EOF'
-          NEXTAUTH_URL=http://localhost:3007
+          NEXTAUTH_URL=http://localhost:3577
           NEXTAUTH_SECRET=ci-nextauth-secret
           GITHUB_CLIENT_ID=ci-github-client-id
           GITHUB_CLIENT_SECRET=ci-github-client-secret
-          DATABASE_URL=postgresql://warroom:warroom@localhost:5432/warroom?schema=public
+          DATABASE_URL=postgresql://warroom:warroom@localhost:3579/warroom?schema=public
           WARROOM_GITHUB_TOKEN=ci-placeholder-token
           WARROOM_GITHUB_PROJECT_OWNER=moldovancsaba
           WARROOM_GITHUB_PROJECT_NUMBER=1

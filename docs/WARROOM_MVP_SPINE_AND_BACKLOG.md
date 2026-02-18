@@ -1,6 +1,6 @@
 # WarRoom - MVP Spine and Backlog Contract
 
-Last updated: 2026-02-13
+Last updated: 2026-02-18
 Owner: Sultan (Product Owner) + War Room agent team
 Scope: `apps/warroom`
 
@@ -86,26 +86,27 @@ gh issue list --state all --limit 400 --json number,title,projectItems \
   | jq -r '.[] | {n:.number,t:.title,s:(.projectItems[]?.status.name // "(none)")} | select(.t|contains("WarRoom")) | "#\(.n)\t\(.s)\t\(.t)"'
 ```
 
-## 5) Snapshot (as-of 2026-02-13)
+## 5) Snapshot (as-of 2026-02-18)
 
 WarRoom status counts:
-- IDEA BANK: 15
+- IDEA BANK: 11
 - Roadmap: 5
-- Backlog: 0
-- Ready: 4
+- Backlog: 4
+- Ready: 0
 - In Progress: 0
-- Done: 40
+- Done: 53
 
 Current Ready cards:
-- `#145` [Bug] portability gate parity + route/runtime regression checks (`P0`)
-- `#146` [Feature] filesystem safety regression harness (`P0`)
-- `#140` [Feature] secrets/DLP guardrail (`P0`)
-- `#139` [Feature] task cancel/interrupt/resume semantics (`P1`)
+- (none)
+
+Current Backlog cards:
+- `#203` WarRoom: Security policy + approval baseline hardening (OpenClaw-inspired)
+- `#204` WarRoom: Channel-aware provenance model for ingress identity
+- `#205` WarRoom: Secure memory index + retrieval controls
+- `#206` WarRoom: Omnichannel routing + human-gated NBA orchestration
 
 Current IdeaBank cards:
 - `#118` WarRoom: Policy simulation and replay harness for governance changes
-- `#119` WarRoom: Board-runtime drift sentinel and safe block policy
-- `#120` WarRoom: Recovery readiness drills and incident evidence bundle
 - `#121` WarRoom: Continuous tech-intelligence ingestion agent (AI source scanning)
 - `#122` WarRoom: Fit-analysis agent for discovered technologies (scoring + prioritization)
 - `#123` WarRoom: Policy-gated auto-onboarding pipeline for approved new agents
@@ -115,9 +116,8 @@ Current IdeaBank cards:
 - `#127` WarRoom: Canary rollout framework for newly onboarded agents
 - `#128` WarRoom: Benchmark dataset governance for reproducible A/B/C/D evaluation
 - `#129` WarRoom: Cost-aware routing policy (quality/latency/spend tradeoff)
-- `#141` WarRoom: Execution identity and provenance chain (approver -> runtime -> git author)
-- `#142` WarRoom: Tool-runtime SLO dashboard (latency/failures/approval wait/dead-letter)
 - `#143` WarRoom: Ephemeral workspace provisioning and cleanup policy
+- De-dupe update: duplicate cards `#148`/`#149`/`#150`/`#151`/`#152` are closed and tracked as `Done`; canonical active set remains `#118`, `#121`-`#129`, and `#143`.
 
 ## 6) Strategic initiative map
 
@@ -161,11 +161,21 @@ Initiative D: Dev-operator cockpit launch enablement (current)
 - execution order lock completed: `#133 -> (#134 + #137) -> #135 -> #138`
 
 Initiative E: Post-MVP hardening lane (current)
-- `#145` portability gate parity + route/runtime regression checks (`Ready`, P0)
-- `#146` filesystem safety regression harness (`Ready`, P0)
-- `#140` secrets/DLP output guardrail (`Ready`, P0)
-- `#139` cancel/interrupt/resume semantics (`Ready`, P1)
-- execution order lock: `#145 -> #146 -> #140 -> #139`
+- `#145` portability gate parity + route/runtime regression checks (`Done`, P0)
+- `#146` filesystem safety regression harness (`Done`, P0)
+- `#140` secrets/DLP output guardrail (`Done`, P0)
+- `#139` cancel/interrupt/resume semantics (`Done`, P1)
+- `#119` board-runtime drift sentinel + safe block policy (`Done`, P0)
+- `#141` execution identity and provenance chain (`Done`, P0)
+- `#142` tool-runtime SLO dashboard (`Done`, P1)
+- `#120` recovery readiness drills + incident evidence bundle (`Done`, P1)
+- execution order lock completed: `#145 -> #146 -> #140 -> #139`
+
+Initiative F: OpenClaw-inspired WarRoom hardening intake (new backlog)
+- `#203` security policy + approval baseline hardening (`Backlog`, P1, Audit)
+- `#204` channel-aware provenance model for ingress identity (`Backlog`, P1)
+- `#205` secure memory index + retrieval controls (`Backlog`, P1)
+- `#206` omnichannel routing + human-gated NBA orchestration (`Backlog`, P1)
 
 ## 7) Re-entry and drop rules
 

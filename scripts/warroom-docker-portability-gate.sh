@@ -11,8 +11,8 @@ COMPOSE_FILE="$REPO_ROOT/docker-compose.yml"
 PREFLIGHT_SCRIPT="$SCRIPT_DIR/warroom-docker-preflight.sh"
 BOOTSTRAP_SCRIPT="$SCRIPT_DIR/warroom-docker-bootstrap.sh"
 
-DB_PORT="${WARROOM_DB_PORT:-5432}"
-APP_PORT="${WARROOM_APP_PORT:-3007}"
+DB_PORT="${WARROOM_DB_PORT:-3579}"
+APP_PORT="${WARROOM_APP_PORT:-3577}"
 NEXTAUTH_URL_VALUE="${NEXTAUTH_URL:-http://localhost:${APP_PORT}}"
 
 dc() {
@@ -51,14 +51,75 @@ assert_health() {
   fi
 }
 
+assert_route_status() {
+  local path="$1"
+  local expected_codes_csv="$2"
+  local expected_location_contains="${3:-}"
+  local url="http://127.0.0.1:${APP_PORT}${path}"
+  local headers
+  local status
+  local location
+  local ok=0
+
+  headers="$(mktemp)"
+  if ! status="$(curl -sS -o /dev/null -D "$headers" -w "%{http_code}" "$url")"; then
+    rm -f "$headers"
+    fail "Route check failed for ${path}. Remediation: inspect app logs and verify Next.js runtime startup."
+  fi
+
+  IFS=',' read -r -a expected_codes <<< "$expected_codes_csv"
+  for code in "${expected_codes[@]}"; do
+    if [ "$status" = "$code" ]; then
+      ok=1
+      break
+    fi
+  done
+
+  if [ "$ok" -ne 1 ]; then
+    rm -f "$headers"
+    fail "Route ${path} returned HTTP ${status}; expected one of [${expected_codes_csv}]. Remediation: inspect docker logs --tail 200 warroom-app and verify route guards."
+  fi
+
+  if [ -n "$expected_location_contains" ]; then
+    location="$(
+      awk 'BEGIN{IGNORECASE=1} /^location:/ {sub(/^location:[[:space:]]*/,"",$0); sub(/\r$/,"",$0); print; exit}' "$headers"
+    )"
+    if ! printf "%s\n" "$location" | grep -F -q "$expected_location_contains"; then
+      rm -f "$headers"
+      fail "Route ${path} location header '${location:-<missing>}' does not contain '${expected_location_contains}'. Remediation: verify auth/session redirect policy."
+    fi
+  fi
+
+  rm -f "$headers"
+  pass "Route ${path} status=${status}${expected_location_contains:+, location contains '${expected_location_contains}'}"
+}
+
+assert_no_regression_signatures() {
+  local logs
+
+  if ! logs="$(docker logs --tail 200 warroom-app 2>&1)"; then
+    fail "Unable to read warroom-app logs for regression signature checks. Remediation: inspect container status/logging and rerun the gate."
+  fi
+
+  if printf "%s\n" "$logs" | grep -F -q "EACCES: permission denied, mkdir '/app/.warroom'"; then
+    fail "Detected known regression signature: EACCES /app/.warroom write failure. Remediation: verify /app/.warroom ownership/permissions in Docker image."
+  fi
+
+  if printf "%s\n" "$logs" | grep -E -q "ps: bad -o argument 'command'|bad -o argument 'command'"; then
+    fail "Detected known regression signature: non-portable ps flag usage. Remediation: use portable process listing (ps -eo pid=,args=)."
+  fi
+
+  pass "No known runtime portability regression signatures detected in warroom-app logs."
+}
+
 dump_diagnostics() {
   echo
   echo "---- portability gate diagnostics ----"
   dc ps || true
   echo
-  docker logs --tail 80 warroom-db 2>/dev/null || true
+  docker logs --tail 200 warroom-db 2>/dev/null || true
   echo
-  docker logs --tail 80 warroom-app 2>/dev/null || true
+  docker logs --tail 200 warroom-app 2>/dev/null || true
   echo "--------------------------------------"
 }
 
@@ -103,6 +164,16 @@ echo
 echo "[STEP] Assert expected healthy conditions"
 assert_health "warroom-db" "healthy"
 assert_health "warroom-app" "healthy"
+echo
+
+echo "[STEP] Assert route-level runtime behavior"
+assert_route_status "/signin" "200"
+assert_route_status "/products" "302,303,307,308" "/signin"
+assert_route_status "/agents" "302,303,307,308" "/signin"
+echo
+
+echo "[STEP] Assert known runtime regression signatures are absent"
+assert_no_regression_signatures
 echo
 
 echo "[STEP] Assert expected unhealthy condition probe"

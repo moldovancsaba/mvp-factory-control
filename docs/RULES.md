@@ -7,7 +7,7 @@ All agents and humans working with the [MVP Factory Board](https://github.com/us
 ## 0. AI Developer Conduct (Mandatory)
 
 - Product Owner direction is authoritative for scope, priority, and acceptance.
-- Execute autonomously, but do not assume missing facts. If uncertain, ask.
+- Execute autonomously, but **do not assume missing facts. When you need clarification, or you are not 100% sure — ASK.** Do not guess or implement ahead of the process.
 - Documentation is part of delivery:
   - if code/logic changes, update related docs in the same work window.
   - if it is not documented and reflected on the board, it is not done.
@@ -35,14 +35,22 @@ All agents and humans working with the [MVP Factory Board](https://github.com/us
 
 ---
 
-## 3. Approve by moving to Ready; work starts only after Ready
+## 3. Mandatory workflow: Idea → Roadmap → Backlog → Ready
+
+**Everyone (agents and humans) must follow this flow. No skipping steps.**
+
+| Step | Status | When to use |
+|------|--------|-------------|
+| **1. Any idea** | **IDEA BANK** | Anybody has an idea — it goes to Idea Bank first. No implementation, no breakdown yet. |
+| **2. Work we want to do** | **Roadmap** | When we want to work on it: move to Roadmap. Use Roadmap to set priorities and find dependencies. |
+| **3. Break down to smaller issues** | **Backlog** | When we break it down into smaller issues, those go to Backlog. |
+| **4. Smaller tasks ready to execute** | **Ready** | Tasks that are small enough to deliver go to Ready — with priorities, dependencies, and delivery order clear. Only then does work start. |
 
 - **Product / you approve** by moving the card to **Ready** on the board.
-- **Work starts only when the card is in Ready.** Do not start implementation until the card is in Ready.
-- Status flow: `IDEA BANK` (raw ideas, pre-triage) → `Roadmap` (vision) | `Backlog` (not yet broken down) → `Ready` (start work) → `In Progress` → `Review` → `Done` (and optionally `Blocked`).
+- **Work starts only when the card is in Ready.** Do not start implementation until the card is in Ready. Do not implement from an idea or from a Roadmap/Backlog card that has not been broken down and moved to Ready.
 - **Ready gate is strict:** cards can move to `Ready` only if issue body has a complete Executable Prompt Package (v1): [docs/EXECUTABLE_PROMPT_PACKAGE.md](EXECUTABLE_PROMPT_PACKAGE.md).
 - If a card is found in `Ready` without a valid prompt package, demote it from `Ready` immediately in the same session and post validator evidence on the issue.
-- Idea intake rule: every new idea (including speculative/crazy ideas) is captured first in `IDEA BANK`; only triaged ideas move to `Roadmap` or `Backlog`.
+- Full status flow: `IDEA BANK` → `Roadmap` (priorities, dependencies) → `Backlog` (broken-down issues) → `Ready` (tasks with priorities, dependencies, delivery order) → `In Progress` → `Review` → `Done` (and optionally `Blocked`).
 
 ---
 
@@ -154,6 +162,8 @@ When you move **project-related agent docs** (e.g. agent operating documents for
 
 | Rule | Meaning |
 |------|--------|
+| **Ask when unsure** | When you need clarification or are not 100% sure — ASK. Do not guess or implement ahead of the process. |
+| **Mandatory workflow** | Idea → Idea Bank → Roadmap (priorities, dependencies) → Backlog (broken down) → Ready (priorities, dependencies, delivery order) → then work. No skipping. |
 | Work = issues here | All work is an issue in mvp-factory-control; cards on the board. |
 | Use templates | Create issues with the repo’s issue templates; never bypass. |
 | Ready = start | Do not start work until the card is in **Ready**. |

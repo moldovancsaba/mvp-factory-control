@@ -1,0 +1,46 @@
+name: WarRoom DLP Guardrail Gate
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "apps/warroom/scripts/lib/output-dlp.js"
+      - "apps/warroom/scripts/worker.js"
+      - "apps/warroom/scripts/e2e/warroom-dlp-guardrail.e2e.js"
+      - "apps/warroom/package.json"
+      - "apps/warroom/package-lock.json"
+      - ".github/workflows/warroom-dlp-guardrail-gate.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/warroom/scripts/lib/output-dlp.js"
+      - "apps/warroom/scripts/worker.js"
+      - "apps/warroom/scripts/e2e/warroom-dlp-guardrail.e2e.js"
+      - "apps/warroom/package.json"
+      - "apps/warroom/package-lock.json"
+      - ".github/workflows/warroom-dlp-guardrail-gate.yml"
+
+jobs:
+  dlp-guardrail-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/warroom
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: apps/warroom/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run DLP guardrail harness
+        run: npm run e2e:dlp-guardrail

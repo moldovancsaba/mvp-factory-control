@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
+import type { Prisma } from "@prisma/client";
 import { authOptions } from "@/lib/auth";
 import { createMessage, getOrCreateThread } from "@/lib/chat";
 import { enqueueTask } from "@/lib/tasks";
@@ -32,6 +33,15 @@ import {
   getAlphaFailureDecision,
   recordAlphaFailureEvent
 } from "@/lib/alpha-failure-policy";
+import {
+  evaluateTaskTransition,
+  recordLifecycleAudit
+} from "@/lib/lifecycle-policy";
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  return value as Record<string, unknown>;
+}
 
 async function resolveCanonicalRuntimeAgentKey(input: string) {
   const raw = String(input || "").trim();
@@ -351,6 +361,254 @@ export async function enqueueIssueTask(issueNumber: number, formData: FormData) 
   });
 
   revalidatePath(`/issues/${issueNumber}`);
+}
+
+export async function requestIssueTaskControlAction(issueNumber: number, formData: FormData) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) throw new Error("Not authenticated.");
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userId = (session.user as any).id as string | undefined;
+  const taskId = String(formData.get("taskId") || "").trim();
+  const control = String(formData.get("control") || "")
+    .trim()
+    .toUpperCase();
+  const reason = String(formData.get("reason") || "").trim();
+  if (!taskId) throw new Error("Missing taskId.");
+  if (control !== "CANCEL" && control !== "INTERRUPT") {
+    throw new Error(`Unsupported task control action: ${control || "(empty)"}`);
+  }
+
+  const task = await prisma.agentTask.findUnique({
+    where: { id: taskId },
+    select: {
+      id: true,
+      status: true,
+      issueNumber: true,
+      threadId: true,
+      title: true,
+      agentKey: true,
+      payload: true
+    }
+  });
+  if (!task) throw new Error(`Task not found: ${taskId}`);
+  if ((task.issueNumber ?? null) !== issueNumber) {
+    throw new Error("Task does not belong to this issue.");
+  }
+  if (task.status !== "RUNNING") {
+    throw new Error(`Task control denied: expected RUNNING task, got ${task.status}.`);
+  }
+
+  const transitionAction = control === "INTERRUPT" ? "INTERRUPT_TASK" : "CANCEL_TASK";
+  const decision = evaluateTaskTransition({
+    actorRole: "HUMAN_OPERATOR",
+    action: transitionAction,
+    fromState: task.status,
+    toState: "CANCELED"
+  });
+  if (!decision.allowed) {
+    throw new Error(decision.reason);
+  }
+
+  const payloadRecord = asRecord(task.payload) ? { ...(task.payload as Record<string, unknown>) } : {};
+  const currentControl = asRecord(payloadRecord.taskControl);
+  const currentState = asRecord(currentControl?.state);
+  payloadRecord.taskControl = {
+    ...(currentControl || {}),
+    state: {
+      ...(currentState || {}),
+      lastAction: control,
+      reason: reason || null,
+      requestedByUserId: userId ?? null,
+      requestedAt: new Date().toISOString(),
+      resumeAllowed: control === "INTERRUPT"
+    }
+  };
+
+  await prisma.agentTask.update({
+    where: { id: task.id },
+    data: {
+      status: "CANCELED",
+      finishedAt: new Date(),
+      error:
+        control === "INTERRUPT"
+          ? `Task interrupted by operator${reason ? `: ${reason}` : "."}`
+          : `Task canceled by operator${reason ? `: ${reason}` : "."}`,
+      payload: payloadRecord as Prisma.InputJsonValue
+    }
+  });
+
+  await recordLifecycleAudit({
+    entityType: "TASK",
+    entityId: task.id,
+    actorRole: "HUMAN_OPERATOR",
+    action: transitionAction,
+    fromState: task.status,
+    toState: "CANCELED",
+    allowed: true,
+    reason: decision.reason,
+    metadata: {
+      issueNumber,
+      taskId: task.id,
+      control,
+      requestedByUserId: userId ?? null,
+      reason: reason || null,
+      resumeAllowed: control === "INTERRUPT"
+    }
+  });
+
+  const thread = await getOrCreateThread({
+    kind: "ISSUE",
+    ref: String(issueNumber),
+    title: `Issue #${issueNumber}`,
+    createdById: userId ?? null
+  });
+  await createMessage({
+    threadId: thread.id,
+    authorType: "SYSTEM",
+    content:
+      control === "INTERRUPT"
+        ? `Operator interrupted task ${task.id.slice(0, 8)} for @${task.agentKey}. Resume is available.`
+        : `Operator canceled task ${task.id.slice(0, 8)} for @${task.agentKey}.`,
+    meta: {
+      kind: control === "INTERRUPT" ? "task_interrupted" : "task_canceled_by_operator",
+      issueNumber,
+      taskId: task.id,
+      agentKey: task.agentKey,
+      reason: reason || null,
+      resumeAllowed: control === "INTERRUPT"
+    }
+  });
+
+  revalidatePath(`/issues/${issueNumber}`);
+  revalidatePath("/dashboard");
+}
+
+export async function resumeIssueTaskAction(issueNumber: number, formData: FormData) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) throw new Error("Not authenticated.");
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userId = (session.user as any).id as string | undefined;
+  const taskId = String(formData.get("taskId") || "").trim();
+  const resumeNote = String(formData.get("resumeNote") || "").trim();
+  if (!taskId) throw new Error("Missing taskId.");
+
+  const sourceTask = await prisma.agentTask.findUnique({
+    where: { id: taskId },
+    select: {
+      id: true,
+      status: true,
+      issueNumber: true,
+      threadId: true,
+      title: true,
+      agentKey: true,
+      payload: true
+    }
+  });
+  if (!sourceTask) throw new Error(`Task not found: ${taskId}`);
+  if ((sourceTask.issueNumber ?? null) !== issueNumber) {
+    throw new Error("Task does not belong to this issue.");
+  }
+  if (sourceTask.status !== "CANCELED") {
+    throw new Error(`Resume denied: expected CANCELED task, got ${sourceTask.status}.`);
+  }
+
+  const payloadRecord = asRecord(sourceTask.payload)
+    ? { ...(sourceTask.payload as Record<string, unknown>) }
+    : {};
+  const taskControl = asRecord(payloadRecord.taskControl);
+  const state = asRecord(taskControl?.state);
+  const resumeAllowed = state?.resumeAllowed === true;
+  if (!resumeAllowed) {
+    throw new Error("Resume denied by policy: source task is not marked resumable.");
+  }
+
+  const thread = sourceTask.threadId
+    ? { id: sourceTask.threadId }
+    : await getOrCreateThread({
+        kind: "ISSUE",
+        ref: String(issueNumber),
+        title: `Issue #${issueNumber}`,
+        createdById: userId ?? null
+      });
+
+  const nextResumeCount =
+    Number.isFinite(Number(state?.resumeCount)) && Number(state?.resumeCount) >= 0
+      ? Number(state?.resumeCount) + 1
+      : 1;
+  const resumedPayload = {
+    ...payloadRecord,
+    resumedFromTaskId: sourceTask.id,
+    resumeNote: resumeNote || null,
+    taskControl: {
+      ...(taskControl || {}),
+      state: {
+        ...(state || {}),
+        lastAction: "RESUME",
+        resumedFromTaskId: sourceTask.id,
+        resumedByUserId: userId ?? null,
+        resumedAt: new Date().toISOString(),
+        resumeCount: nextResumeCount,
+        resumeAllowed: false
+      }
+    }
+  };
+
+  const resumedTask = await enqueueTask({
+    agentKey: sourceTask.agentKey,
+    title: sourceTask.title,
+    issueNumber,
+    threadId: thread.id,
+    createdById: userId ?? null,
+    payload: resumedPayload
+  });
+
+  const decision = evaluateTaskTransition({
+    actorRole: "HUMAN_OPERATOR",
+    action: "RESUME_TASK",
+    fromState: sourceTask.status,
+    toState: resumedTask.status
+  });
+  if (!decision.allowed) {
+    throw new Error(decision.reason);
+  }
+
+  await recordLifecycleAudit({
+    entityType: "TASK",
+    entityId: sourceTask.id,
+    actorRole: "HUMAN_OPERATOR",
+    action: "RESUME_TASK",
+    fromState: sourceTask.status,
+    toState: resumedTask.status,
+    allowed: true,
+    reason: decision.reason,
+    metadata: {
+      issueNumber,
+      sourceTaskId: sourceTask.id,
+      resumedTaskId: resumedTask.id,
+      agentKey: sourceTask.agentKey,
+      resumeNote: resumeNote || null,
+      requestedByUserId: userId ?? null
+    }
+  });
+
+  await createMessage({
+    threadId: thread.id,
+    authorType: "SYSTEM",
+    content: `Operator resumed task ${sourceTask.id.slice(0, 8)} as ${resumedTask.id.slice(0, 8)} for @${sourceTask.agentKey}.`,
+    meta: {
+      kind: "task_resumed",
+      issueNumber,
+      sourceTaskId: sourceTask.id,
+      resumedTaskId: resumedTask.id,
+      agentKey: sourceTask.agentKey,
+      resumeNote: resumeNote || null
+    }
+  });
+
+  revalidatePath(`/issues/${issueNumber}`);
+  revalidatePath("/dashboard");
 }
 
 export async function activateIssueAlphaContextAction(issueNumber: number, formData: FormData) {

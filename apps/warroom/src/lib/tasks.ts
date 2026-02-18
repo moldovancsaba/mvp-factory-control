@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { evaluateTaskTransition, recordLifecycleAudit } from "@/lib/lifecycle-policy";
+import crypto from "node:crypto";
 import {
   CONTROL_INTENT_BETA_REASON,
   evaluateTaskJudgementGate
@@ -108,6 +109,18 @@ export async function enqueueTask(params: {
   if (params.runtimeConfigResolution) {
     payloadRecord.runtimeConfigResolution = params.runtimeConfigResolution;
   }
+  const existingProvenance =
+    payloadRecord.provenance && typeof payloadRecord.provenance === "object" && !Array.isArray(payloadRecord.provenance)
+      ? { ...(payloadRecord.provenance as Record<string, unknown>) }
+      : {};
+  const chainId = asTrimmed(existingProvenance.chainId) || crypto.randomUUID();
+  payloadRecord.provenance = {
+    ...existingProvenance,
+    chainId,
+    issueNumber: params.issueNumber ?? null,
+    createdById: params.createdById ?? null,
+    createdAt: new Date().toISOString()
+  };
   const toolCallProtocolValidation = validateToolCallProtocolEnvelope(
     payloadRecord.toolCallProtocol
   );
@@ -246,6 +259,25 @@ export async function enqueueTask(params: {
       });
     }
 
+    await recordLifecycleAudit({
+      entityType: "TASK_PROVENANCE",
+      entityId: chainId,
+      actorRole: "HUMAN_OPERATOR",
+      action: "REGISTER_PROVENANCE_CHAIN",
+      fromState: null,
+      toState: finalStatus,
+      allowed: true,
+      reason: "Provenance chain registered at task enqueue.",
+      metadata: {
+        chainId,
+        taskId: task.id,
+        issueNumber: params.issueNumber ?? null,
+        createdById: params.createdById ?? null,
+        agentKey: params.agentKey
+      },
+      db: tx
+    });
+
     if (toolCallProtocolValidation.present) {
       await recordLifecycleAudit({
         entityType: "TASK",
@@ -363,9 +395,16 @@ export async function markQueuedTasksManualRequired(agentKey: string, reason: st
   });
 }
 
-export async function listAgentTasks(params: { agentKey: string; limit?: number }) {
+export async function listAgentTasks(params: {
+  agentKey: string;
+  issueNumber?: number;
+  limit?: number;
+}) {
   return prisma.agentTask.findMany({
-    where: { agentKey: params.agentKey },
+    where: {
+      agentKey: params.agentKey,
+      ...(typeof params.issueNumber === "number" ? { issueNumber: params.issueNumber } : {})
+    },
     orderBy: { createdAt: "desc" },
     take: Math.min(Math.max(params.limit ?? 50, 1), 200)
   });

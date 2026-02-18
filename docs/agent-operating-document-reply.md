@@ -38,6 +38,8 @@ Use these so agents can open the right file in the IDE or from the repo.
 | ROADMAP | https://github.com/moldovancsaba/reply/blob/main/docs/ROADMAP.md | `reply/docs/ROADMAP.md` (e.g. `Projects/reply/docs/ROADMAP.md`) |
 | TASKLIST | https://github.com/moldovancsaba/reply/blob/main/docs/TASKLIST.md | `reply/docs/TASKLIST.md` |
 | RELEASE_NOTES | https://github.com/moldovancsaba/reply/blob/main/docs/RELEASE_NOTES.md | `reply/docs/RELEASE_NOTES.md` |
+| POC first functions | https://github.com/moldovancsaba/reply/blob/main/docs/POC_FIRST_FUNCTIONS.md | `reply/docs/POC_FIRST_FUNCTIONS.md` |
+| INGESTION | https://github.com/moldovancsaba/reply/blob/main/docs/INGESTION.md | `reply/docs/INGESTION.md` |
 | brain dump | https://github.com/moldovancsaba/reply/blob/main/docs/reply-codex-brain-dump.md | `reply/docs/reply-codex-brain-dump.md` |
 
 If your workspace has both repos under a common parent (e.g. `Projects/`), full paths are: **`<workspace>/reply/docs/<file>`** and **`<workspace>/mvp-factory-control/docs/<file>`**.
@@ -113,6 +115,7 @@ When you **lose context** while working on Reply:
 | ROADMAP.md | Future vision (reference only; source of truth is the board). | [reply/docs/ROADMAP.md](https://github.com/moldovancsaba/reply/blob/main/docs/ROADMAP.md) | `reply/docs/ROADMAP.md` |
 | TASKLIST.md | Open tasks (reference only; source of truth is the board). | [reply/docs/TASKLIST.md](https://github.com/moldovancsaba/reply/blob/main/docs/TASKLIST.md) | `reply/docs/TASKLIST.md` |
 | RELEASE_NOTES.md | Completed work only. | [reply/docs/RELEASE_NOTES.md](https://github.com/moldovancsaba/reply/blob/main/docs/RELEASE_NOTES.md) | `reply/docs/RELEASE_NOTES.md` |
+| POC_FIRST_FUNCTIONS.md | First POC capabilities: knowledge injection + localhost chat. | [reply/docs/POC_FIRST_FUNCTIONS.md](https://github.com/moldovancsaba/reply/blob/main/docs/POC_FIRST_FUNCTIONS.md) | `reply/docs/POC_FIRST_FUNCTIONS.md` |
 | reply-codex-brain-dump.md | Current job, where we left off, open decisions. | [reply/docs/reply-codex-brain-dump.md](https://github.com/moldovancsaba/reply/blob/main/docs/reply-codex-brain-dump.md) | `reply/docs/reply-codex-brain-dump.md` |
 
 Single-place rule: ROADMAP = vision; TASKLIST = open tasks; RELEASE_NOTES = completed. Do not duplicate.
