@@ -162,6 +162,19 @@ if [ "${MVP_SKIP_EXECUTABLE_PROMPT_GATE:-0}" != "1" ] && [ "$(echo "$STATUS" | t
   fi
 fi
 
+# Hard Done gate: issue must have an updated handover document.
+if [ "${MVP_SKIP_HANDOVER_GATE:-0}" != "1" ] && [ "$(echo "$STATUS" | tr '[:upper:]' '[:lower:]')" = "done" ] && [ "$(echo "$CURRENT_STATUS" | tr '[:upper:]' '[:lower:]')" != "done" ]; then
+  HANDOVER_VALIDATOR="$SCRIPT_DIR/mvp-factory-validate-handover.sh"
+  if [ ! -f "$HANDOVER_VALIDATOR" ]; then
+    echo "Done gate validator missing: $HANDOVER_VALIDATOR" >&2
+    exit 1
+  fi
+  if ! "$HANDOVER_VALIDATOR"; then
+    echo "Refusing to move issue #$ISSUE_NUM to Done: Handover document not updated." >&2
+    exit 1
+  fi
+fi
+
 echo "Issue: $REPO_NAME #$ISSUE_NUM -> Status=$STATUS, Agent=$AGENT, Product=$PRODUCT, Type=$TYPE, Priority=$PRIORITY"
 
 # Helper: get option ID for a field by option name (case-insensitive); output trimmed (no newline)
