@@ -28,7 +28,7 @@ If you are installing on a second Mac from a shared path such as `/Volumes/Macin
 
 Once the installer finishes:
 
-1. **Spotlight Ready**: You can now typed `Control` in Spotlight to launch the Monitoring App.
+1. **Spotlight**: You can now type `Control` in Spotlight to launch the Monitoring App.
 2. **24/7/365 Sovereign Watchdog**: The background service is now active.
     - > [!IMPORTANT]
     - > **macOS Permission**: Go to `System Settings` -> `General` -> `Login Items` and ensure **"Control"** is allowed to run in the background.
@@ -60,6 +60,19 @@ There is **no** Status value named `Ready` on the current board. The **Status** 
   `bash scripts/list-project-column.sh 'Todo (NEXT)'`
 
 Project URL: [github.com/users/moldovancsaba/projects/1](https://github.com/users/moldovancsaba/projects/1).
+
+### Board status shortcuts
+
+[`mvp-factory-set-project-fields.sh`](../scripts/mvp-factory-set-project-fields.sh) accepts these **case-insensitive** shortcuts for `--status` / `MVP_STATUS` so older playbooks and external wrappers keep working:
+
+| You pass | Board value used |
+| :--- | :--- |
+| `Backlog` | `Backlog (SOONER)` |
+| `Ready` | `Todo (NEXT)` |
+| `Roadmap` | `Roadmap (LATER)` |
+| `In Progress` | `In Progress (NOW)` |
+
+**Everything else** (the GitHub CLI, `gh project item-list --query`, other repos’ automation) must use the **exact** option string. Discover current names from this repo with `bash scripts/list-project-column.sh` (from the `mvp-factory-control` root).
 
 ---
 

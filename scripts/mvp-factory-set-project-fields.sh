@@ -5,6 +5,7 @@
 # One-time: gh auth refresh -h github.com -s read:project,project — see docs/SETUP.md
 # Usage: ./scripts/mvp-factory-set-project-fields.sh ISSUE_NUMBER [--status STATUS] [--agent AGENT] [--product PRODUCT] [--type TYPE] [--priority PRIORITY]
 # Env overrides (only for fields you pass): MVP_STATUS, MVP_AGENT, MVP_PRODUCT, MVP_TYPE, MVP_PRIORITY
+# Status must match the board single-select, or use short aliases (case-insensitive): Backlog, Ready, Roadmap, In Progress — see docs/SETUP.md
 
 set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -136,9 +137,24 @@ get_current_value() {
   ' | head -1 | tr -d '\n\r'
 }
 
+# Map legacy/short status labels to current Project option names (gh requires exact match).
+normalize_board_status() {
+  local trimmed s
+  trimmed=$(printf '%s' "$1" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+  s=$(printf '%s' "$trimmed" | tr '[:upper:]' '[:lower:]')
+  case "$s" in
+    backlog) echo "Backlog (SOONER)" ;;
+    ready) echo "Todo (NEXT)" ;;
+    roadmap) echo "Roadmap (LATER)" ;;
+    "in progress") echo "In Progress (NOW)" ;;
+    *) echo "$trimmed" ;;
+  esac
+}
+
 # Resolve each field: override > current on board > default
 STATUS="${OVERRIDE_STATUS:-$(get_current_value "Status")}"
 STATUS="${STATUS:-$DEFAULT_STATUS}"
+STATUS="$(normalize_board_status "$STATUS")"
 AGENT="${OVERRIDE_AGENT:-$(get_current_value "Agent")}"
 AGENT="${AGENT:-$DEFAULT_AGENT}"
 PRODUCT="${OVERRIDE_PRODUCT:-$(get_current_value "Product")}"

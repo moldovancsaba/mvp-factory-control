@@ -174,7 +174,8 @@ Agents should:
 
 Board/issue scripts:
 
-- [scripts/mvp-factory-set-project-fields.sh](scripts/mvp-factory-set-project-fields.sh)
+- [scripts/mvp-factory-set-project-fields.sh](scripts/mvp-factory-set-project-fields.sh) — optional short `--status` aliases (`Backlog`, `Ready`, `Roadmap`, `In Progress`); see [docs/SETUP.md](docs/SETUP.md#board-status-shortcuts)
+- [scripts/list-project-column.sh](scripts/list-project-column.sh) — print Status options or list items by status (exact strings for `gh` and other tools)
 - [scripts/mvp-factory-ready-gate-audit.sh](scripts/mvp-factory-ready-gate-audit.sh)
 - [scripts/mvp-factory-validate-prompt-package.js](scripts/mvp-factory-validate-prompt-package.js)
 
