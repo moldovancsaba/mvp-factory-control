@@ -33,9 +33,10 @@ External documentation, README copy, workflow labels, and operator-facing langua
 
 ## Local Runtime
 
-Primary path:
+Typical developer paths (use whichever matches the machine):
 
 - `/Users/moldovancsaba/Projects/mvp-factory-control/apps/mvp-factory-control`
+- `/Users/Shared/Projects/mvp-factory-control/apps/mvp-factory-control` (shared Mac layout; see [TRANSFER_TO_SHARED_MAC.md](TRANSFER_TO_SHARED_MAC.md))
 
 The app may use local runtime state under `.mvp-factory-control`, but runtime state, logs, and shell-session artifacts should not be committed to git.
 

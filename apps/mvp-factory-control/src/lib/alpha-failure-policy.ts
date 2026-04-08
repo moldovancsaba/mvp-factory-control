@@ -39,7 +39,7 @@ const FAILURE_DECISIONS: Record<AlphaFailureClass, AlphaFailureDecision> = {
     severity: "LOW",
     fallbackAction: "ALERT_ONLY",
     remediation:
-      "Prepare handover package now to avoid scope-expansion block at 70% context usage."
+      "Prepare handover package now; WARNING begins at 60% usage and hard BLOCK without a package applies from 70% (see alpha-context guardrail thresholds)."
   },
   STALE_RUNNING_DETECTED: {
     failureClass: "STALE_RUNNING_DETECTED",

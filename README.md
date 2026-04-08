@@ -14,6 +14,12 @@ This repository is the control layer for the portfolio and the primary home for 
 
 We use a decentralized, autonomous architecture to manage full-stack delivery with maximum privacy and reliability.
 
+## Contributors and `main` history
+
+`main` was reset from the canonical local workspace (April 2026). If you had an older clone, **do not merge** expecting continuity: fetch and `git reset --hard origin/main`, or **re-clone** the repository.
+
+`main` is **branch-protected**: the `portability-gate` check must pass before merge, and **force-push is disabled**. To rewrite `main` again, a repo admin must temporarily change branch protection in GitHub settings.
+
 ## Start Here
 
 - Wiki: [docs/WIKI.md](docs/WIKI.md)

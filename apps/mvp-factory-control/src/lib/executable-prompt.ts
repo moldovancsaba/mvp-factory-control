@@ -1,3 +1,10 @@
+/**
+ * Validates GitHub issue bodies for the Executable Prompt Package shape.
+ *
+ * Enforced sections match docs/EXECUTABLE_PROMPT_PACKAGE.md **except** "Product":
+ * that heading is portfolio metadata for humans; this module does not parse or
+ * require it (routing uses labels / fields elsewhere).
+ */
 export type ExecutablePromptSectionKey =
   | "objective"
   | "executionPrompt"
