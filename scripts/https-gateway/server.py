@@ -71,22 +71,49 @@ class GatewayHandler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
         return
 
-    def _match_route(self):
+    def _split_path_and_query(self) -> tuple[str, str]:
+        raw = self.path or "/"
+        if "?" in raw:
+            path_part, query = raw.split("?", 1)
+        else:
+            path_part, query = raw, ""
+        path_part = path_part.strip() or "/"
+        if path_part.startswith(("http://", "https://")):
+            try:
+                parsed = urllib.parse.urlparse(path_part)
+                path_part = parsed.path or "/"
+                if parsed.query and not query:
+                    query = parsed.query
+            except Exception:
+                pass
+        if not path_part.startswith("/"):
+            path_part = "/" + path_part
+        return path_part, query
+
+    def _match_route(self, path_only: str) -> tuple[str | None, str | None]:
         for prefix, target in ROUTES.items():
-            if self.path == prefix[:-1]:
+            no_slash = prefix[:-1] if prefix.endswith("/") else prefix
+            if path_only == no_slash:
                 return prefix, target
-            if self.path.startswith(prefix):
+            if path_only.startswith(prefix):
                 return prefix, target
         return None, None
 
     def _proxy(self):
-        prefix, target = self._match_route()
-        if not prefix:
+        path_only, query = self._split_path_and_query()
+        prefix, target = self._match_route(path_only)
+        if not prefix or not target:
             self.send_error(404, "Unknown HTTPS gateway route")
             return
 
-        suffix = self.path[len(prefix):] if self.path.startswith(prefix) else ""
+        if path_only.startswith(prefix):
+            suffix = path_only[len(prefix) :]
+        else:
+            suffix = ""
         target_url = urllib.parse.urljoin(target, suffix)
+        if query:
+            sep = "&" if "?" in target_url else "?"
+            target_url = f"{target_url}{sep}{query}"
 
         body = b""
         length = self.headers.get("Content-Length")

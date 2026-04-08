@@ -46,9 +46,15 @@ ENV_SERVER_PY = os.path.join(ENV_SERVER_DIR, "server.py")
 SETTINGS_PANEL_PORT = 3200
 SETTINGS_PANEL_DIR = os.path.join(REPO_ROOT, "scripts", "settings-panel")
 SETTINGS_PANEL_PY = os.path.join(SETTINGS_PANEL_DIR, "server.py")
-HTTPS_GATEWAY_PORT = 3443
+HTTPS_GATEWAY_PORT = int(os.environ.get("MVP_HTTPS_GATEWAY_PORT", "3443"))
+os.environ["MVP_HTTPS_GATEWAY_PORT"] = str(HTTPS_GATEWAY_PORT)
 HTTPS_GATEWAY_DIR = os.path.join(REPO_ROOT, "scripts", "https-gateway")
 HTTPS_GATEWAY_PY = os.path.join(HTTPS_GATEWAY_DIR, "server.py")
+# Browser URL for Paperclip: SPA uses root-relative /api/* — only works at origin / (not under /dashboard/).
+DASHBOARD_BROWSER_URL = (
+    os.environ.get("MVP_FACTORY_CONTROL_DASHBOARD_BROWSER_URL", "http://127.0.0.1:3100/").strip()
+    or "http://127.0.0.1:3100/"
+)
 RUNTIME_STATE_DIR = os.path.join(REPO_ROOT, ".mvp-factory-control")
 APP_SETTINGS_PATH = os.path.join(RUNTIME_STATE_DIR, "settings.json")
 CONTROL_PANEL_SETTINGS_PATH = os.path.join(RUNTIME_STATE_DIR, "control-panel-settings.json")
@@ -236,7 +242,7 @@ class ControlApp(rumps.App):
         )
         self.cli_status_item = rumps.MenuItem("🤖 Agent CLIs: Checking...")
         self.dashboard_link = rumps.MenuItem(
-            "🌐 Open Dashboard (localhost:3100)", callback=self.open_dashboard
+            "🌐 Open Dashboard (Paperclip)", callback=self.open_dashboard
         )
         self.docs_link = rumps.MenuItem(
             "📚 Open Documentation", callback=self.open_docs
@@ -428,15 +434,26 @@ class ControlApp(rumps.App):
         )
 
     def open_dashboard(self, _):
+        cfg = SERVICES["Paperclip"]
+        if not self.is_port_open(cfg["port"]):
+            self.start_service("Paperclip")
         self.ensure_https_gateway_server()
+        url = DASHBOARD_BROWSER_URL
+        if not url.endswith("/"):
+            url = f"{url}/"
         for _ in range(25):
-            if self.is_port_open(HTTPS_GATEWAY_PORT):
-                webbrowser.open(f"https://127.0.0.1:{HTTPS_GATEWAY_PORT}/dashboard/")
+            if self.is_port_open(cfg["port"]):
+                webbrowser.open(url)
                 return
             time.sleep(0.15)
         rumps.alert(
             title="Dashboard",
-            message="Could not start the local HTTPS gateway on port 3443.",
+            message=(
+                f"Could not reach Paperclip on port {cfg['port']}.\n\n"
+                f"Browser URL is {DASHBOARD_BROWSER_URL} (override with "
+                "MVP_FACTORY_CONTROL_DASHBOARD_BROWSER_URL).\n"
+                f"TLS health checks still use https://127.0.0.1:{HTTPS_GATEWAY_PORT}/dashboard/api/health."
+            ),
         )
 
     def open_docs(self, _):

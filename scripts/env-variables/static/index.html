@@ -363,7 +363,13 @@
   </div>
 
   <script>
-    const API = "";
+    /** When served via HTTPS gateway under /variables/, API calls must stay under that prefix. */
+    function computeApiBase() {
+      const p = (window.location.pathname || "/").replace(/\/+$/, "") || "/";
+      if (p === "/variables" || p.startsWith("/variables/")) return "/variables";
+      return "";
+    }
+    const API = computeApiBase();
     const state = { projects: [], vars: {}, revealed: new Set(), openMenu: null, collapsed: new Set(), searchQuery: "" };
 
     function toast(msg) {

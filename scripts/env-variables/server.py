@@ -21,16 +21,26 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 PORT = int(os.environ.get("MVP_ENV_UI_PORT", "3199"))
+_GATEWAY_PORT = os.environ.get("MVP_HTTPS_GATEWAY_PORT", "3443")
 REGISTRY_DIR = Path.home() / ".mvp-factory-control"
 REGISTRY_PATH = REGISTRY_DIR / "env-registry.json"
 META_DIR = REGISTRY_DIR / "env-variables-meta"
 
 ENV_CANDIDATES = (".env", ".env.local", ".env.development", ".env.development.local")
 
+_ENV_CORS_ORIGINS = [
+    "http://127.0.0.1",
+    f"http://127.0.0.1:{PORT}",
+    "http://localhost",
+    f"http://localhost:{PORT}",
+    f"https://127.0.0.1:{_GATEWAY_PORT}",
+    f"https://localhost:{_GATEWAY_PORT}",
+]
+
 app = FastAPI(title="MVP Factory Env Variables")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1", f"http://127.0.0.1:{PORT}", "http://localhost", f"http://localhost:{PORT}"],
+    allow_origins=_ENV_CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

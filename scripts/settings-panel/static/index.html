@@ -267,6 +267,13 @@
   <div class="toast" id="toast"></div>
 
   <script>
+    /** When served via HTTPS gateway under /settings/, API calls must stay under that prefix. */
+    function computeApiBase() {
+      const p = (window.location.pathname || "/").replace(/\/+$/, "") || "/";
+      if (p === "/settings" || p.startsWith("/settings/")) return "/settings";
+      return "";
+    }
+    const API_BASE = computeApiBase();
     const state = { data: null };
 
     function showToast(message) {
@@ -277,7 +284,7 @@
     }
 
     async function api(path, options = {}) {
-      const response = await fetch(path, {
+      const response = await fetch(API_BASE + path, {
         headers: { "Content-Type": "application/json" },
         ...options
       });

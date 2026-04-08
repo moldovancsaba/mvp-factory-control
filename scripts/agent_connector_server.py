@@ -14,9 +14,10 @@ from urllib.parse import urlparse
 
 
 PORT = 3198
+_GW_PORT = os.environ.get("MVP_HTTPS_GATEWAY_PORT", "3443")
 SERVICES = [
-    ("Paperclip", "https://127.0.0.1:3443/dashboard/api/health"),
-    ("OpenCode", "https://127.0.0.1:3443/opencode/"),
+    ("Paperclip", f"https://127.0.0.1:{_GW_PORT}/dashboard/api/health"),
+    ("OpenCode", f"https://127.0.0.1:{_GW_PORT}/opencode/"),
     ("ChecklistSync", "http://127.0.0.1:10005/health"),
     ("Ollama", "http://127.0.0.1:11434/api/tags"),
 ]

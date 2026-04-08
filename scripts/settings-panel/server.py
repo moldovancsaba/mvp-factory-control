@@ -20,6 +20,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 PORT = int(os.environ.get("MVP_SETTINGS_PANEL_PORT", "3200"))
+_GATEWAY_PORT = os.environ.get("MVP_HTTPS_GATEWAY_PORT", "3443")
 REPO_ROOT = Path(__file__).resolve().parents[2]
 STATE_DIR = REPO_ROOT / ".mvp-factory-control"
 APP_SETTINGS_PATH = STATE_DIR / "settings.json"
@@ -40,6 +41,8 @@ app.add_middleware(
         f"http://127.0.0.1:{PORT}",
         "http://localhost",
         f"http://localhost:{PORT}",
+        f"https://127.0.0.1:{_GATEWAY_PORT}",
+        f"https://localhost:{_GATEWAY_PORT}",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -146,34 +149,35 @@ def http_ok(url: str) -> bool:
 
 
 def build_support_tools() -> list[dict[str, Any]]:
+    gw = f"https://127.0.0.1:{_GATEWAY_PORT}"
     tools = [
         {
             "name": "Dashboard",
-            "url": "https://127.0.0.1:3443/dashboard/",
-            "description": "Paperclip delivery dashboard",
+            "url": "http://127.0.0.1:3100/",
+            "description": "Paperclip UI (HTTP — root /api/*; daemons use TLS via gateway /dashboard/api/*)",
             "healthy": http_ok("http://127.0.0.1:3100/api/health"),
         },
         {
             "name": "Environment Variables",
-            "url": "https://127.0.0.1:3443/variables/",
-            "description": "Local env editor for connected projects",
+            "url": f"{gw}/variables/",
+            "description": "Local env editor (HTTPS gateway; resolves /variables/api/* correctly)",
             "healthy": http_ok("http://127.0.0.1:3199/api/health"),
         },
         {
             "name": "Agent Connector",
-            "url": "https://127.0.0.1:3443/connectors/",
+            "url": f"{gw}/connectors/",
             "description": "Agent connector status and local endpoints",
             "healthy": http_ok("http://127.0.0.1:3198/health"),
         },
         {
             "name": "ChecklistSync",
-            "url": "https://127.0.0.1:3443/checklistsync",
+            "url": f"{gw}/checklistsync/",
             "description": "Checklist local AI sync health",
             "healthy": http_ok("http://127.0.0.1:10005/health"),
         },
         {
             "name": "OpenCode",
-            "url": "https://127.0.0.1:3443/opencode",
+            "url": f"{gw}/opencode/",
             "description": "Local coding service endpoint",
             "healthy": port_open(18788),
         },

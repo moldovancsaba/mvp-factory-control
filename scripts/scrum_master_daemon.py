@@ -10,9 +10,10 @@ import time
 import urllib.request
 
 
+_GW_PORT = os.environ.get("MVP_HTTPS_GATEWAY_PORT", "3443")
 PAPERCLIP_HEALTH_URL = os.environ.get(
     "SCRUM_MASTER_PAPERCLIP_HEALTH_URL",
-    "https://127.0.0.1:3443/dashboard/api/health",
+    f"https://127.0.0.1:{_GW_PORT}/dashboard/api/health",
 )
 LOCAL_TLS_CERT_PATH = os.environ.get("LOCAL_TLS_CERT_PATH", "")
 CHECK_INTERVAL = int(os.environ.get("SCRUM_MASTER_INTERVAL_SEC", "30"))
