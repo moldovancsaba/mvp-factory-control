@@ -1,9 +1,10 @@
 /**
- * Single **product** settings editor: env vars text area, GitHub URL, save/delete via `products/actions`.
+ * Single **product** settings editor: grouped vars (formulas, docs, usage), GitHub URL, save/delete.
  */
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Shell } from "@/components/Shell";
+import { ProductVarsEditor } from "@/components/ProductVarsEditor";
 import {
   deleteProjectConfigAction,
   saveProjectConfigAction
@@ -12,10 +13,6 @@ import { listProjectItems } from "@/lib/github";
 import { readMVPFactoryControlSettings } from "@/lib/settings-store";
 import { requireSession } from "@/lib/session";
 import { buttonClassName } from "@/components/ui";
-
-function varsToText(vars: Array<{ key: string; value: string }>) {
-  return vars.map((v) => `${v.key}=${v.value}`).join("\n");
-}
 
 export default async function ProductPage(props: {
   params: Promise<{ product: string }>;
@@ -70,15 +67,13 @@ export default async function ProductPage(props: {
                 />
               </label>
             </div>
-            <label className="ui-field">
-              <span className="ui-field__label">Project vars (one `KEY=VALUE` per line)</span>
-              <textarea
-                name="vars"
-                defaultValue={config ? varsToText(config.vars) : ""}
-                rows={4}
-                className="ui-textarea font-mono text-xs"
+            <div className="ui-field">
+              <span className="ui-field__label">Project variables</span>
+              <ProductVarsEditor
+                initialVars={config?.vars ?? []}
+                varUsage={config?.varUsage}
               />
-            </label>
+            </div>
             <div className="flex items-center gap-2">
               <button
                 type="submit"

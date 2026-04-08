@@ -19,6 +19,17 @@ export type AgentSetting = {
 export type ProjectVar = {
   key: string;
   value: string;
+  /** When set, this template (with `${OTHER_KEY}` refs) defines the effective value instead of `value`. */
+  formula?: string;
+  /** UI grouping; default "General" in the editor. */
+  group?: string;
+  /** Short documentation (tooltip / modal) for operators. */
+  doc?: string;
+};
+
+export type ProjectVarUsageEntry = {
+  count: number;
+  lastUsedAt: string;
 };
 
 export type ProjectSetting = {
@@ -27,6 +38,8 @@ export type ProjectSetting = {
   projectUrl: string;
   projectGithub: string;
   vars: ProjectVar[];
+  /** Incremented when runtime resolution applies vars (see `recordProjectVarUsage`). */
+  varUsage?: Record<string, ProjectVarUsageEntry>;
 };
 
 export type TasteRubricVersion = {
@@ -78,6 +91,21 @@ function asString(v: unknown) {
   return typeof v === "string" ? v : "";
 }
 
+function normalizeProjectVarUsage(input: unknown): Record<string, ProjectVarUsageEntry> | undefined {
+  const record = asRecord(input);
+  if (!record) return undefined;
+  const out: Record<string, ProjectVarUsageEntry> = {};
+  for (const [key, raw] of Object.entries(record)) {
+    const r = asRecord(raw);
+    if (!r) continue;
+    const count = Number(r.count);
+    const lastUsedAt = asString(r.lastUsedAt).trim();
+    if (!Number.isFinite(count) || count < 0 || !lastUsedAt) continue;
+    out[key] = { count: Math.trunc(count), lastUsedAt };
+  }
+  return Object.keys(out).length ? out : undefined;
+}
+
 function normalizeProjectVars(input: unknown): ProjectVar[] {
   if (!Array.isArray(input)) return [];
   const out: ProjectVar[] = [];
@@ -87,7 +115,14 @@ function normalizeProjectVars(input: unknown): ProjectVar[] {
     const key = asString(record.key).trim();
     if (!key) continue;
     const value = asString(record.value).trim();
-    out.push({ key, value });
+    const formula = asString(record.formula).trim();
+    const group = asString(record.group).trim();
+    const doc = asString(record.doc).trim();
+    const row: ProjectVar = { key, value };
+    if (formula) row.formula = formula;
+    if (group) row.group = group;
+    if (doc) row.doc = doc;
+    out.push(row);
   }
   return out;
 }
@@ -172,13 +207,16 @@ function normalizeSettings(raw: unknown): MVPFactoryControlSettings {
           const projectId = asString(row.projectId).trim();
           const projectName = asString(row.projectName).trim();
           if (!projectId || !projectName) return null;
-          return {
+          const normalized: ProjectSetting = {
             projectId,
             projectName,
             projectUrl: asString(row.projectUrl).trim(),
             projectGithub: asString(row.projectGithub).trim(),
             vars: normalizeProjectVars(row.vars)
-          } as ProjectSetting;
+          };
+          const vu = normalizeProjectVarUsage(row.varUsage);
+          if (vu) normalized.varUsage = vu;
+          return normalized;
         })
         .filter((v): v is ProjectSetting => Boolean(v))
     : [];

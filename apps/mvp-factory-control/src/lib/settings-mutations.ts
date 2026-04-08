@@ -10,6 +10,7 @@ import {
   type AgentSetting,
   type ProjectSetting,
   type ProjectVar,
+  type ProjectVarUsageEntry,
   type TasteRubricVersion,
   readMVPFactoryControlSettings,
   writeMVPFactoryControlSettings
@@ -80,6 +81,73 @@ export function parseProjectVars(text: string): ProjectVar[] {
   }
 
   return out;
+}
+
+/** Parse JSON array from the product vars editor (`varsPayload` hidden field). */
+export function parseProjectVarsPayload(json: string): ProjectVar[] {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(json);
+  } catch {
+    throw new Error("varsPayload is not valid JSON.");
+  }
+  if (!Array.isArray(parsed)) {
+    throw new Error("varsPayload must be a JSON array.");
+  }
+  const out: ProjectVar[] = [];
+  for (const raw of parsed) {
+    const record = raw && typeof raw === "object" && !Array.isArray(raw) ? (raw as Record<string, unknown>) : null;
+    if (!record) continue;
+    const key = String(record.key || "").trim();
+    if (!key || key.length > 256) continue;
+    const value = String(record.value ?? "");
+    const formula = String(record.formula ?? "").trim();
+    const group = String(record.group ?? "").trim();
+    const doc = String(record.doc ?? "").trim();
+    const row: ProjectVar = { key, value };
+    if (formula) row.formula = formula.slice(0, 4000);
+    if (group) row.group = group.slice(0, 128);
+    if (doc) row.doc = doc.slice(0, 4000);
+    out.push(row);
+  }
+  return out;
+}
+
+function pruneVarUsageForKeys(
+  prev: Record<string, ProjectVarUsageEntry> | undefined,
+  vars: ProjectVar[]
+): Record<string, ProjectVarUsageEntry> | undefined {
+  const keys = new Set(vars.map((v) => String(v.key || "").trim()).filter(Boolean));
+  if (!prev) return undefined;
+  const next: Record<string, ProjectVarUsageEntry> = {};
+  for (const [k, v] of Object.entries(prev)) {
+    if (keys.has(k)) next[k] = v;
+  }
+  return Object.keys(next).length ? next : undefined;
+}
+
+export async function recordProjectVarUsage(projectId: string, keys: string[]) {
+  const uniq = [...new Set(keys.map((k) => k.trim()).filter(Boolean))];
+  if (!uniq.length) return;
+
+  const settings = await readMVPFactoryControlSettings();
+  const idx = settings.projects.findIndex((p) => p.projectId === projectId);
+  if (idx < 0) return;
+
+  const prev = settings.projects[idx];
+  const vu: Record<string, ProjectVarUsageEntry> = { ...(prev.varUsage || {}) };
+  const now = new Date().toISOString();
+  for (const k of uniq) {
+    const prior = vu[k];
+    vu[k] = {
+      count: (prior?.count ?? 0) + 1,
+      lastUsedAt: now
+    };
+  }
+
+  const nextProjects = settings.projects.slice();
+  nextProjects[idx] = { ...prev, varUsage: vu };
+  await writeMVPFactoryControlSettings({ ...settings, projects: nextProjects });
 }
 
 export function parseTasteRubricPrinciples(text: string): string[] {
@@ -261,15 +329,16 @@ export async function upsertProjectSetting(input: {
       : p.projectName.toLowerCase() === projectName.toLowerCase()
   );
 
+  const previous = idx >= 0 ? next[idx] : null;
+
   const row: ProjectSetting = {
     projectId: wantedId || (idx >= 0 ? next[idx].projectId : newId()),
     projectName,
     projectUrl: input.projectUrl?.trim() || "",
     projectGithub: input.projectGithub?.trim() || "",
-    vars: input.vars || []
+    vars: input.vars || [],
+    varUsage: pruneVarUsageForKeys(previous?.varUsage, input.vars || [])
   };
-
-  const previous = idx >= 0 ? next[idx] : null;
   const projectDiff = diffProjectRuntimeVarMutations(previous?.vars || [], row.vars);
   if (projectDiff.immutableChangedKeys.length > 0) {
     const reason =
@@ -356,7 +425,8 @@ export async function cleanProjectSettings(input?: { boardProjectNames?: string[
       projectName: canonicalName,
       projectUrl: project.projectUrl.trim(),
       projectGithub: project.projectGithub.trim(),
-      vars: project.vars
+      vars: project.vars,
+      ...(project.varUsage && Object.keys(project.varUsage).length ? { varUsage: project.varUsage } : {})
     };
 
     const existing = merged.get(key);
@@ -370,7 +440,8 @@ export async function cleanProjectSettings(input?: { boardProjectNames?: string[
       ...existing,
       projectUrl: existing.projectUrl || normalized.projectUrl,
       projectGithub: existing.projectGithub || normalized.projectGithub,
-      vars: existing.vars.length ? existing.vars : normalized.vars
+      vars: existing.vars.length ? existing.vars : normalized.vars,
+      varUsage: { ...(normalized.varUsage || {}), ...(existing.varUsage || {}) }
     });
   }
 

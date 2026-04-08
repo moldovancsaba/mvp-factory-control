@@ -8,6 +8,7 @@ import { requireRbacAccess } from "@/lib/rbac";
 import {
   cleanProjectSettings,
   parseProjectVars,
+  parseProjectVarsPayload,
   removeProjectSetting,
   upsertProjectSetting
 } from "@/lib/settings-mutations";
@@ -17,7 +18,10 @@ export async function saveProjectConfigAction(formData: FormData) {
   const projectName = String(formData.get("projectName") || "").trim();
   const projectUrl = String(formData.get("projectUrl") || "").trim();
   const projectGithub = String(formData.get("projectGithub") || "").trim();
-  const vars = parseProjectVars(String(formData.get("vars") || ""));
+  const payloadRaw = String(formData.get("varsPayload") || "").trim();
+  const vars = payloadRaw
+    ? parseProjectVarsPayload(payloadRaw)
+    : parseProjectVars(String(formData.get("vars") || ""));
 
   const auth = await requireRbacAccess({
     action: "PRODUCTS_SAVE_PROJECT_CONFIG",

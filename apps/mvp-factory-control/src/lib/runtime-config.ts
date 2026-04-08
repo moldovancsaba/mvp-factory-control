@@ -9,7 +9,12 @@
  */
 import { createHash } from "node:crypto";
 import { prisma } from "@/lib/prisma";
+import {
+  collectVarDependencyClosure,
+  resolveProjectVars
+} from "@/lib/project-var-resolve";
 import { readMVPFactoryControlSettings } from "@/lib/settings-store";
+import { recordProjectVarUsage } from "@/lib/settings-mutations";
 import { isMutableRuntimeSettingKey } from "@/lib/runtime-settings-mutability";
 
 type RuntimeMode = "LOCAL" | "CLOUD";
@@ -260,12 +265,20 @@ export async function resolveRuntimeConfigForTask(params: {
     : null;
 
   if (projectSetting) {
+    const { resolved, errors } = resolveProjectVars(projectSetting.vars);
+    if (errors.length) {
+      console.warn(
+        "[runtime-config] project var resolution:",
+        projectSetting.projectName,
+        errors.join("; ")
+      );
+    }
     const vars: Record<string, string> = {};
-    for (const row of projectSetting.vars) {
-      const key = normalizeText(row.key);
-      const value = normalizeText(row.value);
-      if (!key || !value) continue;
-      vars[key] = value;
+    for (const [key, value] of Object.entries(resolved)) {
+      const k = normalizeText(key);
+      const v = normalizeText(value);
+      if (!k || !v) continue;
+      vars[k] = v;
     }
     const projectOverrides = applyRuntimeOverrides({ runtime, effective, sourceValues: vars });
     sourceChain.push({
@@ -274,6 +287,18 @@ export async function resolveRuntimeConfigForTask(params: {
       appliedKeys: projectOverrides.appliedKeys,
       ignoredKeys: projectOverrides.ignoredKeys
     });
+
+    const usageKeys = collectVarDependencyClosure(
+      projectSetting.vars,
+      projectOverrides.appliedKeys
+    );
+    if (usageKeys.size > 0) {
+      try {
+        await recordProjectVarUsage(projectSetting.projectId, [...usageKeys]);
+      } catch (err) {
+        console.warn("[runtime-config] recordProjectVarUsage failed", err);
+      }
+    }
   }
 
   let activeContextWindowId: string | null = null;

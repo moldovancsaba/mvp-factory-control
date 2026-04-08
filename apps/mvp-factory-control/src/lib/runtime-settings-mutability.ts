@@ -46,12 +46,18 @@ export type RuntimeMutabilityDiff = {
   mutableChangedKeys: string[];
 };
 
+function projectVarFingerprint(row: ProjectVar): string {
+  const value = String(row.value || "").trim();
+  const formula = String(row.formula || "").trim();
+  return formula ? `${value}\n::f::\n${formula}` : value;
+}
+
 function toProjectVarMap(vars: ProjectVar[]) {
   const out = new Map<string, string>();
   for (const row of vars) {
     const key = String(row.key || "").trim();
     if (!key) continue;
-    out.set(key, String(row.value || "").trim());
+    out.set(key, projectVarFingerprint(row));
   }
   return out;
 }
