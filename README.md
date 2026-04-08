@@ -156,7 +156,7 @@ Shared standards:
 
 Agents should:
 
-1. read the issue and board card in this repository. Ensure it is moved from **Backlog** to **Todo**.
+1. read the issue and board card in this repository. Ensure it is moved from **Backlog (SOONER)** to **Todo (NEXT)** when it is actionable.
 2. verify no dependencies are mathematically blocked by the **Scrum Master Orchestrator**.
 3. identify the target project from the `Product` field.
 4. open the corresponding product page under `docs/projects/`.

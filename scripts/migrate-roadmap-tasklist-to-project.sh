@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Migrate ROADMAP.md and TASKLIST.md (amanoba) into GitHub Project issues.
-# - ROADMAP vision items → new issues, Status = Roadmap
-# - TASKLIST items not broken down (scoping/define) → new issues, Status = Backlog
-# - TASKLIST items broken down to actionable deliverables → new issues, Status = Ready
-# Existing issue #2 is P2 #3 (Dashboard/course pages); we set it to Ready, do not duplicate.
+# - ROADMAP vision items → new issues, Status = Roadmap (LATER)
+# - TASKLIST items not broken down (scoping/define) → new issues, Status = Backlog (SOONER)
+# - TASKLIST items broken down to actionable deliverables → new issues, Status = Todo (NEXT)
+# Existing issue #2 is P2 #3 (Dashboard/course pages); we set it to Todo (NEXT), do not duplicate.
 # Requires: gh (with project scope), jq. Run from mvp-factory-control repo root.
 # Usage: ./scripts/migrate-roadmap-tasklist-to-project.sh [--dry-run]
 #         ./scripts/migrate-roadmap-tasklist-to-project.sh [--skip-roadmap] [--skip-backlog] [--skip-ready-first N]
@@ -76,10 +76,10 @@ while IFS= read -r line; do
 $body
 
 ---
-*Migrated to board; Product = amanoba. Status = Roadmap.*")
+*Migrated to board; Product = amanoba. Status = Roadmap (LATER).*")
   if [[ -n "$num" ]]; then
     roadmap_issues+=("$num")
-    set_board_status "$num" "Roadmap"
+    set_board_status "$num" "Roadmap (LATER)"
   fi
 done << 'ROADMAP_ITEMS'
 Multiple courses: enrolment + prerequisites|Enrolment in several courses at once; prerequisites so learners follow a sensible order.
@@ -116,14 +116,14 @@ for i in "${!backlog_titles[@]}"; do
 ${backlog_bodies[$i]}
 
 ---
-*Product = amanoba. Status = Backlog.*")
-  if [[ -n "$num" ]]; then set_board_status "$num" "Backlog"; fi
+*Product = amanoba. Status = Backlog (SOONER).*")
+  if [[ -n "$num" ]]; then set_board_status "$num" "Backlog (SOONER)"; fi
 done
 fi
 
-# --- 3) TASKLIST → Ready (actionable deliverables) ---
-# Skip P2 #3 (Dashboard/course pages) — already issue #2; we set #2 to Ready below.
-echo "=== Creating Ready (actionable) issues ==="
+# --- 3) TASKLIST → Todo (NEXT) (actionable deliverables) ---
+# Skip P2 #3 (Dashboard/course pages) — already issue #2; we set #2 to Todo (NEXT) below.
+echo "=== Creating Todo (NEXT) (actionable) issues ==="
 ready_titles=(
   "[P2] Email/scheduler: Respect multiple enrolments (daily lesson per enrolled course, no duplicate sends)"
   "[P3] MailerLite or ActiveCampaign integration: sync subscribers, send campaign from platform or webhook"
@@ -168,21 +168,21 @@ ready_bodies=(
 )
 for i in "${!ready_titles[@]}"; do
   [[ "$i" -lt "${SKIP_READY_FIRST:-0}" ]] && continue
-  num=$(create_issue "${ready_titles[$i]}" "**Source:** TASKLIST.md (Ready — broken down to actionable deliverable)
+  num=$(create_issue "${ready_titles[$i]}" "**Source:** TASKLIST.md (Todo (NEXT) — broken down to actionable deliverable)
 
 ${ready_bodies[$i]}
 
 ---
-*Product = amanoba. Status = Ready.*")
-  if [[ -n "$num" ]]; then set_board_status "$num" "Ready"; fi
+*Product = amanoba. Status = Todo (NEXT).*")
+  if [[ -n "$num" ]]; then set_board_status "$num" "Todo (NEXT)"; fi
 done
 
-# --- 4) Set existing issue #2 (P2 #3 Dashboard) to Ready ---
-echo "=== Setting existing issue #2 (P2 #3 Dashboard) to Ready ==="
+# --- 4) Set existing issue #2 (P2 #3 Dashboard) to Todo (NEXT) ---
+echo "=== Setting existing issue #2 (P2 #3 Dashboard) to Todo (NEXT) ==="
 if [[ -z "$DRY_RUN" ]]; then
-  "$SCRIPT_DIR/mvp-factory-set-project-fields.sh" 2 --status Ready --product amanoba
+  "$SCRIPT_DIR/mvp-factory-set-project-fields.sh" 2 --status "Todo (NEXT)" --product amanoba
 else
-  echo "[DRY-RUN] Would set issue #2 Status=Ready"
+  echo "[DRY-RUN] Would set issue #2 Status=Todo (NEXT)"
 fi
 
 echo "Done. Board: https://github.com/users/$OWNER/projects/1"

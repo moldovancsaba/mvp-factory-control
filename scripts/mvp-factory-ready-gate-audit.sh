@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# Audit or enforce Executable Prompt Package gate for board cards in Ready/In Progress.
-# Default mode is dry-run. Use --apply to move invalid cards to Backlog.
+# Audit or enforce Executable Prompt Package gate for cards in Todo (NEXT) / In Progress (NOW)
+# (and legacy Ready / In Progress if any remain). Default: dry-run. Use --apply to move invalid cards to Backlog (SOONER).
 
 set -euo pipefail
 
@@ -112,7 +112,10 @@ FILTERED=$(echo "$ALL_ITEMS" | jq -r --arg product "$PRODUCT_FILTER" '
   .[]
   | select(.content.__typename == "Issue")
   | (.fieldValues.nodes | map(select(.__typename == "ProjectV2ItemFieldSingleSelectValue") | {(.field.name): .name}) | add) as $f
-  | select(($f.Status == "Ready") or ($f.Status == "In Progress"))
+  | select(
+      ($f.Status == "Todo (NEXT)") or ($f.Status == "In Progress (NOW)") or
+      ($f.Status == "Ready") or ($f.Status == "In Progress")
+    )
   | if ($product == "") then . else select(($f.Product // "") == $product) end
   | [
       .content.number,
@@ -124,7 +127,7 @@ FILTERED=$(echo "$ALL_ITEMS" | jq -r --arg product "$PRODUCT_FILTER" '
 ')
 
 if [ -z "$FILTERED" ]; then
-  echo "No Ready/In Progress cards matched."
+  echo "No Todo (NEXT) / In Progress (NOW) cards matched (including legacy Ready / In Progress)."
   exit 0
 fi
 
@@ -151,11 +154,11 @@ while IFS=$'\t' read -r issue_num status product agent title; do
   echo "      $summary"
 
   if [ "$APPLY" -eq 1 ]; then
-    "$SETTER" "$issue_num" --status Backlog >/dev/null
+    "$SETTER" "$issue_num" --status "Backlog (SOONER)" >/dev/null
     enforced=$((enforced + 1))
-    echo "      -> moved to Backlog"
+    echo "      -> moved to Backlog (SOONER)"
     if [ "$COMMENT" -eq 1 ]; then
-      note="Ready gate enforcement: this card was moved to Backlog because Executable Prompt Package is incomplete."
+      note="Executable prompt package gate: this card was moved to Backlog (SOONER) because the issue body did not meet the required structure."
       req="Required sections: Objective, Execution Prompt, Scope / Non-goals, Constraints, Acceptance Checks, Delivery Artifact."
       details="Missing: ${missing:-none}. Weak: ${weak:-none}."
       gh issue comment "$issue_num" --repo "$PROJECT_OWNER/$REPO_NAME" --body "$note"$'\n\n'"$details"$'\n'"$req" >/dev/null

@@ -1,21 +1,22 @@
 #!/bin/bash
 #
-# Legacy/automation bridge: polls GitHub Project "Ready" column via gh CLI, triggers Paperclip URL.
+# Legacy/automation bridge: polls GitHub Project Todo (NEXT) queue via gh CLI, triggers Paperclip URL.
 # IDs below are org/project-specific; treat as deployment configuration, not library code.
 #
 COMPANY_ID="96fc6f38-b26a-446b-a174-bf36dfe86733"
 PROJECT_ID="PVT_kwHOACGtF84BOtVF"
-READY_COLUMN_NAME="Ready (NEXT)"
+# Board Status single-select (see scripts/list-project-column.sh); was formerly named "Ready (NEXT)".
+PULL_QUEUE_STATUS="Todo (NEXT)"
 STATUS_FIELD_ID="PVTSSF_lAHOACGtF84BOtVFzg9VH2o"
 IN_PROGRESS_OPTION_ID="47fc9ee4"
 PAPERCLIP_URL="http://localhost:3100"
 
 echo "MVP Factory Automation Bridge starting..."
-echo "Polling column: $READY_COLUMN_NAME"
+echo "Polling Status: $PULL_QUEUE_STATUS"
 
 while true; do
-  # 1. Get items in Ready (NEXT)
-  ITEMS=$(gh project item-list 1 --owner moldovancsaba --format json | jq -c '.items[] | select(.status=="'"$READY_COLUMN_NAME"'")')
+  # 1. Get items in Todo (NEXT)
+  ITEMS=$(gh project item-list 1 --owner moldovancsaba --format json | jq -c '.items[] | select(.status=="'"$PULL_QUEUE_STATUS"'")')
 
   if [ -z "$ITEMS" ]; then
     # echo "No ready tasks. Waiting..."
@@ -42,8 +43,8 @@ while true; do
       -H "Content-Type: application/json" \
       -d "$(jq -n --arg t "$TITLE" --arg d "$BODY" '{title: $t, description: $d, status: "todo"}')" > /dev/null
 
-    # 3. Mark as In Progress in GH Project
-    echo "Updating project status to In Progress..."
+    # 3. Mark as In Progress (NOW) on the project board
+    echo "Updating project status to In Progress (NOW)..."
     gh project item-edit --id "$ITEM_ID" --field-id "$STATUS_FIELD_ID" --project-id "$PROJECT_ID" --single-select-option-id "$IN_PROGRESS_OPTION_ID" > /dev/null
 
     echo "Task $TITLE dispatched successfully."

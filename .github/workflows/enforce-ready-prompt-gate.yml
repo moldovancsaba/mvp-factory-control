@@ -1,4 +1,4 @@
-name: Enforce Ready Prompt Gate
+name: Enforce executable prompt gate (Todo / In progress)
 
 on:
   workflow_dispatch:

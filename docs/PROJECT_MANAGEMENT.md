@@ -43,12 +43,13 @@ Every delivery task must have:
 
 ## Suggested Status Flow
 
-- `Backlog`
-- `Ready`
-- `In Progress`
-- `Review`
-- `Done`
-- `Blocked`
+Board **Status** values (Project 1) use explicit labels, including:
+
+- `IDEA BANK`, `Roadmap (LATER)`, `Backlog (SOONER)`
+- `Todo (NEXT)` — actionable “next up” queue (executable prompt package expected before moving here)
+- `In Progress (NOW)`, `Review`, `Blocked`, `Done`
+
+Legacy docs may say “Ready” or plain “In Progress”; the live equivalents are **`Todo (NEXT)`** and **`In Progress (NOW)`**. Use `bash scripts/list-project-column.sh` to print the current options.
 
 ## Rule Of Execution
 
@@ -71,7 +72,7 @@ The **Scrum Master Daemon** mathematically throttles concurrency and enforces de
 
 ## Background Allocation
 
-Unassigned tasks placed in `Backlog` are automatically parsed by the orchestrator. They will be distributed to idle agents sequentially, determined first by Priority (`urgent` > `high` > `medium` > `low`) and second by oldest numeric Task ID.
+Unassigned tasks placed in `Backlog (SOONER)` are automatically parsed by the orchestrator. They will be distributed to idle agents sequentially, determined first by Priority (`urgent` > `high` > `medium` > `low`) and second by oldest numeric Task ID.
 
 ## Relationship To Product Repositories
 
@@ -96,7 +97,7 @@ If implementation happened in a product repository, evidence here should still p
 
 - create work here first, then route it
 - keep board state and issue state aligned
-- do not let `Ready` mean “still being clarified”
+- do not let `Todo (NEXT)` mean “still being clarified”
 - record blockers explicitly instead of hiding them in comments
 - update shared docs here when the change affects portfolio-wide behavior
 

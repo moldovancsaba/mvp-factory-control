@@ -816,7 +816,7 @@ export default async function IssuePage(props: {
               <MentionInput
                 name="content"
                 mentionables={mentionables}
-                placeholder='Message (try: "@Agent take this once Status=Ready")'
+                placeholder='Message (try: "@Agent take this once Status=Todo (NEXT)")'
               />
               <button
                 type="submit"

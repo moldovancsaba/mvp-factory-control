@@ -48,7 +48,7 @@ if [ -f "$DEFAULTS_FILE" ]; then
   source "$DEFAULTS_FILE"
   set +a
 fi
-DEFAULT_STATUS="${MVP_STATUS:-Backlog}"
+DEFAULT_STATUS="${MVP_STATUS:-Backlog (SOONER)}"
 # Intentionally no fallback agent to avoid leaking demo/default assignments.
 DEFAULT_AGENT="${MVP_AGENT-}"
 DEFAULT_PRODUCT="${MVP_PRODUCT:-amanoba}"
@@ -148,15 +148,18 @@ TYPE="${TYPE:-$DEFAULT_TYPE}"
 PRIORITY="${OVERRIDE_PRIORITY:-$(get_current_value "Priority")}"
 PRIORITY="${PRIORITY:-$DEFAULT_PRIORITY}"
 
-# Hard Ready gate: issue must contain a valid Executable Prompt Package.
+# Executable prompt gate: moving into Todo (NEXT) (pull queue) requires a valid Executable Prompt Package on the issue.
 CURRENT_STATUS="$(get_current_value "Status")"
-if [ "${MVP_SKIP_EXECUTABLE_PROMPT_GATE:-0}" != "1" ] && [ "$(echo "$STATUS" | tr '[:upper:]' '[:lower:]')" = "ready" ] && [ "$(echo "$CURRENT_STATUS" | tr '[:upper:]' '[:lower:]')" != "ready" ]; then
+norm_new="$(echo "$STATUS" | tr '[:upper:]' '[:lower:]')"
+norm_cur="$(echo "$CURRENT_STATUS" | tr '[:upper:]' '[:lower:]')"
+todo_next="todo (next)"
+if [ "${MVP_SKIP_EXECUTABLE_PROMPT_GATE:-0}" != "1" ] && [ "$norm_new" = "$todo_next" ] && [ "$norm_cur" != "$norm_new" ]; then
   if [ ! -f "$PROMPT_VALIDATOR" ]; then
-    echo "Ready gate validator missing: $PROMPT_VALIDATOR" >&2
+    echo "Prompt package validator missing: $PROMPT_VALIDATOR" >&2
     exit 1
   fi
   if ! node "$PROMPT_VALIDATOR" --issue "$ISSUE_NUM" --repo "$PROJECT_OWNER/$REPO_NAME"; then
-    echo "Refusing to move issue #$ISSUE_NUM to Ready: Executable Prompt Package is incomplete." >&2
+    echo "Refusing to move issue #$ISSUE_NUM to Todo (NEXT): Executable Prompt Package is incomplete." >&2
     echo "Add required sections (Objective, Execution Prompt, Scope/Non-goals, Constraints, Acceptance Checks, Delivery Artifact)." >&2
     exit 1
   fi

@@ -110,7 +110,7 @@ Each project has a dedicated page under `docs/projects/`.
 
 ### Status Flow
 
-1. Backlog → Ready → In Progress → Review → Done
+1. Backlog (SOONER) → Todo (NEXT) → In Progress (NOW) → Review → Done
 2. Blocked (when encountering blockers)
 
 ### Core Fields
