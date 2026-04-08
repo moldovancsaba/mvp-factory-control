@@ -3,370 +3,195 @@
  *
  * Forms post to `agents/actions.ts`. Permission matrix from `lifecycle-policy` for documentation in-page.
  */
-//> Import bindings from a module.
 import { redirect } from "next/navigation";
-//> Import bindings from a module.
 import { Shell } from "@/components/Shell";
-//> Import bindings from a module.
 import { getProjectMeta, reconcileBoardAgentOptions } from "@/lib/github";
-//> Import bindings from a module.
 import { buildAgentReadinessChecklist } from "@/lib/agent-readiness";
-//> Import bindings from a module.
 import { permissionMatrixRows } from "@/lib/lifecycle-policy";
-//> Import bindings from a module.
 import { getOrchestratorLeaseSnapshot } from "@/lib/orchestrator-lease";
-//> Import bindings from a module.
 import { prisma } from "@/lib/prisma";
-//> Import bindings from a module.
 import { readMVPFactoryControlSettings } from "@/lib/settings-store";
-//> Import bindings from a module.
 import { requireSession } from "@/lib/session";
-//> Import bindings from a module.
 import {
-  //> Source statement or expression.
   isRuntimeRunnable,
-  //> Source statement or expression.
   listRunningWorkers
-//> Source statement or expression.
 } from "@/lib/worker-process";
-//> Import bindings from a module.
 import {
-  //> Source statement or expression.
   createAgentAction,
-  //> Source statement or expression.
   adminOverrideManualRequiredAction,
-  //> Source statement or expression.
   deleteAgentConfigAction,
-  //> Source statement or expression.
   mergeCaseVariantAgentKeysAction,
-  //> Source statement or expression.
   saveAgentConfigAction,
-  //> Source statement or expression.
   startAgentWorkerAction,
-  //> Source statement or expression.
   stopAgentWorkerAction,
-  //> Source statement or expression.
   updateAgentReadinessAction,
-  //> Source statement or expression.
   updateAgentSmokeTestAction
-//> Source statement or expression.
 } from "@/app/agents/actions";
-//> Import bindings from a module.
 import { badgeClassName, buttonClassName } from "@/components/ui";
 
-//> Function declaration.
 function heartbeatStatus(a: {
-  //> Source statement or expression.
   runtime: string;
-  //> Source statement or expression.
   lastHeartbeatAt: Date | null;
-  //> Source statement or expression.
   runnable: boolean;
-  //> Source statement or expression.
   isRunning: boolean;
-//> Source statement or expression.
 }) {
-  //> Conditional branch.
   if (a.runtime === "MANUAL") return { label: "MANUAL", tone: "muted" as const };
   // For runnable agents, process state is authoritative for immediate online/offline UX.
-  //> Conditional branch.
   if (a.runnable && !a.isRunning) return { label: "OFFLINE", tone: "bad" as const };
-  //> Conditional branch.
   if (!a.lastHeartbeatAt) return { label: "OFFLINE", tone: "bad" as const };
-  //> Variable declaration.
   const ageMs = Date.now() - a.lastHeartbeatAt.getTime();
-  //> Conditional branch.
   if (ageMs <= 15_000) return { label: "ONLINE", tone: "good" as const };
-  //> Conditional branch.
   if (ageMs <= 60_000) return { label: "STALE", tone: "warn" as const };
-  //> Return a value.
   return { label: "OFFLINE", tone: "bad" as const };
-//> Brace or statement terminator.
 }
 
-//> Function declaration.
 function readinessRank(readiness: "NOT_READY" | "READY" | "PAUSED") {
-  //> Conditional branch.
   if (readiness === "READY") return 3;
-  //> Conditional branch.
   if (readiness === "PAUSED") return 2;
-  //> Return a value.
   return 1;
-//> Brace or statement terminator.
 }
 
-//> Function declaration.
 function pickRecommendedCanonicalKey(
-  //> Source statement or expression.
   agents: Array<{
-    //> Source statement or expression.
     key: string;
-    //> Source statement or expression.
     runtime: "MANUAL" | "LOCAL" | "CLOUD";
-    //> Source statement or expression.
     readiness: "NOT_READY" | "READY" | "PAUSED";
-    //> Source statement or expression.
     enabled: boolean;
-    //> Source statement or expression.
     smokeTestPassedAt: Date | null;
-    //> Source statement or expression.
     lastHeartbeatAt: Date | null;
-  //> Delimiter or separator.
   }>,
-  //> Source statement or expression.
   taskCountByKey: Map<string, number>
-//> Source statement or expression.
 ) {
-  //> Return a value.
   return agents
-    //> Source statement or expression.
     .slice()
-    //> Source statement or expression.
     .sort((a, b) => {
-      //> Variable declaration.
       const scoreA =
-        //> Source statement or expression.
         (isRuntimeRunnable(a.runtime) ? 100 : 0) +
-        //> Source statement or expression.
         (a.enabled ? 30 : 0) +
-        //> Source statement or expression.
         readinessRank(a.readiness) * 10 +
-        //> Source statement or expression.
         (a.smokeTestPassedAt ? 8 : 0) +
-        //> Source statement or expression.
         (a.lastHeartbeatAt ? 6 : 0) +
-        //> Source statement or expression.
         Math.min(taskCountByKey.get(a.key) || 0, 20);
-      //> Variable declaration.
       const scoreB =
-        //> Source statement or expression.
         (isRuntimeRunnable(b.runtime) ? 100 : 0) +
-        //> Source statement or expression.
         (b.enabled ? 30 : 0) +
-        //> Source statement or expression.
         readinessRank(b.readiness) * 10 +
-        //> Source statement or expression.
         (b.smokeTestPassedAt ? 8 : 0) +
-        //> Source statement or expression.
         (b.lastHeartbeatAt ? 6 : 0) +
-        //> Source statement or expression.
         Math.min(taskCountByKey.get(b.key) || 0, 20);
-      //> Conditional branch.
       if (scoreB !== scoreA) return scoreB - scoreA;
-      //> Return a value.
       return a.key.localeCompare(b.key);
-    //> Source statement or expression.
     })[0]?.key;
-//> Brace or statement terminator.
 }
 
-//> Function declaration.
 function leaseHealthClass(health: "HEALTHY" | "EXPIRING" | "STALE" | "UNHELD") {
-  //> Conditional branch.
   if (health === "HEALTHY") {
-    //> Return a value.
     return badgeClassName("success");
-  //> Brace or statement terminator.
   }
-  //> Conditional branch.
   if (health === "EXPIRING") {
-    //> Return a value.
     return badgeClassName("warning");
-  //> Brace or statement terminator.
   }
-  //> Conditional branch.
   if (health === "STALE") {
-    //> Return a value.
     return badgeClassName("danger");
-  //> Brace or statement terminator.
   }
-  //> Return a value.
   return badgeClassName();
-//> Brace or statement terminator.
 }
 
-//> Function declaration.
 function formatLeaseTtl(ttlMs: number | null) {
-  //> Conditional branch.
   if (ttlMs === null) return "(n/a)";
-  //> Conditional branch.
   if (ttlMs <= 0) return "expired";
-  //> Conditional branch.
   if (ttlMs < 1_000) return "<1s";
-  //> Return a value.
   return `${Math.ceil(ttlMs / 1000)}s`;
-//> Brace or statement terminator.
 }
 
-//> Function declaration.
 function getTasteRubricVersion(metadata: unknown) {
-  //> Conditional branch.
   if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) return null;
-  //> Const with function or expression.
   const value = (metadata as Record<string, unknown>).tasteRubricVersion;
-  //> Conditional branch.
   if (typeof value !== "string" || !value.trim()) return null;
-  //> Return a value.
   return value.trim();
-//> Brace or statement terminator.
 }
 
-//> Export declaration.
 export default async function AgentsPage() {
-  //> Variable declaration.
   const session = await requireSession();
-  //> Conditional branch.
   if (!session) redirect("/signin");
 
-  //> Variable declaration.
   const settings = await readMVPFactoryControlSettings();
-  //> Variable declaration.
   let boardAgents: string[] = [];
-  //> Variable declaration.
   let boardLoadError: string | null = null;
-  //> Try block start.
   try {
-    //> Variable declaration.
     const meta = await getProjectMeta();
-    //> Variable declaration.
     const agentField = meta.fields.find((f) => f.name === "Agent");
-    //> Source statement or expression.
     boardAgents = agentField?.options?.map((o) => o.name) ?? [];
-  //> Source statement or expression.
   } catch (e) {
-    //> Source statement or expression.
     boardLoadError = e instanceof Error ? e.message : String(e);
-  //> Brace or statement terminator.
   }
 
   // Seed settings-only agent configs into local registry.
-  //> For-loop header.
   for (const row of settings.agents) {
     // eslint-disable-next-line no-await-in-loop
-    //> Variable declaration.
     const existing = await prisma.agent.findFirst({
-      //> Source statement or expression.
       where: { key: { equals: row.agentName, mode: "insensitive" } },
-      //> Source statement or expression.
       select: { key: true }
-    //> Brace or statement terminator.
     });
-    //> Conditional branch.
     if (existing?.key) continue;
     // eslint-disable-next-line no-await-in-loop
-    //> Await async value.
     await prisma.agent.create({
-      //> Source statement or expression.
       data: {
-        //> Source statement or expression.
         key: row.agentName,
-        //> Source statement or expression.
         displayName: row.agentName,
-        //> Source statement or expression.
         runtime: "MANUAL"
-      //> Brace or statement terminator.
       }
-    //> Brace or statement terminator.
     });
-  //> Brace or statement terminator.
   }
 
-  //> Variable declaration.
   const dbAgents = await prisma.agent.findMany({ orderBy: { displayName: "asc" } });
-  //> Variable declaration.
   const visibleAgents = dbAgents.filter((a) => a.runtime !== "MANUAL");
-  //> Variable declaration.
   const boardAgentReconciliation = reconcileBoardAgentOptions({
-    //> Source statement or expression.
     boardAgentOptions: boardAgents,
-    //> Source statement or expression.
     dbAgents: visibleAgents.map((a) => ({
-      //> Source statement or expression.
       key: a.key,
-      //> Source statement or expression.
       displayName: a.displayName,
-      //> Source statement or expression.
       enabled: a.enabled,
-      //> Source statement or expression.
       runtime: a.runtime
-    //> Delimiter or separator.
     }))
-  //> Brace or statement terminator.
   });
-  //> Variable declaration.
   const taskCounts = await prisma.agentTask.groupBy({
-    //> Source statement or expression.
     by: ["agentKey"],
-    //> Source statement or expression.
     _count: { _all: true }
-  //> Brace or statement terminator.
   });
-  //> Variable declaration.
   const taskCountByKey = new Map(taskCounts.map((row) => [row.agentKey, row._count._all]));
-  //> Variable declaration.
   const settingsByAgentName = new Map(
-    //> Source statement or expression.
     settings.agents.map((row) => [row.agentName.toLowerCase(), row])
-  //> Delimiter or separator.
   );
-  //> Variable declaration.
   const boardAgentSet = new Set(boardAgents.map((k) => k.toLowerCase()));
-  //> Variable declaration.
   const runningWorkers = listRunningWorkers();
-  //> Variable declaration.
   const leaseSnapshot = await getOrchestratorLeaseSnapshot();
-  //> Variable declaration.
   const lifecycleRows = permissionMatrixRows();
-  //> Variable declaration.
   const lifecycleAudits = await prisma.lifecycleAuditEvent.findMany({
-    //> Source statement or expression.
     orderBy: { createdAt: "desc" },
-    //> Source statement or expression.
     take: 10
-  //> Brace or statement terminator.
   });
-  //> Variable declaration.
   const runningKeys = new Set(
-    //> Source statement or expression.
     runningWorkers.map((w) => w.agentKey).filter(Boolean) as string[]
-  //> Delimiter or separator.
   );
-  //> Variable declaration.
   const duplicateGroups = Array.from(
-    //> Source statement or expression.
     dbAgents.reduce((acc, row) => {
-      //> Variable declaration.
       const key = row.key.toLowerCase();
-      //> Variable declaration.
       const existing = acc.get(key);
-      //> Conditional branch.
       if (existing) existing.push(row);
-      //> Else branch.
       else acc.set(key, [row]);
-      //> Return a value.
       return acc;
-    //> Source statement or expression.
     }, new Map<string, typeof dbAgents>())
-  //> Delimiter or separator.
   )
-    //> Source statement or expression.
     .map(([lowerKey, rows]) => ({
-      //> Source statement or expression.
       lowerKey,
-      //> Source statement or expression.
       rows: rows.sort((a, b) => a.key.localeCompare(b.key))
-    //> Delimiter or separator.
     }))
-    //> Source statement or expression.
     .filter((group) => group.rows.length > 1)
-    //> Source statement or expression.
     .sort((a, b) => a.lowerKey.localeCompare(b.lowerKey));
-  //> Variable declaration.
   const alphaCount = visibleAgents.filter((a) => a.controlRole === "ALPHA").length;
-  //> Variable declaration.
   const betaCount = visibleAgents.filter((a) => a.controlRole !== "ALPHA").length;
 
-  //> Return a value.
   return (
     <Shell
       title="Agents"
@@ -943,5 +768,4 @@ export default async function AgentsPage() {
       ) : null}
     </Shell>
   );
-//> Brace or statement terminator.
 }

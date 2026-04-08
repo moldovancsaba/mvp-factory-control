@@ -3,154 +3,83 @@
  *
  * Auth: `requireSession`. Project key from `MVP_FACTORY_CONTROL_DASHBOARD_PRODUCT` (default `mvp-factory-control`).
  */
-//> Import bindings from a module.
 import Link from "next/link";
-//> Import bindings from a module.
 import { redirect } from "next/navigation";
-//> Import bindings from a module.
 import { Shell } from "@/components/Shell";
-//> Import bindings from a module.
 import { requireSession } from "@/lib/session";
-//> Import bindings from a module.
 import { getProjectMeta, listProjectItems } from "@/lib/github";
-//> Import bindings from a module.
 import { listActiveProjectAlphaLocks } from "@/lib/alpha-context";
-//> Import bindings from a module.
 import { getOrchestratorIntrospectionSnapshot } from "@/lib/orchestrator-introspection";
-//> Import bindings from a module.
 import { prisma } from "@/lib/prisma";
-//> Import bindings from a module.
 import { badgeClassName, buttonClassName } from "@/components/ui";
 
-//> Function declaration.
 function countBy(items: Array<{ fields: Record<string, string> }>, field: string) {
-  //> Variable declaration.
   const out: Record<string, number> = {};
-  //> For-loop header.
   for (const it of items) {
-    //> Variable declaration.
     const v = it.fields[field] || "(unset)";
-    //> Source statement or expression.
     out[v] = (out[v] || 0) + 1;
-  //> Brace or statement terminator.
   }
-  //> Return a value.
   return Object.entries(out).sort((a, b) => b[1] - a[1]);
-//> Brace or statement terminator.
 }
 
-//> Export declaration.
 export default async function DashboardPage() {
-  //> Variable declaration.
   const session = await requireSession();
-  //> Conditional branch.
   if (!session) redirect("/signin");
 
-  //> Const with function or expression.
   const dashboardProduct = (process.env.MVP_FACTORY_CONTROL_DASHBOARD_PRODUCT || "mvp-factory-control").trim();
-  //> Variable declaration.
   let meta: Awaited<ReturnType<typeof getProjectMeta>> | null = null;
-  //> Variable declaration.
   let items: Awaited<ReturnType<typeof listProjectItems>> = [];
-  //> Variable declaration.
   let emailEvents: Array<{
-    //> Source statement or expression.
     id: string;
-    //> Source statement or expression.
     status: string;
-    //> Source statement or expression.
     senderEmail: string;
-    //> Source statement or expression.
     attemptCount: number;
-    //> Source statement or expression.
     lastFailureCode: string | null;
-    //> Source statement or expression.
     createdAt: Date;
-  //> Source statement or expression.
   }> = [];
-  //> Variable declaration.
   let activeAlphaLocks: Awaited<ReturnType<typeof listActiveProjectAlphaLocks>> = [];
-  //> Variable declaration.
   let introspection: Awaited<ReturnType<typeof getOrchestratorIntrospectionSnapshot>> | null = null;
-  //> Variable declaration.
   let introspectionError: string | null = null;
-  //> Variable declaration.
   let boardError: string | null = null;
-  //> Variable declaration.
   let localError: string | null = null;
 
-  //> Try block start.
   try {
-    //> Source statement or expression.
     [meta, items] = await Promise.all([
-      //> Source statement or expression.
       getProjectMeta(),
-      //> Source statement or expression.
       listProjectItems({ limit: 200, product: dashboardProduct })
-    //> Delimiter or separator.
     ]);
-  //> Source statement or expression.
   } catch (e) {
-    //> Source statement or expression.
     boardError = e instanceof Error ? e.message : String(e);
-  //> Brace or statement terminator.
   }
 
-  //> Try block start.
   try {
-    //> Source statement or expression.
     [emailEvents, activeAlphaLocks] = await Promise.all([
-      //> Source statement or expression.
       prisma.inboundEmailEvent.findMany({
-        //> Source statement or expression.
         orderBy: { createdAt: "desc" },
-        //> Source statement or expression.
         take: 50,
-        //> Source statement or expression.
         select: {
-          //> Source statement or expression.
           id: true,
-          //> Source statement or expression.
           status: true,
-          //> Source statement or expression.
           senderEmail: true,
-          //> Source statement or expression.
           attemptCount: true,
-          //> Source statement or expression.
           lastFailureCode: true,
-          //> Source statement or expression.
           createdAt: true
-        //> Brace or statement terminator.
         }
-      //> Delimiter or separator.
       }),
-      //> Source statement or expression.
       listActiveProjectAlphaLocks(30)
-    //> Delimiter or separator.
     ]);
-  //> Source statement or expression.
   } catch (e) {
-    //> Source statement or expression.
     localError = e instanceof Error ? e.message : String(e);
-  //> Brace or statement terminator.
   }
 
-  //> Conditional branch.
   if (!localError) {
-    //> Try block start.
     try {
-      //> Source statement or expression.
       introspection = await getOrchestratorIntrospectionSnapshot();
-    //> Source statement or expression.
     } catch (e) {
-      //> Source statement or expression.
       introspectionError = e instanceof Error ? e.message : String(e);
-    //> Brace or statement terminator.
     }
-  //> Brace or statement terminator.
   }
 
-  //> Return a value.
   return (
     <Shell
       title="Dashboard"
@@ -447,5 +376,4 @@ export default async function DashboardPage() {
       )}
     </Shell>
   );
-//> Brace or statement terminator.
 }

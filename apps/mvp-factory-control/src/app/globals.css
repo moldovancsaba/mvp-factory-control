@@ -3,972 +3,528 @@
  * Defines CSS variables (--bg-*, --text-*, --accent, radii), `.ui-shell` / `.ui-panel` / `.ui-button` components,
  * and Tailwind v4 `@import "tailwindcss"`. Keep in sync with `docs/design-system-lts.md` and `components/ui.tsx`.
  */
-/*> C: Import directive. */
 @import "tailwindcss";
 
-/*> C: Pseudo selector. */
 :root {
-  /*> C: Declaration or selector fragment. */
   --bg-canvas: #08111f;
-  /*> C: Declaration or selector fragment. */
   --bg-surface: rgba(10, 20, 37, 0.72);
-  /*> C: Declaration or selector fragment. */
   --bg-surface-strong: rgba(7, 14, 26, 0.82);
-  /*> C: Declaration or selector fragment. */
   --bg-surface-soft: rgba(255, 255, 255, 0.04);
-  /*> C: Declaration or selector fragment. */
   --bg-surface-hover: rgba(255, 255, 255, 0.08);
-  /*> C: Declaration or selector fragment. */
   --border-subtle: rgba(255, 255, 255, 0.08);
-  /*> C: Declaration or selector fragment. */
   --border-strong: rgba(255, 255, 255, 0.14);
-  /*> C: Declaration or selector fragment. */
   --text-strong: rgba(244, 248, 255, 0.96);
-  /*> C: Declaration or selector fragment. */
   --text-base: rgba(225, 232, 245, 0.86);
-  /*> C: Declaration or selector fragment. */
   --text-muted: rgba(188, 198, 216, 0.68);
-  /*> C: Declaration or selector fragment. */
   --text-faint: rgba(163, 173, 190, 0.52);
-  /*> C: Declaration or selector fragment. */
   --accent: #8ab4ff;
-  /*> C: Declaration or selector fragment. */
   --accent-strong: #5b8cff;
-  /*> C: Declaration or selector fragment. */
   --success: #34d2aa;
-  /*> C: Declaration or selector fragment. */
   --warning: #ffca72;
-  /*> C: Declaration or selector fragment. */
   --danger: #ff7c86;
-  /*> C: Declaration or selector fragment. */
   --radius-sm: 0.9rem;
-  /*> C: Declaration or selector fragment. */
   --radius-md: 1.15rem;
-  /*> C: Declaration or selector fragment. */
   --radius-lg: 1.45rem;
-  /*> C: Declaration or selector fragment. */
   --shadow-panel: 0 24px 80px rgba(0, 0, 0, 0.3);
-  /*> C: Declaration or selector fragment. */
   --max-page-width: 88rem;
-  /*> C: Declaration or selector fragment. */
   --page-gutter: clamp(1rem, 2vw, 2rem);
-  /*> C: Declaration or selector fragment. */
   --section-gap: clamp(1rem, 1.6vw, 1.5rem);
-/*> C: Rule set end. */
 }
 
-/*> C: CSS source line. */
 html,
-/*> C: Rule set opening. */
 body {
-  /*> C: Declaration or selector fragment. */
   min-height: 100%;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 body {
-  /*> C: Declaration or selector fragment. */
   color: var(--text-base);
-  /*> C: Declaration or selector fragment. */
   background:
-    /*> C: CSS source line. */
     radial-gradient(58rem 36rem at 14% 8%, rgba(138, 180, 255, 0.18), transparent 55%),
-    /*> C: CSS source line. */
     radial-gradient(48rem 28rem at 85% 12%, rgba(52, 210, 170, 0.14), transparent 58%),
-    /*> C: CSS source line. */
     radial-gradient(32rem 28rem at 50% 100%, rgba(91, 140, 255, 0.12), transparent 62%),
-    /*> C: CSS source line. */
     linear-gradient(180deg, #0a1324 0%, var(--bg-canvas) 100%);
-  /*> C: Declaration or selector fragment. */
   font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-/*> C: Rule set end. */
 }
 
 * {
-  /*> C: Declaration or selector fragment. */
   box-sizing: border-box;
-/*> C: Rule set end. */
 }
 
-/*> C: Pseudo selector. */
 ::selection {
-  /*> C: Declaration or selector fragment. */
   background: rgba(138, 180, 255, 0.32);
-/*> C: Rule set end. */
 }
 
-/*> C: CSS source line. */
 a,
-/*> C: CSS source line. */
 button,
-/*> C: CSS source line. */
 input,
-/*> C: CSS source line. */
 textarea,
-/*> C: Rule set opening. */
 select {
-  /*> C: Declaration or selector fragment. */
   transition:
-    /*> C: CSS source line. */
     border-color 140ms ease,
-    /*> C: CSS source line. */
     background-color 140ms ease,
-    /*> C: CSS source line. */
     color 140ms ease,
-    /*> C: CSS source line. */
     transform 140ms ease,
-    /*> C: CSS source line. */
     box-shadow 140ms ease;
-/*> C: Rule set end. */
 }
 
-/*> C: CSS source line. */
 code,
-/*> C: CSS source line. */
 pre,
-/*> C: Rule set opening. */
 .font-mono {
-  /*> C: Declaration or selector fragment. */
   font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-shell {
-  /*> C: Declaration or selector fragment. */
   min-height: 100vh;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-shell__header {
-  /*> C: Declaration or selector fragment. */
   position: sticky;
-  /*> C: Declaration or selector fragment. */
   top: 0;
-  /*> C: Declaration or selector fragment. */
   z-index: 30;
-  /*> C: Declaration or selector fragment. */
   border-bottom: 1px solid var(--border-subtle);
-  /*> C: Declaration or selector fragment. */
   background: rgba(5, 11, 22, 0.68);
-  /*> C: Declaration or selector fragment. */
   backdrop-filter: blur(18px);
-/*> C: Rule set end. */
 }
 
-/*> C: CSS source line. */
 .ui-shell__inner,
-/*> C: CSS source line. */
 .ui-page,
-/*> C: Rule set opening. */
 .ui-auth {
-  /*> C: Declaration or selector fragment. */
   width: min(var(--max-page-width), calc(100% - (var(--page-gutter) * 2)));
-  /*> C: Declaration or selector fragment. */
   margin: 0 auto;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-shell__inner {
-  /*> C: Declaration or selector fragment. */
   display: flex;
-  /*> C: Declaration or selector fragment. */
   align-items: center;
-  /*> C: Declaration or selector fragment. */
   justify-content: space-between;
-  /*> C: Declaration or selector fragment. */
   gap: 1rem;
-  /*> C: Declaration or selector fragment. */
   min-height: 4.75rem;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-shell__brand {
-  /*> C: Declaration or selector fragment. */
   display: grid;
-  /*> C: Declaration or selector fragment. */
   gap: 0.15rem;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-shell__brand-name {
-  /*> C: Declaration or selector fragment. */
   display: flex;
-  /*> C: Declaration or selector fragment. */
   align-items: center;
-  /*> C: Declaration or selector fragment. */
   gap: 0.65rem;
-  /*> C: Declaration or selector fragment. */
   color: var(--text-strong);
-  /*> C: Declaration or selector fragment. */
   font-size: 0.96rem;
-  /*> C: Declaration or selector fragment. */
   font-weight: 600;
-  /*> C: Declaration or selector fragment. */
   letter-spacing: 0.01em;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-shell__brand-copy {
-  /*> C: Declaration or selector fragment. */
   font-size: 0.72rem;
-  /*> C: Declaration or selector fragment. */
   color: var(--text-faint);
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-shell__nav {
-  /*> C: Declaration or selector fragment. */
   display: none;
-  /*> C: Declaration or selector fragment. */
   align-items: center;
-  /*> C: Declaration or selector fragment. */
   gap: 0.4rem;
-  /*> C: Declaration or selector fragment. */
   padding: 0.3rem;
-  /*> C: Declaration or selector fragment. */
   border: 1px solid var(--border-subtle);
-  /*> C: Declaration or selector fragment. */
   border-radius: 999px;
-  /*> C: Declaration or selector fragment. */
   background: rgba(255, 255, 255, 0.03);
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-shell__nav-link {
-  /*> C: Declaration or selector fragment. */
   padding: 0.55rem 0.85rem;
-  /*> C: Declaration or selector fragment. */
   border-radius: 999px;
-  /*> C: Declaration or selector fragment. */
   color: var(--text-muted);
-  /*> C: Declaration or selector fragment. */
   font-size: 0.86rem;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-shell__nav-link:hover {
-  /*> C: Declaration or selector fragment. */
   background: rgba(255, 255, 255, 0.06);
-  /*> C: Declaration or selector fragment. */
   color: var(--text-strong);
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-shell__actions {
-  /*> C: Declaration or selector fragment. */
   display: flex;
-  /*> C: Declaration or selector fragment. */
   align-items: center;
-  /*> C: Declaration or selector fragment. */
   gap: 0.75rem;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-shell__user {
-  /*> C: Declaration or selector fragment. */
   display: none;
-  /*> C: Declaration or selector fragment. */
   font-size: 0.86rem;
-  /*> C: Declaration or selector fragment. */
   color: var(--text-muted);
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-page {
-  /*> C: Declaration or selector fragment. */
   padding-block: clamp(1.5rem, 3vw, 2.5rem) 3rem;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-page__header {
-  /*> C: Declaration or selector fragment. */
   display: grid;
-  /*> C: Declaration or selector fragment. */
   gap: 0.4rem;
-  /*> C: Declaration or selector fragment. */
   margin-bottom: 1.5rem;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-page__title {
-  /*> C: Declaration or selector fragment. */
   color: var(--text-strong);
-  /*> C: Declaration or selector fragment. */
   font-size: clamp(1.9rem, 4vw, 2.65rem);
-  /*> C: Declaration or selector fragment. */
   line-height: 1.05;
-  /*> C: Declaration or selector fragment. */
   font-weight: 700;
-  /*> C: Declaration or selector fragment. */
   letter-spacing: -0.03em;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-page__subtitle {
-  /*> C: Declaration or selector fragment. */
   max-width: 72rem;
-  /*> C: Declaration or selector fragment. */
   color: var(--text-muted);
-  /*> C: Declaration or selector fragment. */
   font-size: 0.96rem;
-  /*> C: Declaration or selector fragment. */
   line-height: 1.55;
-/*> C: Rule set end. */
 }
 
-/*> C: CSS source line. */
 .ui-page__body,
-/*> C: CSS source line. */
 .ui-stack-lg,
-/*> C: CSS source line. */
 .ui-stack-md,
-/*> C: Rule set opening. */
 .ui-stack-sm {
-  /*> C: Declaration or selector fragment. */
   display: grid;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-stack-lg {
-  /*> C: Declaration or selector fragment. */
   gap: 1.5rem;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-stack-md {
-  /*> C: Declaration or selector fragment. */
   gap: 1rem;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-stack-sm {
-  /*> C: Declaration or selector fragment. */
   gap: 0.7rem;
-/*> C: Rule set end. */
 }
 
-/*> C: CSS source line. */
 .ui-grid-2,
-/*> C: CSS source line. */
 .ui-grid-3,
-/*> C: CSS source line. */
 .ui-grid-4,
-/*> C: Rule set opening. */
 .ui-grid-auto {
-  /*> C: Declaration or selector fragment. */
   display: grid;
-  /*> C: Declaration or selector fragment. */
   gap: var(--section-gap);
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-grid-2 {
-  /*> C: Declaration or selector fragment. */
   grid-template-columns: repeat(1, minmax(0, 1fr));
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-grid-3 {
-  /*> C: Declaration or selector fragment. */
   grid-template-columns: repeat(1, minmax(0, 1fr));
-/*> C: Rule set end. */
 }
 
-/*> C: CSS source line. */
 .ui-grid-4,
-/*> C: Rule set opening. */
 .ui-grid-auto {
-  /*> C: Declaration or selector fragment. */
   grid-template-columns: repeat(1, minmax(0, 1fr));
-/*> C: Rule set end. */
 }
 
-/*> C: CSS source line. */
 .ui-panel,
-/*> C: CSS source line. */
 .ui-subpanel,
-/*> C: CSS source line. */
 .ui-list-panel,
-/*> C: Rule set opening. */
 .ui-empty {
-  /*> C: Declaration or selector fragment. */
   border: 1px solid var(--border-strong);
-  /*> C: Declaration or selector fragment. */
   background:
-    /*> C: CSS source line. */
     linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02)),
-    /*> C: CSS source line. */
     var(--bg-surface);
-  /*> C: Declaration or selector fragment. */
   box-shadow: var(--shadow-panel);
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-panel {
-  /*> C: Declaration or selector fragment. */
   border-radius: var(--radius-lg);
-  /*> C: Declaration or selector fragment. */
   padding: 1.25rem;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-panel--compact {
-  /*> C: Declaration or selector fragment. */
   padding: 1rem;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-panel--hero {
-  /*> C: Declaration or selector fragment. */
   background:
-    /*> C: CSS source line. */
     linear-gradient(135deg, rgba(138, 180, 255, 0.12), transparent 50%),
-    /*> C: CSS source line. */
     linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)),
-    /*> C: CSS source line. */
     var(--bg-surface);
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-subpanel {
-  /*> C: Declaration or selector fragment. */
   border-radius: var(--radius-md);
-  /*> C: Declaration or selector fragment. */
   padding: 0.85rem 1rem;
-  /*> C: Declaration or selector fragment. */
   background: var(--bg-surface-strong);
-  /*> C: Declaration or selector fragment. */
   box-shadow: none;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-list-panel {
-  /*> C: Declaration or selector fragment. */
   overflow: hidden;
-  /*> C: Declaration or selector fragment. */
   border-radius: var(--radius-lg);
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-list-row {
-  /*> C: Declaration or selector fragment. */
   display: block;
-  /*> C: Declaration or selector fragment. */
   padding: 1rem 1.25rem;
-  /*> C: Declaration or selector fragment. */
   border-top: 1px solid var(--border-subtle);
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-list-row:first-child {
-  /*> C: Declaration or selector fragment. */
   border-top: 0;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-list-row:hover {
-  /*> C: Declaration or selector fragment. */
   background: rgba(255, 255, 255, 0.04);
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-empty {
-  /*> C: Declaration or selector fragment. */
   border-radius: var(--radius-md);
-  /*> C: Declaration or selector fragment. */
   padding: 0.85rem 1rem;
-  /*> C: Declaration or selector fragment. */
   color: var(--text-muted);
-  /*> C: Declaration or selector fragment. */
   font-size: 0.88rem;
-  /*> C: Declaration or selector fragment. */
   line-height: 1.5;
-/*> C: Rule set end. */
 }
 
-/*> C: CSS source line. */
 .ui-eyebrow,
-/*> C: Rule set opening. */
 .ui-kicker {
-  /*> C: Declaration or selector fragment. */
   color: var(--text-faint);
-  /*> C: Declaration or selector fragment. */
   text-transform: uppercase;
-  /*> C: Declaration or selector fragment. */
   letter-spacing: 0.11em;
-  /*> C: Declaration or selector fragment. */
   font-size: 0.7rem;
-  /*> C: Declaration or selector fragment. */
   font-weight: 600;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-section-title {
-  /*> C: Declaration or selector fragment. */
   color: var(--text-strong);
-  /*> C: Declaration or selector fragment. */
   font-size: 1.02rem;
-  /*> C: Declaration or selector fragment. */
   font-weight: 600;
-  /*> C: Declaration or selector fragment. */
   line-height: 1.3;
-/*> C: Rule set end. */
 }
 
-/*> C: CSS source line. */
 .ui-section-copy,
-/*> C: Rule set opening. */
 .ui-copy {
-  /*> C: Declaration or selector fragment. */
   color: var(--text-muted);
-  /*> C: Declaration or selector fragment. */
   font-size: 0.9rem;
-  /*> C: Declaration or selector fragment. */
   line-height: 1.55;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-meta {
-  /*> C: Declaration or selector fragment. */
   color: var(--text-faint);
-  /*> C: Declaration or selector fragment. */
   font-size: 0.76rem;
-  /*> C: Declaration or selector fragment. */
   line-height: 1.45;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-kpi-value {
-  /*> C: Declaration or selector fragment. */
   color: var(--text-strong);
-  /*> C: Declaration or selector fragment. */
   font-size: clamp(1.75rem, 4vw, 2.6rem);
-  /*> C: Declaration or selector fragment. */
   font-weight: 700;
-  /*> C: Declaration or selector fragment. */
   line-height: 1;
-  /*> C: Declaration or selector fragment. */
   letter-spacing: -0.04em;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-toolbar {
-  /*> C: Declaration or selector fragment. */
   display: flex;
-  /*> C: Declaration or selector fragment. */
   flex-wrap: wrap;
-  /*> C: Declaration or selector fragment. */
   align-items: center;
-  /*> C: Declaration or selector fragment. */
   justify-content: space-between;
-  /*> C: Declaration or selector fragment. */
   gap: 0.85rem;
-/*> C: Rule set end. */
 }
 
-/*> C: CSS source line. */
 .ui-toolbar__actions,
-/*> C: Rule set opening. */
 .ui-inline-cluster {
-  /*> C: Declaration or selector fragment. */
   display: flex;
-  /*> C: Declaration or selector fragment. */
   flex-wrap: wrap;
-  /*> C: Declaration or selector fragment. */
   align-items: center;
-  /*> C: Declaration or selector fragment. */
   gap: 0.6rem;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-button {
-  /*> C: Declaration or selector fragment. */
   display: inline-flex;
-  /*> C: Declaration or selector fragment. */
   align-items: center;
-  /*> C: Declaration or selector fragment. */
   justify-content: center;
-  /*> C: Declaration or selector fragment. */
   gap: 0.45rem;
-  /*> C: Declaration or selector fragment. */
   min-height: 2.55rem;
-  /*> C: Declaration or selector fragment. */
   padding: 0.7rem 1rem;
-  /*> C: Declaration or selector fragment. */
   border: 1px solid var(--border-strong);
-  /*> C: Declaration or selector fragment. */
   border-radius: 999px;
-  /*> C: Declaration or selector fragment. */
   background: rgba(255, 255, 255, 0.07);
-  /*> C: Declaration or selector fragment. */
   color: var(--text-strong);
-  /*> C: Declaration or selector fragment. */
   font-size: 0.88rem;
-  /*> C: Declaration or selector fragment. */
   font-weight: 600;
-  /*> C: Declaration or selector fragment. */
   line-height: 1;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-button:hover {
-  /*> C: Declaration or selector fragment. */
   background: rgba(255, 255, 255, 0.12);
-  /*> C: Declaration or selector fragment. */
   transform: translateY(-1px);
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-button--secondary {
-  /*> C: Declaration or selector fragment. */
   background: rgba(255, 255, 255, 0.03);
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-button--success {
-  /*> C: Declaration or selector fragment. */
   border-color: rgba(52, 210, 170, 0.32);
-  /*> C: Declaration or selector fragment. */
   background: rgba(52, 210, 170, 0.14);
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-button--success:hover {
-  /*> C: Declaration or selector fragment. */
   background: rgba(52, 210, 170, 0.2);
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-button--danger {
-  /*> C: Declaration or selector fragment. */
   border-color: rgba(255, 124, 134, 0.35);
-  /*> C: Declaration or selector fragment. */
   background: rgba(255, 124, 134, 0.14);
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-button--danger:hover {
-  /*> C: Declaration or selector fragment. */
   background: rgba(255, 124, 134, 0.2);
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-badge {
-  /*> C: Declaration or selector fragment. */
   display: inline-flex;
-  /*> C: Declaration or selector fragment. */
   align-items: center;
-  /*> C: Declaration or selector fragment. */
   gap: 0.35rem;
-  /*> C: Declaration or selector fragment. */
   padding: 0.34rem 0.65rem;
-  /*> C: Declaration or selector fragment. */
   border: 1px solid var(--border-strong);
-  /*> C: Declaration or selector fragment. */
   border-radius: 999px;
-  /*> C: Declaration or selector fragment. */
   background: rgba(255, 255, 255, 0.05);
-  /*> C: Declaration or selector fragment. */
   color: var(--text-base);
-  /*> C: Declaration or selector fragment. */
   font-size: 0.7rem;
-  /*> C: Declaration or selector fragment. */
   font-weight: 600;
-  /*> C: Declaration or selector fragment. */
   line-height: 1;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-badge--success {
-  /*> C: Declaration or selector fragment. */
   border-color: rgba(52, 210, 170, 0.32);
-  /*> C: Declaration or selector fragment. */
   background: rgba(52, 210, 170, 0.14);
-  /*> C: Declaration or selector fragment. */
   color: #d9fff4;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-badge--warning {
-  /*> C: Declaration or selector fragment. */
   border-color: rgba(255, 202, 114, 0.3);
-  /*> C: Declaration or selector fragment. */
   background: rgba(255, 202, 114, 0.14);
-  /*> C: Declaration or selector fragment. */
   color: #fff1d2;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-badge--danger {
-  /*> C: Declaration or selector fragment. */
   border-color: rgba(255, 124, 134, 0.35);
-  /*> C: Declaration or selector fragment. */
   background: rgba(255, 124, 134, 0.14);
-  /*> C: Declaration or selector fragment. */
   color: #ffe1e6;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-badge--accent {
-  /*> C: Declaration or selector fragment. */
   border-color: rgba(138, 180, 255, 0.34);
-  /*> C: Declaration or selector fragment. */
   background: rgba(138, 180, 255, 0.14);
-  /*> C: Declaration or selector fragment. */
   color: #e4edff;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-field {
-  /*> C: Declaration or selector fragment. */
   display: grid;
-  /*> C: Declaration or selector fragment. */
   gap: 0.45rem;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-field__label {
-  /*> C: Declaration or selector fragment. */
   color: var(--text-faint);
-  /*> C: Declaration or selector fragment. */
   font-size: 0.72rem;
-  /*> C: Declaration or selector fragment. */
   font-weight: 600;
-  /*> C: Declaration or selector fragment. */
   letter-spacing: 0.03em;
-/*> C: Rule set end. */
 }
 
-/*> C: CSS source line. */
 .ui-input,
-/*> C: CSS source line. */
 .ui-select,
-/*> C: Rule set opening. */
 .ui-textarea {
-  /*> C: Declaration or selector fragment. */
   width: 100%;
-  /*> C: Declaration or selector fragment. */
   border: 1px solid var(--border-strong);
-  /*> C: Declaration or selector fragment. */
   border-radius: var(--radius-md);
-  /*> C: Declaration or selector fragment. */
   background: rgba(5, 12, 22, 0.52);
-  /*> C: Declaration or selector fragment. */
   color: var(--text-strong);
-  /*> C: Declaration or selector fragment. */
   font-size: 0.9rem;
-  /*> C: Declaration or selector fragment. */
   line-height: 1.45;
-  /*> C: Declaration or selector fragment. */
   outline: none;
-  /*> C: Declaration or selector fragment. */
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-/*> C: Rule set end. */
 }
 
-/*> C: CSS source line. */
 .ui-input,
-/*> C: Rule set opening. */
 .ui-select {
-  /*> C: Declaration or selector fragment. */
   min-height: 2.7rem;
-  /*> C: Declaration or selector fragment. */
   padding: 0.72rem 0.9rem;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-textarea {
-  /*> C: Declaration or selector fragment. */
   min-height: 7rem;
-  /*> C: Declaration or selector fragment. */
   padding: 0.85rem 0.9rem;
-  /*> C: Declaration or selector fragment. */
   resize: vertical;
-/*> C: Rule set end. */
 }
 
-/*> C: Declaration or selector fragment. */
 .ui-input::placeholder,
-/*> C: Rule set opening. */
 .ui-textarea::placeholder {
-  /*> C: Declaration or selector fragment. */
   color: rgba(188, 198, 216, 0.42);
-/*> C: Rule set end. */
 }
 
-/*> C: Declaration or selector fragment. */
 .ui-input:focus,
-/*> C: Declaration or selector fragment. */
 .ui-select:focus,
-/*> C: Rule set opening. */
 .ui-textarea:focus {
-  /*> C: Declaration or selector fragment. */
   border-color: rgba(138, 180, 255, 0.45);
-  /*> C: Declaration or selector fragment. */
   box-shadow: 0 0 0 4px rgba(138, 180, 255, 0.12);
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-auth {
-  /*> C: Declaration or selector fragment. */
   min-height: 100vh;
-  /*> C: Declaration or selector fragment. */
   display: grid;
-  /*> C: Declaration or selector fragment. */
   place-items: center;
-  /*> C: Declaration or selector fragment. */
   padding-block: 2rem;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-auth__content {
-  /*> C: Declaration or selector fragment. */
   width: min(34rem, 100%);
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-chat-message {
-  /*> C: Declaration or selector fragment. */
   display: grid;
-  /*> C: Declaration or selector fragment. */
   grid-template-columns: 2.25rem minmax(0, 1fr);
-  /*> C: Declaration or selector fragment. */
   gap: 0.85rem;
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-avatar {
-  /*> C: Declaration or selector fragment. */
   width: 2.25rem;
-  /*> C: Declaration or selector fragment. */
   height: 2.25rem;
-  /*> C: Declaration or selector fragment. */
   border-radius: 999px;
-  /*> C: Declaration or selector fragment. */
   border: 1px solid var(--border-strong);
-  /*> C: Declaration or selector fragment. */
   background: rgba(255, 255, 255, 0.05);
-/*> C: Rule set end. */
 }
 
-/*> C: Rule set opening. */
 .ui-scroll {
-  /*> C: Declaration or selector fragment. */
   scrollbar-width: thin;
-  /*> C: Declaration or selector fragment. */
   scrollbar-color: rgba(138, 180, 255, 0.3) transparent;
-/*> C: Rule set end. */
 }
 
-/*> C: At-rule. */
 @media (min-width: 768px) {
-  /*> C: Rule set opening. */
   .ui-shell__nav {
-    /*> C: Declaration or selector fragment. */
     display: flex;
-  /*> C: Rule set end. */
   }
 
-  /*> C: Rule set opening. */
   .ui-shell__user {
-    /*> C: Declaration or selector fragment. */
     display: block;
-  /*> C: Rule set end. */
   }
 
-  /*> C: Rule set opening. */
   .ui-grid-2 {
-    /*> C: Declaration or selector fragment. */
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  /*> C: Rule set end. */
   }
 
-  /*> C: Rule set opening. */
   .ui-grid-3 {
-    /*> C: Declaration or selector fragment. */
     grid-template-columns: repeat(3, minmax(0, 1fr));
-  /*> C: Rule set end. */
   }
 
-  /*> C: CSS source line. */
   .ui-grid-4,
-  /*> C: Rule set opening. */
   .ui-grid-auto {
-    /*> C: Declaration or selector fragment. */
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  /*> C: Rule set end. */
   }
-/*> C: Rule set end. */
 }
 
-/*> C: At-rule. */
 @media (min-width: 1100px) {
-  /*> C: Rule set opening. */
   .ui-grid-4 {
-    /*> C: Declaration or selector fragment. */
     grid-template-columns: repeat(4, minmax(0, 1fr));
-  /*> C: Rule set end. */
   }
 
-  /*> C: Rule set opening. */
   .ui-grid-auto {
-    /*> C: Declaration or selector fragment. */
     grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
-  /*> C: Rule set end. */
   }
-/*> C: Rule set end. */
 }
 

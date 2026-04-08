@@ -1,67 +1,38 @@
 /**
  * Single **product** settings editor: env vars text area, GitHub URL, save/delete via `products/actions`.
  */
-//> Import bindings from a module.
 import Link from "next/link";
-//> Import bindings from a module.
 import { redirect } from "next/navigation";
-//> Import bindings from a module.
 import { Shell } from "@/components/Shell";
-//> Import bindings from a module.
 import {
-  //> Source statement or expression.
   deleteProjectConfigAction,
-  //> Source statement or expression.
   saveProjectConfigAction
-//> Source statement or expression.
 } from "@/app/products/actions";
-//> Import bindings from a module.
 import { listProjectItems } from "@/lib/github";
-//> Import bindings from a module.
 import { readMVPFactoryControlSettings } from "@/lib/settings-store";
-//> Import bindings from a module.
 import { requireSession } from "@/lib/session";
-//> Import bindings from a module.
 import { buttonClassName } from "@/components/ui";
 
-//> Function declaration.
 function varsToText(vars: Array<{ key: string; value: string }>) {
-  //> Return a value.
   return vars.map((v) => `${v.key}=${v.value}`).join("\n");
-//> Brace or statement terminator.
 }
 
-//> Export declaration.
 export default async function ProductPage(props: {
-  //> Source statement or expression.
   params: Promise<{ product: string }>;
-//> Source statement or expression.
 }) {
-  //> Variable declaration.
   const session = await requireSession();
-  //> Conditional branch.
   if (!session) redirect("/signin");
 
-  //> Variable declaration.
   const { product } = await props.params;
-  //> Variable declaration.
   const decoded = decodeURIComponent(product);
-  //> Variable declaration.
   const [items, settings] = await Promise.all([
-    //> Source statement or expression.
     listProjectItems({ product: decoded, limit: 200 }),
-    //> Source statement or expression.
     readMVPFactoryControlSettings()
-  //> Delimiter or separator.
   ]);
-  //> Variable declaration.
   const config =
-    //> Source statement or expression.
     settings.projects.find((p) => p.projectName.toLowerCase() === decoded.toLowerCase()) ||
-    //> Source statement or expression.
     null;
 
-  //> Return a value.
   return (
     <Shell
       title={`Product: ${decoded}`}
@@ -178,5 +149,4 @@ export default async function ProductPage(props: {
       </div>
     </Shell>
   );
-//> Brace or statement terminator.
 }

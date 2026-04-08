@@ -1,42 +1,25 @@
 /**
  * **Settings** UI: local project root path, taste rubric editor (principles, version metadata).
  */
-//> Import bindings from a module.
 import Link from "next/link";
-//> Import bindings from a module.
 import { redirect } from "next/navigation";
-//> Import bindings from a module.
 import { Shell } from "@/components/Shell";
-//> Import bindings from a module.
 import {
-  //> Source statement or expression.
   saveLocalProjectFolderAction,
-  //> Source statement or expression.
   saveTasteRubricAction
-//> Source statement or expression.
 } from "@/app/settings/actions";
-//> Import bindings from a module.
 import { getActiveTasteRubricVersion, readMVPFactoryControlSettings } from "@/lib/settings-store";
-//> Import bindings from a module.
 import { requireSession } from "@/lib/session";
-//> Import bindings from a module.
 import { buttonClassName } from "@/components/ui";
 
-//> Export declaration.
 export default async function SettingsPage() {
-  //> Variable declaration.
   const session = await requireSession();
-  //> Conditional branch.
   if (!session) redirect("/signin");
 
-  //> Variable declaration.
   const settings = await readMVPFactoryControlSettings();
-  //> Variable declaration.
   const activeRubric = getActiveTasteRubricVersion(settings);
-  //> Variable declaration.
   const defaultPrinciples = activeRubric?.principles?.join("\n") || "";
 
-  //> Return a value.
   return (
     <Shell
       title="Settings"
@@ -181,5 +164,4 @@ export default async function SettingsPage() {
       </div>
     </Shell>
   );
-//> Brace or statement terminator.
 }

@@ -2,7 +2,7 @@
 
 The MVP Factory is designed to be a high-availability, fully autonomous ecosystem. This guide provides a 100% clear roadmap for installation, including prerequisites and troubleshooting.
 
-**Internal app configuration:** After install, running the Next app from `apps/mvp-factory-control` requires PostgreSQL and the environment variables listed in [BUILD_AND_RUN.md](BUILD_AND_RUN.md) (section **Internal control app — environment**). GitHub CLI project scopes for board scripts are unchanged from the `gh auth refresh` notes below.
+**Internal app configuration:** After install, running the Next app from `apps/mvp-factory-control` requires PostgreSQL and the environment variables listed in [BUILD_AND_RUN.md](BUILD_AND_RUN.md) (section **Internal control app — environment**). GitHub Projects CLI setup is in [section 4](#4-github-cli--projects-board) below.
 
 ## 1. Pre-flight Check (Foundational Requirements)
 
@@ -36,7 +36,34 @@ Once the installer finishes:
 
 ---
 
-## 4. Industrial Troubleshooting
+## 4. GitHub CLI & Projects board
+
+Scripts such as [`scripts/mvp-factory-set-project-fields.sh`](../scripts/mvp-factory-set-project-fields.sh) and [`scripts/list-project-column.sh`](../scripts/list-project-column.sh) call the GitHub Projects API. Your token needs **`read:project`** and **`project`** scopes.
+
+### Add scopes (active account only)
+
+`gh auth refresh` always updates the **currently active** `github.com` login. It does **not** accept `-u` to pick a user.
+
+1. See which account is active: `gh auth status`
+2. Switch if needed: `gh auth switch -h github.com -u YOUR_LOGIN`
+3. Refresh scopes: `gh auth refresh -h github.com -s read:project,project`  
+   (This may open [https://github.com/login/device](https://github.com/login/device); complete the flow in the browser.)
+
+Afterward, confirm with `gh auth status` that `read:project` and `project` appear for that account.
+
+### Status column names (project 1)
+
+There is **no** Status value named `Ready` on the current board. The **Status** single-select options include **Todo (NEXT)** (typical “next up” queue), **In Progress (NOW)**, **Backlog (SOONER)**, **Done**, and others.
+
+- List every Status option: `bash scripts/list-project-column.sh`
+- List items in one status (quote values with spaces):  
+  `bash scripts/list-project-column.sh 'Todo (NEXT)'`
+
+Project URL: [github.com/users/moldovancsaba/projects/1](https://github.com/users/moldovancsaba/projects/1).
+
+---
+
+## 5. Industrial Troubleshooting
 
 | Error/Issue | Root Cause | Resolution |
 | :--- | :--- | :--- |

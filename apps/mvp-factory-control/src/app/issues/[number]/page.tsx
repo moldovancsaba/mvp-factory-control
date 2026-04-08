@@ -3,378 +3,200 @@
  *
  * Dynamic segment `[number]` is the GitHub issue number in the configured repo/project.
  */
-//> Import bindings from a module.
 import Link from "next/link";
-//> Import bindings from a module.
 import { redirect } from "next/navigation";
-//> Import bindings from a module.
 import { Shell } from "@/components/Shell";
-//> Import bindings from a module.
 import { requireSession } from "@/lib/session";
-//> Import bindings from a module.
 import { getOrCreateThread, listMessages } from "@/lib/chat";
-//> Import bindings from a module.
 import {
-  //> Source statement or expression.
   getProjectAlphaLockSnapshot,
-  //> Source statement or expression.
   listProjectAlphaContextAuditEvents
-//> Source statement or expression.
 } from "@/lib/alpha-context";
-//> Import bindings from a module.
 import {
-  //> Source statement or expression.
   ensureProjectItemForIssue,
-  //> Source statement or expression.
   getIssueDetails,
-  //> Source statement or expression.
   getItemSingleSelectValues,
-  //> Source statement or expression.
   getProjectMeta,
-  //> Source statement or expression.
   reconcileBoardAgentOptions,
-  //> Source statement or expression.
   reconcileBoardAgentValue
-//> Source statement or expression.
 } from "@/lib/github";
-//> Import bindings from a module.
 import {
-  //> Source statement or expression.
   activateIssueAlphaContextAction,
-  //> Source statement or expression.
   closeIssueAlphaContextAction,
-  //> Source statement or expression.
   enqueueIssueTask,
-  //> Source statement or expression.
   overrideIssueGuardrailAction,
-  //> Source statement or expression.
   recordIssueHandoverPackageAction,
-  //> Source statement or expression.
   sendIssueMessage,
-  //> Source statement or expression.
   transferIssueAlphaContextAction,
-  //> Source statement or expression.
   updateIssueFields
-//> Source statement or expression.
 } from "@/app/issues/[number]/actions";
-//> Import bindings from a module.
 import { prisma } from "@/lib/prisma";
-//> Import bindings from a module.
 import { listAgentTasks } from "@/lib/tasks";
-//> Import bindings from a module.
 import {
-  //> Source statement or expression.
   listIssueTaskPromptPackageInvariants,
-  //> Source statement or expression.
   listProjectAlphaContextPackageInvariants
-//> Source statement or expression.
 } from "@/lib/prompt-package-invariants";
-//> Import bindings from a module.
 import { buildMentionables } from "@/lib/mentionables";
-//> Import bindings from a module.
 import {
-  //> Source statement or expression.
   promptPackageMissingSummary,
-  //> Source statement or expression.
   validateExecutablePromptPackage
-//> Source statement or expression.
 } from "@/lib/executable-prompt";
-//> Import bindings from a module.
 import { MentionInput } from "@/components/MentionInput";
-//> Import bindings from a module.
 import { badgeClassName, buttonClassName } from "@/components/ui";
 
-//> Function declaration.
 function asRecord(value: unknown): Record<string, unknown> | null {
-  //> Conditional branch.
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
-  //> Return a value.
   return value as Record<string, unknown>;
-//> Brace or statement terminator.
 }
 
-//> Function declaration.
 function readRoutedHandoffMeta(meta: unknown): null | {
-  //> Source statement or expression.
   requestedByAgent: string;
-  //> Source statement or expression.
   targetAgentKey: string;
-  //> Source statement or expression.
   sourceMessageId: string | null;
-  //> Source statement or expression.
   manualRequired: boolean;
-  //> Source statement or expression.
   reason: string | null;
-//> Source statement or expression.
 } {
-  //> Variable declaration.
   const record = asRecord(meta);
-  //> Conditional branch.
   if (
-    //> Source statement or expression.
     !record ||
-    //> Source statement or expression.
     (record.kind !== "agent_handoff_routed" &&
-      //> Source statement or expression.
       record.kind !== "agent_handoff_manual_required")
-  //> Source statement or expression.
   ) {
-    //> Return a value.
     return null;
-  //> Brace or statement terminator.
   }
 
-  //> Variable declaration.
   const requestedByAgent =
-    //> Source statement or expression.
     typeof record.requestedByAgent === "string" ? record.requestedByAgent : null;
-  //> Variable declaration.
   const targetAgentKey =
-    //> Source statement or expression.
     typeof record.targetAgentKey === "string" ? record.targetAgentKey : null;
-  //> Variable declaration.
   const sourceMessageId =
-    //> Source statement or expression.
     typeof record.sourceMessageId === "string" ? record.sourceMessageId : null;
-  //> Variable declaration.
   const reason = typeof record.reason === "string" ? record.reason : null;
 
-  //> Conditional branch.
   if (!requestedByAgent || !targetAgentKey) return null;
-  //> Return a value.
   return {
-    //> Source statement or expression.
     requestedByAgent,
-    //> Source statement or expression.
     targetAgentKey,
-    //> Source statement or expression.
     sourceMessageId,
-    //> Source statement or expression.
     manualRequired: record.kind === "agent_handoff_manual_required",
-    //> Source statement or expression.
     reason
-  //> Brace or statement terminator.
   };
-//> Brace or statement terminator.
 }
 
-//> Function declaration.
 function readTaskHandoffTrace(payload: unknown): null | {
-  //> Source statement or expression.
   requestedByAgent: string;
-  //> Source statement or expression.
   sourceThreadId: string;
-  //> Source statement or expression.
   sourceMessageId: string;
-//> Source statement or expression.
 } {
-  //> Variable declaration.
   const record = asRecord(payload);
-  //> Conditional branch.
   if (!record || record.kind !== "agent_handoff") return null;
 
-  //> Variable declaration.
   const requestedByAgent =
-    //> Source statement or expression.
     typeof record.requestedByAgent === "string" ? record.requestedByAgent : null;
-  //> Variable declaration.
   const sourceThreadId =
-    //> Source statement or expression.
     typeof record.sourceThreadId === "string" ? record.sourceThreadId : null;
-  //> Variable declaration.
   const sourceMessageId =
-    //> Source statement or expression.
     typeof record.sourceMessageId === "string" ? record.sourceMessageId : null;
 
-  //> Conditional branch.
   if (!requestedByAgent || !sourceThreadId || !sourceMessageId) return null;
-  //> Return a value.
   return { requestedByAgent, sourceThreadId, sourceMessageId };
-//> Brace or statement terminator.
 }
 
-//> Export declaration.
 export default async function IssuePage(props: {
-  //> Source statement or expression.
   params: Promise<{ number: string }>;
-//> Source statement or expression.
 }) {
-  //> Variable declaration.
   const session = await requireSession();
-  //> Conditional branch.
   if (!session) redirect("/signin");
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //> Const with function or expression.
   const userId = (session.user as any).id as string | undefined;
 
-  //> Variable declaration.
   const { number } = await props.params;
-  //> Variable declaration.
   const issueNumber = Number(number);
-  //> Conditional branch.
   if (!Number.isFinite(issueNumber)) redirect("/dashboard");
 
-  //> Variable declaration.
   const [meta, issue] = await Promise.all([
-    //> Source statement or expression.
     getProjectMeta(),
-    //> Source statement or expression.
     getIssueDetails({ issueNumber })
-  //> Delimiter or separator.
   ]);
 
-  //> Variable declaration.
   const { itemId } = await ensureProjectItemForIssue({ issueNumber });
-  //> Variable declaration.
   const current = await getItemSingleSelectValues({ itemId });
 
-  //> Variable declaration.
   const thread = await getOrCreateThread({
-    //> Source statement or expression.
     kind: "ISSUE",
-    //> Source statement or expression.
     ref: String(issueNumber),
-    //> Source statement or expression.
     title: `Issue #${issueNumber}`,
-    //> Source statement or expression.
     createdById: userId ?? null
-  //> Brace or statement terminator.
   });
-  //> Variable declaration.
   const messages = await listMessages(thread.id, 200);
-  //> Variable declaration.
   const promptValidation = validateExecutablePromptPackage(issue.body || "");
 
-  //> Variable declaration.
   const statusOpts = meta.fields.find((f) => f.name === "Status")?.options ?? [];
-  //> Variable declaration.
   const boardAgentOpts = meta.fields.find((f) => f.name === "Agent")?.options ?? [];
-  //> Variable declaration.
   const priOpts = meta.fields.find((f) => f.name === "Priority")?.options ?? [];
-  //> Variable declaration.
   const dodOpts = meta.fields.find((f) => f.name === "DoD")?.options ?? [];
 
-  //> Variable declaration.
   const agents = await prisma.agent.findMany({ orderBy: { displayName: "asc" } });
-  //> Variable declaration.
   const runtimeAgents = agents.filter((a) => a.runtime !== "MANUAL");
-  //> Variable declaration.
   const boardAgentResolution = reconcileBoardAgentValue({
-    //> Source statement or expression.
     boardAgentValue: current["Agent"] || null,
-    //> Source statement or expression.
     dbAgents: runtimeAgents.map((a) => ({
-      //> Source statement or expression.
       key: a.key,
-      //> Source statement or expression.
       displayName: a.displayName,
-      //> Source statement or expression.
       enabled: a.enabled,
-      //> Source statement or expression.
       runtime: a.runtime
-    //> Delimiter or separator.
     }))
-  //> Brace or statement terminator.
   });
-  //> Variable declaration.
   const boardAgentReconciliation = reconcileBoardAgentOptions({
-    //> Source statement or expression.
     boardAgentOptions: boardAgentOpts.map((o) => o.name),
-    //> Source statement or expression.
     dbAgents: runtimeAgents.map((a) => ({
-      //> Source statement or expression.
       key: a.key,
-      //> Source statement or expression.
       displayName: a.displayName,
-      //> Source statement or expression.
       enabled: a.enabled,
-      //> Source statement or expression.
       runtime: a.runtime
-    //> Delimiter or separator.
     }))
-  //> Brace or statement terminator.
   });
-  //> Variable declaration.
   const mentionables = buildMentionables({
-    //> Source statement or expression.
     agentKeys: agents
-      //> Source statement or expression.
       .filter((a) => a.enabled && a.runtime !== "MANUAL")
-      //> Source statement or expression.
       .map((a) => a.key),
-    //> Source statement or expression.
     humanNames: Array.from(
-      //> Source statement or expression.
       new Set(
-        //> Source statement or expression.
         messages
-          //> Source statement or expression.
           .filter((m) => m.authorType === "HUMAN")
-          //> Source statement or expression.
           .map((m) => m.user?.name || "")
-          //> Source statement or expression.
           .concat(session.user?.name ? [session.user.name] : [])
-          //> Source statement or expression.
           .filter(Boolean)
-      //> Delimiter or separator.
       )
-    //> Delimiter or separator.
     )
-  //> Brace or statement terminator.
   });
-  //> Variable declaration.
   const activeAgentForTasks = boardAgentResolution.mappedAgentKey;
-  //> Variable declaration.
   const alphaAgents = runtimeAgents.filter((a) => a.controlRole === "ALPHA" && a.enabled);
-  //> Variable declaration.
   const currentProjectName = String(current["Product"] || "").trim();
-  //> Variable declaration.
   const alphaLockSnapshot = currentProjectName
-    //> Source statement or expression.
     ? await getProjectAlphaLockSnapshot(currentProjectName)
-    //> Source statement or expression.
     : null;
-  //> Variable declaration.
   const alphaLockAudits = currentProjectName
-    //> Source statement or expression.
     ? await listProjectAlphaContextAuditEvents({
-        //> Source statement or expression.
         projectName: currentProjectName,
-        //> Source statement or expression.
         limit: 10
-      //> Delimiter or separator.
       })
-    //> Source statement or expression.
     : [];
-  //> Variable declaration.
   const tasks = activeAgentForTasks
-    //> Source statement or expression.
     ? await listAgentTasks({ agentKey: activeAgentForTasks, limit: 20 })
-    //> Source statement or expression.
     : [];
-  //> Variable declaration.
   const taskPromptInvariants = await listIssueTaskPromptPackageInvariants({
-    //> Source statement or expression.
     issueNumber,
-    //> Source statement or expression.
     limit: 12
-  //> Brace or statement terminator.
   });
-  //> Variable declaration.
   const alphaContextPackageInvariants = currentProjectName
-    //> Source statement or expression.
     ? await listProjectAlphaContextPackageInvariants({
-        //> Source statement or expression.
         projectName: currentProjectName,
-        //> Source statement or expression.
         limit: 12
-      //> Delimiter or separator.
       })
-    //> Source statement or expression.
     : [];
 
-  //> Return a value.
   return (
     <Shell
       title={`Issue #${issueNumber}`}
@@ -1137,5 +959,4 @@ export default async function IssuePage(props: {
       </div>
     </Shell>
   );
-//> Brace or statement terminator.
 }
