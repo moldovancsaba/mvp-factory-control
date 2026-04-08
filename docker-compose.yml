@@ -1,0 +1,130 @@
+services:
+  # --- MVP Factory Control ---
+  mvp-factory-control-db:
+    image: postgres:16
+    container_name: mvp-factory-control-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: mvp_factory_control
+      POSTGRES_PASSWORD: mvp_factory_control
+      POSTGRES_DB: mvp_factory_control
+    ports:
+      - "${MVP_FACTORY_CONTROL_DB_PORT:-3579}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mvp_factory_control -d mvp_factory_control"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+      start_period: 10s
+    volumes:
+      - mvp_factory_control_db_data:/var/lib/postgresql/data
+
+  mvp-factory-control-app:
+    build:
+      context: ./apps/mvp-factory-control
+      dockerfile: Dockerfile
+    image: mvp-factory-control-app:local
+    container_name: mvp-factory-control-app
+    restart: unless-stopped
+    depends_on:
+      mvp-factory-control-db:
+        condition: service_healthy
+    env_file:
+      - ./apps/mvp-factory-control/.env
+    environment:
+      DATABASE_URL: postgresql://mvp_factory_control:mvp_factory_control@mvp-factory-control-db:5432/mvp_factory_control?schema=public
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3577}
+    ports:
+      - "${MVP_FACTORY_CONTROL_APP_PORT:-3577}:3007"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3007/signin >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 20s
+
+  # --- Paperclip AI (Orchestrator) ---
+  paperclip-db:
+    image: postgres:17-alpine
+    container_name: paperclip-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: paperclip
+      POSTGRES_PASSWORD: paperclip
+      POSTGRES_DB: paperclip
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U paperclip -d paperclip"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    volumes:
+      - paperclip_db_data:/var/lib/postgresql/data
+    ports:
+      - "35432:5432"
+
+  paperclip:
+    build:
+      context: ../paperclip
+      dockerfile: Dockerfile
+    container_name: paperclip
+    restart: unless-stopped
+    depends_on:
+      paperclip-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://paperclip:paperclip@paperclip-db:5432/paperclip
+      PORT: 3100
+      SERVE_UI: "true"
+      PAPERCLIP_DEPLOYMENT_MODE: authenticated
+      PAPERCLIP_DEPLOYMENT_EXPOSURE: private
+      PAPERCLIP_PUBLIC_URL: ${PAPERCLIP_PUBLIC_URL:-http://localhost:3100}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-automated-factory-secret-123}
+      # Local LLM Integration (Ollama)
+      OPENAI_API_BASE: http://host.docker.internal:11434/v1
+    ports:
+      - "3100:3100"
+    volumes:
+      - paperclip_data:/paperclip
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # --- OpenClaw (Autonomous Assistant) ---
+  openclaw-gateway:
+    image: ghcr.io/openclaw/openclaw:latest
+    container_name: openclaw-gateway
+    restart: unless-stopped
+    environment:
+      HOME: /home/node
+      TERM: xterm-256color
+      GATEWAY_MODE: local
+      OPENCLAW_GATEWAY_TOKEN: ${CLAWDBOT_GATEWAY_TOKEN:-}
+      OPENCLAW_CONTROL_UI_DANGEROUSLY_ALLOW_HOST_HEADER_ORIGIN_FALLBACK: "true"
+      # OpenRouter Integration (300+ models)
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      # Local LLM Integration (Ollama)
+      OPENAI_API_BASE: http://host.docker.internal:11434/v1
+    volumes:
+      - ./openclaw_config:/home/node/.openclaw
+      - openclaw_workspace:/home/node/clawd
+    ports:
+      - "${CLAWDBOT_GATEWAY_PORT:-18789}:18789"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command:
+      [
+        "node",
+        "dist/index.js",
+        "gateway",
+        "--bind",
+        "lan",
+        "--allow-unconfigured",
+        "--port",
+        "18789"
+      ]
+
+volumes:
+  mvp_factory_control_db_data:
+  paperclip_db_data:
+  paperclip_data:
+  openclaw_config:
+  openclaw_workspace:

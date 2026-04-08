@@ -1,0 +1,118 @@
+name: Feature
+description: New feature request (MVP Factory standard)
+title: "[Feature] "
+labels: ["type:feature"]
+body:
+  - type: input
+    id: product
+    attributes:
+      label: Product
+      description: amanoba / cardmass / hatori / kormanyvalto / launchmass / messmass / narimato / reply / sentinelsquad / sso / mvp-factory-control
+      placeholder: "amanoba"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Agent
+      options:
+        - Chappie
+        - Gwen
+        - Tribeca
+    validations:
+      required: true
+
+  - type: textarea
+    id: execution_prompt
+    attributes:
+      label: Execution Prompt
+      description: Explicit instructions an agent can execute immediately.
+      placeholder: |
+        Implement by...
+        Update tests for...
+        Deliver as...
+    validations:
+      required: true
+
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints
+      description: Hard boundaries and requirements for execution.
+      placeholder: |
+        - no secrets
+        - preserve existing behavior X
+    validations:
+      required: true
+
+  - type: textarea
+    id: delivery_artifact
+    attributes:
+      label: Delivery Artifact
+      description: Exact expected output (PR/file/report/deploy evidence).
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What exists today, and why this matters now.
+    validations:
+      required: true
+
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: One sentence. What should be true when this is done.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Checks
+      description: Bullet list. Observable behaviour only.
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: non_goals
+    attributes:
+      label: Non-goals
+      description: What is explicitly out of scope for this issue.
+      placeholder: |
+        - ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks / Edge cases
+      description: Anything that could break, regress, or cause production risk.
+      placeholder: |
+        - ...
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: dod
+    attributes:
+      label: Definition of Done
+      options:
+        - label: Implementation complete and reviewed
+          required: true
+        - label: Tests added or updated (or justified if not applicable)
+          required: true
+        - label: Shared docs and product docs updated as applicable
+          required: true
+        - label: No hardcoded sample data or placeholders introduced
+          required: true
+        - label: Validation is warning-free, error-free, and deprecated-free
+          required: true

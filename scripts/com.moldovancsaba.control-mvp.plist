@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.moldovancsaba.control-mvp</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/moldovancsaba/Projects/mvp-factory-control/.venv/bin/python3</string>
+        <string>/Users/moldovancsaba/Projects/mvp-factory-control/scripts/control_mvp.py</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <dict>
+        <key>SuccessfulExit</key>
+        <false/>
+    </dict>
+    <key>WorkingDirectory</key>
+    <string>/Users/moldovancsaba/Projects/mvp-factory-control</string>
+    <key>StandardOutPath</key>
+    <string>/tmp/control-mvp.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/control-mvp.err.log</string>
+    <key>ProcessType</key>
+    <string>Interactive</string>
+</dict>
+</plist>

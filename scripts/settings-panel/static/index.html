@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Settings - MVP Factory</title>
+  <style>
+    :root {
+      --bg: #020617;
+      --surface: #0f172a;
+      --surface-2: #111827;
+      --border: #243041;
+      --text: #e5eefc;
+      --muted: #8fa3bf;
+      --accent: #7dd3fc;
+      --ok: #22c55e;
+      --warn: #f59e0b;
+      --radius: 10px;
+      --font: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top left, rgba(125, 211, 252, 0.14), transparent 28%),
+        linear-gradient(180deg, #020617, #0b1220 55%, #020617 100%);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+    }
+    .wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 32px 20px 80px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: flex-start;
+      margin-bottom: 28px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      letter-spacing: -0.03em;
+    }
+    .subtitle {
+      margin: 0;
+      max-width: 640px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.8);
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+    .two {
+      grid-template-columns: 1.3fr 1fr;
+    }
+    .card {
+      border: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.86);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 16px 40px rgba(2, 6, 23, 0.28);
+    }
+    .card h2 {
+      margin: 0 0 6px;
+      font-size: 16px;
+      letter-spacing: -0.02em;
+    }
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    form {
+      margin-top: 18px;
+      display: grid;
+      gap: 14px;
+    }
+    label {
+      display: grid;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    input {
+      width: 100%;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: rgba(2, 6, 23, 0.9);
+      color: var(--text);
+      padding: 11px 12px;
+      font-size: 14px;
+    }
+    input:focus {
+      outline: none;
+      border-color: rgba(125, 211, 252, 0.7);
+      box-shadow: 0 0 0 3px rgba(125, 211, 252, 0.12);
+    }
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    button {
+      border: 0;
+      border-radius: var(--radius);
+      padding: 11px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #03111f;
+      background: linear-gradient(135deg, #7dd3fc, #38bdf8);
+    }
+    .note {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .repo-list, .tool-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .repo, .tool {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      background: rgba(2, 6, 23, 0.45);
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .name {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .path {
+      margin-top: 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: var(--muted);
+      font-size: 12px;
+      word-break: break-all;
+    }
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--warn);
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.35);
+    }
+    .dot.ok {
+      background: var(--ok);
+      box-shadow: 0 0 16px rgba(34, 197, 94, 0.35);
+    }
+    .tool a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .tool a:hover {
+      text-decoration: underline;
+    }
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%);
+      background: rgba(2, 6, 23, 0.95);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--text);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s ease;
+    }
+    .toast.show { opacity: 1; }
+    @media (max-width: 920px) {
+      .two { grid-template-columns: 1fr; }
+      header { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Factory Settings</h1>
+        <p class="subtitle">
+          Browser-accessible local settings for the control plane. This panel stores watcher-facing paths and the same local project root used by the internal app settings store.
+        </p>
+      </div>
+      <div class="pill" id="updatedAt">Loading...</div>
+    </header>
+
+    <div class="grid two">
+      <section class="card">
+        <h2>General Settings</h2>
+        <p>These values define where the control layer finds local projects and sibling app repositories.</p>
+        <form id="settingsForm">
+          <label>
+            Local project folder
+            <input id="localProjectFolder" name="localProjectFolder" placeholder="/Users/Shared/Projects" />
+          </label>
+          <label>
+            Shared root
+            <input id="sharedRoot" name="sharedRoot" placeholder="/Users/Shared/Projects" />
+          </label>
+          <label>
+            Paperclip root
+            <input id="paperclipRoot" name="paperclipRoot" placeholder="/Users/Shared/Projects/paperclip" />
+          </label>
+          <label>
+            Checklist root
+            <input id="checklistRoot" name="checklistRoot" placeholder="/Users/Shared/Projects/checklist" />
+          </label>
+          <label>
+            Checklist env path
+            <input id="checklistEnvPath" name="checklistEnvPath" placeholder="/Users/Shared/Projects/checklist/.env" />
+          </label>
+          <div class="actions">
+            <button type="submit">Save settings</button>
+            <div class="note">Watcher-facing changes apply on the next `mvp-factory-control` restart.</div>
+          </div>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Connected Apps</h2>
+        <p>Quick view of the repositories this control machine expects to manage.</p>
+        <div class="repo-list" id="repoList"></div>
+      </section>
+    </div>
+
+    <section class="card" style="margin-top: 18px;">
+      <h2>Support Services</h2>
+      <p>Open the tools already running on this machine, including the environment variables editor.</p>
+      <div class="tool-list" id="toolList"></div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const state = { data: null };
+
+    function showToast(message) {
+      const el = document.getElementById("toast");
+      el.textContent = message;
+      el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 2200);
+    }
+
+    async function api(path, options = {}) {
+      const response = await fetch(path, {
+        headers: { "Content-Type": "application/json" },
+        ...options
+      });
+      if (!response.ok) {
+        let detail = response.statusText;
+        try {
+          const payload = await response.json();
+          detail = payload.detail || payload.error || detail;
+        } catch {}
+        throw new Error(detail);
+      }
+      return response.json();
+    }
+
+    function setValue(id, value) {
+      const el = document.getElementById(id);
+      el.value = value || "";
+    }
+
+    function renderRepos(repos) {
+      const host = document.getElementById("repoList");
+      host.innerHTML = "";
+      for (const repo of repos) {
+        const div = document.createElement("div");
+        div.className = "repo";
+        div.innerHTML = `
+          <div class="row">
+            <div>
+              <div class="name">${repo.name}</div>
+              <div class="path">${repo.rootPath}</div>
+              ${repo.envPath ? `<div class="path">env: ${repo.envPath}</div>` : ""}
+            </div>
+            <div class="status">
+              <span class="dot ${repo.exists ? "ok" : ""}"></span>
+              <span>${repo.exists ? "Path ready" : "Missing path"}</span>
+            </div>
+          </div>
+          ${repo.envPath ? `
+            <div class="status" style="margin-top: 10px;">
+              <span class="dot ${repo.envExists ? "ok" : ""}"></span>
+              <span>${repo.envExists ? "Env file found" : "Env file missing"}</span>
+            </div>
+          ` : ""}
+        `;
+        host.appendChild(div);
+      }
+    }
+
+    function renderTools(tools) {
+      const host = document.getElementById("toolList");
+      host.innerHTML = "";
+      for (const tool of tools) {
+        const div = document.createElement("div");
+        div.className = "tool";
+        div.innerHTML = `
+          <div class="row">
+            <div>
+              <div class="name"><a href="${tool.url}" target="_blank" rel="noreferrer">${tool.name}</a></div>
+              <div class="path">${tool.url}</div>
+              <div class="path">${tool.description}</div>
+            </div>
+            <div class="status">
+              <span class="dot ${tool.healthy ? "ok" : ""}"></span>
+              <span>${tool.healthy ? "Reachable" : "Unavailable"}</span>
+            </div>
+          </div>
+        `;
+        host.appendChild(div);
+      }
+    }
+
+    async function load() {
+      const data = await api("/api/settings");
+      state.data = data;
+      setValue("localProjectFolder", data.general.localProjectFolder);
+      setValue("sharedRoot", data.control.sharedRoot);
+      setValue("paperclipRoot", data.control.paperclipRoot);
+      setValue("checklistRoot", data.control.checklistRoot);
+      setValue("checklistEnvPath", data.control.checklistEnvPath);
+      document.getElementById("updatedAt").textContent =
+        data.general.updatedAt ? `Updated ${new Date(data.general.updatedAt).toLocaleString()}` : "Local settings";
+      renderRepos(data.repos || []);
+      renderTools(data.supportTools || []);
+    }
+
+    document.getElementById("settingsForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const payload = {
+        localProjectFolder: document.getElementById("localProjectFolder").value.trim(),
+        sharedRoot: document.getElementById("sharedRoot").value.trim(),
+        paperclipRoot: document.getElementById("paperclipRoot").value.trim(),
+        checklistRoot: document.getElementById("checklistRoot").value.trim(),
+        checklistEnvPath: document.getElementById("checklistEnvPath").value.trim()
+      };
+      try {
+        const result = await api("/api/settings", {
+          method: "PUT",
+          body: JSON.stringify(payload)
+        });
+        showToast(result.requiresRestart ? "Saved. Restart mvp-factory-control to apply watcher settings." : "Saved.");
+        await load();
+      } catch (error) {
+        showToast(error.message || "Save failed");
+      }
+    });
+
+    load().catch((error) => showToast(error.message || "Failed to load settings"));
+  </script>
+</body>
+</html>

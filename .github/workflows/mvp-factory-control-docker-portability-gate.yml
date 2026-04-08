@@ -1,0 +1,57 @@
+name: MVP Factory Control App Docker Portability Gate
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "apps/mvp-factory-control/**"
+      - "docker-compose.yml"
+      - "scripts/mvp-factory-control-docker-*.sh"
+      - "docs/BUILD_AND_RUN.md"
+      - ".github/workflows/mvp-factory-control-docker-portability-gate.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/mvp-factory-control/**"
+      - "docker-compose.yml"
+      - "scripts/mvp-factory-control-docker-*.sh"
+      - "docs/BUILD_AND_RUN.md"
+      - ".github/workflows/mvp-factory-control-docker-portability-gate.yml"
+
+jobs:
+  portability-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ensure scripts executable
+        run: |
+          chmod +x scripts/mvp-factory-control-docker-preflight.sh
+          chmod +x scripts/mvp-factory-control-docker-bootstrap.sh
+          chmod +x scripts/mvp-factory-control-docker-portability-gate.sh
+
+      - name: Provision CI env file
+        run: |
+          cat > apps/mvp-factory-control/.env <<'EOF'
+          NEXTAUTH_URL=http://localhost:3007
+          NEXTAUTH_SECRET=ci-nextauth-secret
+          GOOGLE_CLIENT_ID=ci-google-client-id
+          GOOGLE_CLIENT_SECRET=ci-google-client-secret
+          DATABASE_URL=postgresql://mvp_factory_control:mvp_factory_control@localhost:5432/mvp_factory_control?schema=public
+          MVP_FACTORY_CONTROL_GITHUB_TOKEN=ci-placeholder-token
+          MVP_FACTORY_CONTROL_GITHUB_PROJECT_OWNER=moldovancsaba
+          MVP_FACTORY_CONTROL_GITHUB_PROJECT_NUMBER=1
+          MVP_FACTORY_CONTROL_TASK_REPO_OWNER=moldovancsaba
+          MVP_FACTORY_CONTROL_TASK_REPO_NAME=mvp-factory-control
+          EOF
+
+      - name: Run portability gate
+        env:
+          MVP_FACTORY_CONTROL_DB_PORT: "55432"
+          MVP_FACTORY_CONTROL_APP_PORT: "3107"
+          NEXTAUTH_URL: "http://localhost:3107"
+          MVP_FACTORY_CONTROL_DOCKER_HEALTH_TIMEOUT_SECONDS: "180"
+        run: ./scripts/mvp-factory-control-docker-portability-gate.sh

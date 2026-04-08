@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Environment Variables — MVP Factory</title>
+  <style>
+    :root {
+      --bg: #000000;
+      --surface: #0a0a0a;
+      --border: #262626;
+      --muted: #737373;
+      --text: #fafafa;
+      --accent: #0070f3;
+      --row-hover: #111111;
+      --danger: #e5484d;
+      --radius: 6px;
+      --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    .wrap { max-width: 920px; margin: 0 auto; padding: 32px 24px 80px; }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 28px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
+    }
+    h1 {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin: 0 0 6px;
+    }
+    .subtitle { color: var(--muted); font-size: 13px; margin: 0; max-width: 480px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 14px;
+      height: 36px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .btn:hover { background: var(--row-hover); border-color: #404040; }
+    .btn-primary {
+      background: var(--text);
+      color: var(--bg);
+      border-color: var(--text);
+    }
+    .btn-primary:hover { filter: brightness(0.92); }
+    .btn-ghost { background: transparent; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; }
+    .search-wrap { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+    .search-input {
+      flex: 1;
+      min-width: 180px;
+      padding: 8px 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: #000;
+      color: var(--text);
+      font-size: 13px;
+    }
+    .search-input::placeholder { color: var(--muted); }
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+      cursor: pointer;
+    }
+    .card-head:hover { background: var(--row-hover); }
+    .card-head-left { display: flex; align-items: center; gap: 10px; }
+    .collapse-icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 12px;
+      transition: transform 0.2s;
+    }
+    .card.collapsed .collapse-icon { transform: rotate(-90deg); }
+    .card.collapsed .var-list { display: none; }
+    .card.collapsed .card-actions { display: none; }
+    .project-title { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+    .project-path { font-size: 12px; color: var(--muted); font-family: ui-monospace, monospace; word-break: break-all; margin-top: 4px; }
+    .card-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .env-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 12px 16px;
+      align-items: center;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.12s;
+    }
+    .env-row:last-child { border-bottom: none; }
+    .env-row:hover { background: var(--row-hover); }
+    @media (max-width: 720px) {
+      .env-row { grid-template-columns: 1fr; }
+    }
+    .key-block { min-width: 0; }
+    .key-line {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .key-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+    .key-name { font-weight: 600; font-size: 14px; letter-spacing: -0.01em; }
+    .key-scope { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .value-block {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .masked {
+      font-family: ui-monospace, monospace;
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      user-select: none;
+    }
+    .masked.revealed {
+      letter-spacing: normal;
+      color: #a3a3a3;
+      user-select: text;
+      word-break: break-all;
+      max-width: 280px;
+    }
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius);
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    .icon-btn:hover { color: var(--text); background: #1a1a1a; border-color: var(--border); }
+    .meta-block {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+    .meta-date { font-size: 12px; color: var(--muted); white-space: nowrap; }
+    .avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #333, #555);
+      flex-shrink: 0;
+    }
+    .menu-wrap { position: relative; }
+    .dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 100%;
+      margin-top: 4px;
+      min-width: 140px;
+      background: #141414;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      z-index: 50;
+      padding: 4px;
+    }
+    .dropdown.open { display: block; }
+    .dropdown button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 8px 12px;
+      border: none;
+      background: none;
+      color: var(--text);
+      font-size: 13px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .dropdown button:hover { background: #262626; }
+    .dropdown button.danger { color: var(--danger); }
+    .empty {
+      padding: 48px 24px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #171717;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .toast.show { opacity: 1; }
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .overlay.open { display: flex; }
+    .modal {
+      width: 100%;
+      max-width: 440px;
+      background: #0d0d0d;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 22px;
+    }
+    .modal h2 { margin: 0 0 16px; font-size: 16px; font-weight: 600; }
+    label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: #000;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      margin-bottom: 14px;
+    }
+    textarea { min-height: 100px; resize: vertical; font-family: ui-monospace, monospace; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px; }
+    .err { color: var(--danger); font-size: 12px; margin: -8px 0 12px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Environment Variables</h1>
+        <p class="subtitle">Manage <code style="color:#a3a3a3">.env</code> files by project. Data stays on your machine. Registry: <code style="color:#a3a3a3">~/.mvp-factory-control/</code></p>
+      </div>
+      <div class="toolbar">
+        <button type="button" class="btn btn-ghost" id="btn-pick">Choose folder…</button>
+        <button type="button" class="btn btn-primary" id="btn-add-project">Add project</button>
+      </div>
+    </header>
+    <div class="search-wrap">
+      <input type="text" class="search-input" id="search-input" placeholder="Search variables…" />
+    </div>
+    <div id="projects"></div>
+    <div id="empty-state" class="empty" style="display:none;">No projects yet. Add a project name and the folder that contains your <code>.env</code> file.</div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <div class="overlay" id="overlay-project">
+    <div class="modal">
+      <h2>Add project</h2>
+      <div id="project-err" class="err" style="display:none;"></div>
+      <label for="inp-name">Project name</label>
+      <input id="inp-name" placeholder="e.g. Project Mamba" autocomplete="off" />
+      <label for="inp-path">Folder path (must contain .env)</label>
+      <input id="inp-path" placeholder="/Users/you/Projects/my-app" autocomplete="off" />
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close="project">Cancel</button>
+        <button type="button" class="btn btn-primary" id="btn-save-project">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay-var">
+    <div class="modal">
+      <h2 id="var-modal-title">Edit variable</h2>
+      <div id="var-err" class="err" style="display:none;"></div>
+      <label>Key</label>
+      <input id="var-key" readonly style="opacity:0.75" />
+      <label for="var-scope">Environment</label>
+      <select id="var-scope">
+        <option value="all">All Environments</option>
+        <option value="production">Production</option>
+      </select>
+      <label for="var-value">Value</label>
+      <textarea id="var-value" placeholder="Secret value"></textarea>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close="var">Cancel</button>
+        <button type="button" class="btn btn-primary" id="btn-save-var">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay-new-var">
+    <div class="modal">
+      <h2>New variable</h2>
+      <div id="new-var-err" class="err" style="display:none;"></div>
+      <label for="new-var-key">Key</label>
+      <input id="new-var-key" placeholder="API_KEY_NAME" autocomplete="off" />
+      <label for="new-var-scope">Environment</label>
+      <select id="new-var-scope">
+        <option value="all">All Environments</option>
+        <option value="production">Production</option>
+      </select>
+      <label for="new-var-value">Value</label>
+      <textarea id="new-var-value" placeholder=""></textarea>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close="newvar">Cancel</button>
+        <button type="button" class="btn btn-primary" id="btn-create-var">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = "";
+    const state = { projects: [], vars: {}, revealed: new Set(), openMenu: null, collapsed: new Set(), searchQuery: "" };
+
+    function toast(msg) {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 2200);
+    }
+
+    function scopeLabel(s) {
+      return s === "production" ? "Production" : "All Environments";
+    }
+
+    function formatDate(iso) {
+      if (!iso) return "—";
+      const d = new Date(iso);
+      return d.toLocaleDateString(undefined, { month: "numeric", day: "numeric", year: "2-digit" });
+    }
+
+    async function api(path, opts = {}) {
+      const r = await fetch(API + path, {
+        ...opts,
+        headers: { "Content-Type": "application/json", ...opts.headers },
+      });
+      const text = await r.text();
+      let data;
+      try { data = text ? JSON.parse(text) : {}; } catch { data = { detail: text }; }
+      if (!r.ok) {
+        const d = data.detail;
+        let msg = r.statusText || "Request failed";
+        if (typeof d === "string") msg = d;
+        else if (Array.isArray(d)) msg = d.map((x) => x.msg || JSON.stringify(x)).join("; ");
+        else if (d) msg = JSON.stringify(d);
+        throw new Error(msg);
+      }
+      return data;
+    }
+
+    async function loadProjects() {
+      const data = await api("/api/projects");
+      state.projects = data.projects || [];
+      await Promise.all(state.projects.map(async (p) => {
+        try {
+          const v = await api("/api/projects/" + encodeURIComponent(p.id) + "/variables");
+          state.vars[p.id] = v;
+        } catch {
+          state.vars[p.id] = { project: p, variables: [] };
+        }
+      }));
+      render();
+    }
+
+    function closeMenus() {
+      document.querySelectorAll(".dropdown.open").forEach((d) => d.classList.remove("open"));
+      state.openMenu = null;
+    }
+
+    document.addEventListener("click", () => closeMenus());
+
+    function render() {
+      const root = document.getElementById("projects");
+      const empty = document.getElementById("empty-state");
+      root.innerHTML = "";
+      if (!state.projects.length) {
+        empty.style.display = "block";
+        return;
+      }
+      empty.style.display = "none";
+
+      for (const p of state.projects) {
+        const pack = state.vars[p.id] || { variables: [] };
+        let vars = pack.variables || [];
+        const card = document.createElement("div");
+        card.className = "card";
+        if (state.collapsed.has(p.id)) card.classList.add("collapsed");
+        const isCollapsed = state.collapsed.has(p.id);
+        card.innerHTML = `
+          <div class="card-head">
+            <div class="card-head-left">
+              <div class="collapse-icon">▼</div>
+              <div>
+                <div class="project-title"></div>
+                <div class="project-path"></div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button type="button" class="btn btn-ghost btn-add-var">+ Add variable</button>
+              <button type="button" class="btn btn-ghost btn-remove-project">Remove project</button>
+            </div>
+          </div>
+          <div class="var-list"></div>
+        `;
+        card.querySelector(".project-title").textContent = p.name;
+        card.querySelector(".project-path").textContent = p.rootPath + " · " + (p.envFileName || ".env");
+
+        card.querySelector(".card-head").addEventListener("click", (e) => {
+          if (e.target.closest(".card-actions") || e.target.closest(".dropdown")) return;
+          if (state.collapsed.has(p.id)) state.collapsed.delete(p.id);
+          else state.collapsed.add(p.id);
+          render();
+        });
+
+        const list = card.querySelector(".var-list");
+        const q = state.searchQuery.toLowerCase();
+        if (q) vars = vars.filter((v) => v.key.toLowerCase().includes(q));
+        if (!vars.length) {
+          const msg = q ? 'No variables match your search.' : 'No variables parsed in this file yet.';
+          list.innerHTML = '<div class="empty" style="padding:24px">' + msg + '</div>';
+        } else {
+          for (const v of vars) {
+            const rid = p.id + "::" + v.key;
+            const revealed = state.revealed.has(rid);
+            const row = document.createElement("div");
+            row.className = "env-row";
+            row.dataset.projectId = p.id;
+            row.dataset.key = v.key;
+            const when = v.updatedAt ? "Updated " + formatDate(v.updatedAt) : "Added " + formatDate(p.createdAt);
+            row.innerHTML = `
+              <div class="key-block">
+                <div class="key-line">
+                  <div class="key-icon">&lt;&gt;</div>
+                  <div>
+                    <div class="key-name"></div>
+                    <div class="key-scope"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="value-block">
+                <button type="button" class="icon-btn btn-eye" title="Reveal / hide" aria-label="Toggle visibility">👁</button>
+                <span class="masked"></span>
+                <button type="button" class="icon-btn btn-copy" title="Copy" aria-label="Copy">⎘</button>
+              </div>
+              <div class="meta-block">
+                <span class="meta-date"></span>
+                <div class="avatar" title="Local"></div>
+                <div class="menu-wrap">
+                  <button type="button" class="icon-btn menu-btn" aria-label="Menu">⋯</button>
+                  <div class="dropdown">
+                    <button type="button" class="btn-edit">Edit</button>
+                    <button type="button" class="btn-del danger">Delete</button>
+                  </div>
+                </div>
+              </div>
+            `;
+            row.querySelector(".key-name").textContent = v.key;
+            row.querySelector(".key-scope").textContent = scopeLabel(v.scope || "all");
+            const mask = row.querySelector(".masked");
+            mask.textContent = revealed ? v.value : "•".repeat(Math.min(24, Math.max(12, (v.value || "").length || 16)));
+            if (revealed) mask.classList.add("revealed");
+            row.querySelector(".meta-date").textContent = when;
+
+            row.querySelector(".btn-eye").addEventListener("click", (e) => {
+              e.stopPropagation();
+              if (state.revealed.has(rid)) state.revealed.delete(rid);
+              else state.revealed.add(rid);
+              render();
+            });
+            row.querySelector(".btn-copy").addEventListener("click", async (e) => {
+              e.stopPropagation();
+              try {
+                await navigator.clipboard.writeText(v.value);
+                toast("Copied to clipboard");
+              } catch { toast("Copy failed"); }
+            });
+            const menubtn = row.querySelector(".menu-btn");
+            const drop = row.querySelector(".dropdown");
+            menubtn.addEventListener("click", (e) => {
+              e.stopPropagation();
+              closeMenus();
+              drop.classList.add("open");
+            });
+            row.querySelector(".btn-edit").addEventListener("click", (e) => {
+              e.stopPropagation();
+              closeMenus();
+              openEditVar(p.id, v);
+            });
+            row.querySelector(".btn-del").addEventListener("click", async (e) => {
+              e.stopPropagation();
+              closeMenus();
+              if (!confirm("Delete " + v.key + "?")) return;
+              await api("/api/projects/" + encodeURIComponent(p.id) + "/variables/" + encodeURIComponent(v.key), { method: "DELETE" });
+              toast("Deleted");
+              await loadProjects();
+            });
+            list.appendChild(row);
+          }
+        }
+
+        card.querySelector(".btn-add-var").addEventListener("click", () => openNewVar(p.id));
+        card.querySelector(".btn-remove-project").addEventListener("click", async () => {
+          if (!confirm("Remove \"" + p.name + "\" from this list? Your .env file on disk is not deleted.")) return;
+          await api("/api/projects/" + encodeURIComponent(p.id), { method: "DELETE" });
+          toast("Project removed");
+          await loadProjects();
+        });
+
+        root.appendChild(card);
+      }
+    }
+
+    function openOverlay(id) { document.getElementById(id).classList.add("open"); }
+    function closeOverlay(id) { document.getElementById(id).classList.remove("open"); }
+
+    document.querySelectorAll("[data-close]").forEach((b) => {
+      b.addEventListener("click", () => {
+        const m = b.getAttribute("data-close");
+        if (m === "project") closeOverlay("overlay-project");
+        if (m === "var") closeOverlay("overlay-var");
+        if (m === "newvar") closeOverlay("overlay-new-var");
+      });
+    });
+
+    document.getElementById("btn-pick").addEventListener("click", async () => {
+      try {
+        const data = await api("/api/pick-folder");
+        document.getElementById("inp-path").value = (data.path || "").replace(/\/$/, "");
+        openOverlay("overlay-project");
+        document.getElementById("inp-name").focus();
+      } catch (e) {
+        toast(e.message || "Folder picker failed");
+      }
+    });
+
+    document.getElementById("btn-add-project").addEventListener("click", () => {
+      document.getElementById("project-err").style.display = "none";
+      openOverlay("overlay-project");
+    });
+
+    document.getElementById("btn-save-project").addEventListener("click", async () => {
+      const name = document.getElementById("inp-name").value.trim();
+      let path = document.getElementById("inp-path").value.trim();
+      const err = document.getElementById("project-err");
+      err.style.display = "none";
+      if (!name || !path) {
+        err.textContent = "Name and folder path are required.";
+        err.style.display = "block";
+        return;
+      }
+      try {
+        await api("/api/projects", { method: "POST", body: JSON.stringify({ name, path }) });
+        closeOverlay("overlay-project");
+        document.getElementById("inp-name").value = "";
+        document.getElementById("inp-path").value = "";
+        toast("Project added");
+        await loadProjects();
+      } catch (e) {
+        err.textContent = e.message;
+        err.style.display = "block";
+      }
+    });
+
+    let editCtx = { projectId: null, key: null };
+    function openEditVar(projectId, v) {
+      editCtx = { projectId, key: v.key };
+      document.getElementById("var-modal-title").textContent = "Edit variable";
+      document.getElementById("var-key").value = v.key;
+      document.getElementById("var-scope").value = v.scope === "production" ? "production" : "all";
+      document.getElementById("var-value").value = v.value;
+      document.getElementById("var-err").style.display = "none";
+      openOverlay("overlay-var");
+    }
+
+    document.getElementById("btn-save-var").addEventListener("click", async () => {
+      const err = document.getElementById("var-err");
+      err.style.display = "none";
+      try {
+        await api(
+          "/api/projects/" + encodeURIComponent(editCtx.projectId) + "/variables/" + encodeURIComponent(editCtx.key),
+          {
+            method: "PATCH",
+            body: JSON.stringify({
+              value: document.getElementById("var-value").value,
+              scope: document.getElementById("var-scope").value,
+            }),
+          }
+        );
+        closeOverlay("overlay-var");
+        toast("Saved");
+        await loadProjects();
+      } catch (e) {
+        err.textContent = e.message;
+        err.style.display = "block";
+      }
+    });
+
+    let newVarProjectId = null;
+    function openNewVar(projectId) {
+      newVarProjectId = projectId;
+      document.getElementById("new-var-key").value = "";
+      document.getElementById("new-var-scope").value = "all";
+      document.getElementById("new-var-value").value = "";
+      document.getElementById("new-var-err").style.display = "none";
+      openOverlay("overlay-new-var");
+    }
+
+    document.getElementById("btn-create-var").addEventListener("click", async () => {
+      const err = document.getElementById("new-var-err");
+      err.style.display = "none";
+      const key = document.getElementById("new-var-key").value.trim();
+      const value = document.getElementById("new-var-value").value;
+      const scope = document.getElementById("new-var-scope").value;
+      if (!key) {
+        err.textContent = "Key is required.";
+        err.style.display = "block";
+        return;
+      }
+      try {
+        await api("/api/projects/" + encodeURIComponent(newVarProjectId) + "/variables", {
+          method: "POST",
+          body: JSON.stringify({ key, value, scope }),
+        });
+        closeOverlay("overlay-new-var");
+        toast("Variable added");
+        await loadProjects();
+      } catch (e) {
+        err.textContent = e.message;
+        err.style.display = "block";
+      }
+    });
+
+    loadProjects().catch((e) => {
+      document.getElementById("empty-state").style.display = "block";
+      document.getElementById("empty-state").textContent = "Could not reach the env server: " + (e.message || e);
+    });
+
+    document.getElementById("search-input").addEventListener("input", (e) => {
+      state.searchQuery = e.target.value;
+      render();
+    });
+  </script>
+</body>
+</html>

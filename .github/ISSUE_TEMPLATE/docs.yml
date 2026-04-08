@@ -1,0 +1,108 @@
+name: Docs
+description: Documentation change (MVP Factory standard)
+title: "[Docs] "
+labels: ["type:docs"]
+body:
+  - type: input
+    id: product
+    attributes:
+      label: Product
+      description: Use `mvp-factory-control` for portfolio docs, or a product name for product-specific documentation.
+      placeholder: "mvp-factory-control"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Agent
+      options:
+        - Chappie
+        - Gwen
+        - Tribeca
+    validations:
+      required: true
+
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: Outcome when documentation work is complete.
+    validations:
+      required: true
+
+  - type: textarea
+    id: execution_prompt
+    attributes:
+      label: Execution Prompt
+      description: Explicit instructions an agent can execute immediately.
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope_non_goals
+    attributes:
+      label: Scope / Non-goals
+      description: What docs are in scope and what is out of scope.
+    validations:
+      required: true
+
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints
+      description: Constraints for tone, structure, safety, and references.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_checks
+    attributes:
+      label: Acceptance Checks
+      description: Checklist of verifiable outcomes.
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: delivery_artifact
+    attributes:
+      label: Delivery Artifact
+      description: Exact expected output (updated files/sections/links).
+    validations:
+      required: true
+
+  - type: textarea
+    id: change
+    attributes:
+      label: Change request
+      description: What should be added/updated/removed in docs.
+    validations:
+      required: true
+
+  - type: textarea
+    id: location
+    attributes:
+      label: Target files/sections
+      description: Exact files and sections to update (paths).
+      placeholder: |
+        - docs/...
+        - README.md#...
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: dod
+    attributes:
+      label: Definition of Done
+      options:
+        - label: Docs updated with precise, non-placeholder content
+          required: true
+        - label: Links verified (no broken references)
+          required: true
+        - label: Shared docs and product docs aligned with the change
+          required: true
+        - label: Documentation reflects the true current system state
+          required: true
