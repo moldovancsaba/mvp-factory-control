@@ -47,9 +47,16 @@ These are shared engineering standards for projects managed through `mvp-factory
 - Prefer updating that block when behavior changes rather than scattering duplicate explanations across docs.
 - The human-readable index of modules is [../READMEDEV.md](../READMEDEV.md) (**Source map**); keep it in sync when adding or renaming major modules.
 
-## Per-line annotations (machine-maintained)
+## Per-line annotations (optional tooling; **not** a quality standard)
 
-- `scripts/annotate-every-line.py` inserts `//> …` above **every** non-blank, non-comment line in `.ts`, `.js`, `.mjs`, and in `.tsx` **outside** `return ( … )` regions that contain JSX. Inserting a comment between arbitrary JSX lines is not valid ECMAScript/TSX, so JSX tree bodies are intentionally skipped after the first `<` / `{/*` / fragment inside such a return.
-- `scripts/strip-line-annotations.py` removes `//>`, `//>>`, and legacy `{/*> … */}` lines for regeneration.
-- `scripts/annotate-prisma-css-lines.py` adds `//> P:` lines in `prisma/schema.prisma` and `/*> C: … */` lines in `src/app/globals.css`.
-- Regenerate after large edits: run `strip` then `annotate-every-line` then `annotate-prisma-css-lines`, then `npm run build` and `npx prisma validate`.
+Scripts exist for historical/experimental use; **do not treat their output as good documentation.**
+
+- `scripts/annotate-every-line.py` — inserts `//> …` above many lines in `.ts` / `.js` / `.mjs`, and partially in `.tsx` (JSX inside `return (…)` is skipped; TSX grammar cannot host a comment on every physical line without rewriting components).
+- `scripts/strip-line-annotations.py` — removes `//>`, `//>>`, and `{/*> … */}` lines.
+- `scripts/annotate-prisma-css-lines.py` — adds `//> P:` / `/*> C: … */` in schema and `globals.css`.
+
+### Retrospective (2026-04) — **record for the future**
+
+Bulk machine-generated per-line comments (**generic text repeated thousands of times**) did **not** improve maintainability: they add noise, worsen diffs and blame, train readers to ignore comments, and cannot cover TSX JSX trees anyway. **High-value documentation** remains: accurate **module-level** headers, real **why** comments at non-obvious spots, and **indexed docs** (READMEDEV source map, BUILD_AND_RUN env reference). Prefer that over regenerating `//>` churn.
+
+If the team wants a lean codebase, run `strip-line-annotations.py` (and remove Prisma/CSS line prefixes if desired), then rely on module headers and real docs only.
