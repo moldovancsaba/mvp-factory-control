@@ -1,12 +1,17 @@
+//> String literal line.
 "use client";
 
 /**
  * Sign-in **card** for `/signin`: Google OAuth and/or dev credentials based on props from server page.
  */
+//> Import bindings from a module.
 import { signIn } from "next-auth/react";
+//> Import bindings from a module.
 import { buttonClassName } from "@/components/ui";
 
+//> Export declaration.
 export function SignInCard(props: { googleEnabled: boolean; devEnabled: boolean }) {
+  //> Return a value.
   return (
     <div className="ui-panel ui-panel--hero ui-stack-md">
       <div className="ui-kicker">Authentication</div>
@@ -53,4 +58,5 @@ export function SignInCard(props: { googleEnabled: boolean; devEnabled: boolean 
       ) : null}
     </div>
   );
+//> Brace or statement terminator.
 }

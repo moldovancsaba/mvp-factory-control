@@ -1,580 +1,1079 @@
 // Prisma schema for the internal control app: agents, tasks, chat, orchestrator lease, alpha context,
 // memory platform, audits, NextAuth tables. PostgreSQL via DATABASE_URL. Migrations under prisma/migrations/.
+//> P: Prisma config block header.
 generator client {
+  //> P: Schema field or clause.
   provider = "prisma-client-js"
+//> P: Block delimiter.
 }
 
+//> P: Prisma config block header.
 datasource db {
+  //> P: Schema field or clause.
   provider = "postgresql"
+  //> P: Schema field or clause.
   url      = env("DATABASE_URL")
+//> P: Block delimiter.
 }
 
+//> P: Enum definition.
 enum AgentRuntime {
+  //> P: Schema field or clause.
   LOCAL
+  //> P: Schema field or clause.
   CLOUD
+  //> P: Schema field or clause.
   MANUAL
+//> P: Block delimiter.
 }
 
+//> P: Enum definition.
 enum AgentReadiness {
+  //> P: Schema field or clause.
   NOT_READY
+  //> P: Schema field or clause.
   READY
+  //> P: Schema field or clause.
   PAUSED
+//> P: Block delimiter.
 }
 
+//> P: Enum definition.
 enum AgentControlRole {
+  //> P: Schema field or clause.
   ALPHA
+  //> P: Schema field or clause.
   BETA
+//> P: Block delimiter.
 }
 
+//> P: Enum definition.
 enum AlphaContextStatus {
+  //> P: Schema field or clause.
   OPEN
+  //> P: Schema field or clause.
   ACTIVE
+  //> P: Schema field or clause.
   TRANSFERRED
+  //> P: Schema field or clause.
   CLOSED
+//> P: Block delimiter.
 }
 
+//> P: Enum definition.
 enum AlphaContextPackageSnapshotKind {
+  //> P: Schema field or clause.
   ACTIVATED
+  //> P: Schema field or clause.
   HANDOVER_PACKAGE
+  //> P: Schema field or clause.
   TRANSFER_OUT
+  //> P: Schema field or clause.
   TRANSFER_IN
+  //> P: Schema field or clause.
   CLOSED
+//> P: Block delimiter.
 }
 
+//> P: Enum definition.
 enum ThreadKind {
+  //> P: Schema field or clause.
   GLOBAL
+  //> P: Schema field or clause.
   ISSUE
+  //> P: Schema field or clause.
   PRODUCT
+//> P: Block delimiter.
 }
 
+//> P: Enum definition.
 enum MessageAuthorType {
+  //> P: Schema field or clause.
   HUMAN
+  //> P: Schema field or clause.
   AGENT
+  //> P: Schema field or clause.
   SYSTEM
+//> P: Block delimiter.
 }
 
+//> P: Enum definition.
 enum TaskStatus {
+  //> P: Schema field or clause.
   QUEUED
+  //> P: Schema field or clause.
   RUNNING
+  //> P: Schema field or clause.
   DONE
+  //> P: Schema field or clause.
   FAILED
+  //> P: Schema field or clause.
   CANCELED
+  //> P: Schema field or clause.
   MANUAL_REQUIRED
+  //> P: Schema field or clause.
   DEAD_LETTER
+//> P: Block delimiter.
 }
 
+//> P: Enum definition.
 enum MemoryScope {
+  //> P: Schema field or clause.
   GLOBAL
+  //> P: Schema field or clause.
   APP
+  //> P: Schema field or clause.
   USER
+  //> P: Schema field or clause.
   APP_USER
+  //> P: Schema field or clause.
   SHARED
+//> P: Block delimiter.
 }
 
+//> P: Enum definition.
 enum MemoryLifecycleState {
+  //> P: Schema field or clause.
   DRAFT
+  //> P: Schema field or clause.
   SYSTEM_PROPOSED
+  //> P: Schema field or clause.
   HUMAN_APPROVED
+  //> P: Schema field or clause.
   SUPERSEDED
+  //> P: Schema field or clause.
   REVOKED
+//> P: Block delimiter.
 }
 
+//> P: Enum definition.
 enum MemorySourceKind {
+  //> P: Schema field or clause.
   MANUAL
+  //> P: Schema field or clause.
   AGENT_SESSION
+  //> P: Schema field or clause.
   SYSTEM_SUMMARY
+  //> P: Schema field or clause.
   IMPORT
+  //> P: Schema field or clause.
   POLICY
+  //> P: Schema field or clause.
   HANDOFF
+//> P: Block delimiter.
 }
 
 // next-auth (Prisma adapter) models
+//> P: Data model definition.
 model User {
+  //> P: Schema field or clause.
   id            String    @id @default(cuid())
+  //> P: Schema field or clause.
   name          String?
+  //> P: Schema field or clause.
   email         String?   @unique
+  //> P: Schema field or clause.
   emailVerified DateTime?
+  //> P: Schema field or clause.
   image         String?
 
+  //> P: Schema field or clause.
   accounts Account[]
+  //> P: Schema field or clause.
   sessions Session[]
 
+  //> P: Schema field or clause.
   createdAt DateTime @default(now())
+  //> P: Schema field or clause.
   updatedAt DateTime @updatedAt
 
+  //> P: Schema field or clause.
   messages ChatMessage[]
+  //> P: Schema field or clause.
   threadsCreated ChatThread[] @relation("ThreadCreatedBy")
 
+  //> P: Schema field or clause.
   tasksCreated AgentTask[]
+  //> P: Schema field or clause.
   alphaContextWindowsCreated AlphaContextWindow[] @relation("AlphaContextWindowCreatedBy")
+  //> P: Schema field or clause.
   alphaContextPackageInvariantsCreated AlphaContextPackageInvariant[] @relation("AlphaContextPackageInvariantCreatedBy")
+  //> P: Schema field or clause.
   memoryProfiles MemoryUserProfile[]
+  //> P: Schema field or clause.
   memorySourcesCreated MemorySource[] @relation("MemorySourceCreatedBy")
+  //> P: Schema field or clause.
   memoryRecordsAuthored MemoryRecord[] @relation("MemoryRecordAuthoredBy")
+  //> P: Schema field or clause.
   memoryRecordsReviewed MemoryRecord[] @relation("MemoryRecordReviewedBy")
+  //> P: Schema field or clause.
   memoryEventsAuthored MemoryEvent[] @relation("MemoryEventAuthoredBy")
+//> P: Block delimiter.
 }
 
+//> P: Data model definition.
 model Account {
+  //> P: Schema field or clause.
   id                String  @id @default(cuid())
+  //> P: Schema field or clause.
   userId            String
+  //> P: Schema field or clause.
   type              String
+  //> P: Schema field or clause.
   provider          String
+  //> P: Schema field or clause.
   providerAccountId String
+  //> P: Schema field or clause.
   refresh_token     String?
+  //> P: Schema field or clause.
   access_token      String?
+  //> P: Schema field or clause.
   expires_at        Int?
+  //> P: Schema field or clause.
   token_type        String?
+  //> P: Schema field or clause.
   scope             String?
+  //> P: Schema field or clause.
   id_token          String?
+  //> P: Schema field or clause.
   session_state     String?
 
+  //> P: Schema field or clause.
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  //> P: Prisma attribute.
   @@unique([provider, providerAccountId])
+//> P: Block delimiter.
 }
 
+//> P: Data model definition.
 model Session {
+  //> P: Schema field or clause.
   id           String   @id @default(cuid())
+  //> P: Schema field or clause.
   sessionToken String   @unique
+  //> P: Schema field or clause.
   userId       String
+  //> P: Schema field or clause.
   expires      DateTime
 
+  //> P: Schema field or clause.
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+//> P: Block delimiter.
 }
 
+//> P: Data model definition.
 model VerificationToken {
+  //> P: Schema field or clause.
   identifier String
+  //> P: Schema field or clause.
   token      String   @unique
+  //> P: Schema field or clause.
   expires    DateTime
 
+  //> P: Prisma attribute.
   @@unique([identifier, token])
+//> P: Block delimiter.
 }
 
 // War Room domain models
+//> P: Data model definition.
 model Agent {
+  //> P: Schema field or clause.
   id           String      @id @default(cuid())
+  //> P: Schema field or clause.
   key          String      @unique
+  //> P: Schema field or clause.
   displayName  String
+  //> P: Schema field or clause.
   avatarUrl    String?
+  //> P: Schema field or clause.
   runtime      AgentRuntime @default(MANUAL)
+  //> P: Schema field or clause.
   readiness    AgentReadiness @default(NOT_READY)
+  //> P: Schema field or clause.
   controlRole  AgentControlRole @default(BETA)
+  //> P: Data model definition.
   model        String?
+  //> P: Schema field or clause.
   host         String?
+  //> P: Schema field or clause.
   enabled      Boolean     @default(true)
+  //> P: Schema field or clause.
   capabilities Json?
+  //> P: Schema field or clause.
   lastHeartbeatAt DateTime?
+  //> P: Schema field or clause.
   lastHeartbeatMeta Json?
+  //> P: Schema field or clause.
   smokeTestPassedAt DateTime?
+  //> P: Schema field or clause.
   createdAt    DateTime    @default(now())
+  //> P: Schema field or clause.
   updatedAt    DateTime    @updatedAt
 
+  //> P: Schema field or clause.
   tasks AgentTask[]
+  //> P: Schema field or clause.
   alphaContextWindows AlphaContextWindow[]
+  //> P: Schema field or clause.
   activeProjectLocks ProjectAlphaLock[] @relation("ProjectAlphaLockOwner")
+//> P: Block delimiter.
 }
 
+//> P: Data model definition.
 model ChatThread {
+  //> P: Schema field or clause.
   id          String     @id @default(cuid())
+  //> P: Schema field or clause.
   kind        ThreadKind
+  //> P: Schema field or clause.
   ref         String
+  //> P: Schema field or clause.
   title       String?
+  //> P: Schema field or clause.
   createdById String?
+  //> P: Schema field or clause.
   createdAt   DateTime   @default(now())
+  //> P: Schema field or clause.
   updatedAt   DateTime   @updatedAt
 
+  //> P: Schema field or clause.
   createdBy User? @relation("ThreadCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  //> P: Schema field or clause.
   messages  ChatMessage[]
 
+  //> P: Schema field or clause.
   tasks AgentTask[]
 
+  //> P: Prisma attribute.
   @@unique([kind, ref])
+//> P: Block delimiter.
 }
 
+//> P: Data model definition.
 model ChatMessage {
+  //> P: Schema field or clause.
   id         String            @id @default(cuid())
+  //> P: Schema field or clause.
   threadId   String
+  //> P: Schema field or clause.
   authorType MessageAuthorType
+  //> P: Schema field or clause.
   authorKey  String?
+  //> P: Schema field or clause.
   userId     String?
+  //> P: Schema field or clause.
   content    String
+  //> P: Schema field or clause.
   meta       Json?
+  //> P: Schema field or clause.
   createdAt  DateTime          @default(now())
 
+  //> P: Schema field or clause.
   thread ChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  //> P: Schema field or clause.
   user   User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
 
+  //> P: Prisma attribute.
   @@index([threadId, createdAt])
+//> P: Block delimiter.
 }
 
+//> P: Data model definition.
 model AgentTask {
+  //> P: Schema field or clause.
   id          String     @id @default(cuid())
+  //> P: Schema field or clause.
   status      TaskStatus @default(QUEUED)
+  //> P: Schema field or clause.
   agentKey    String
+  //> P: Schema field or clause.
   attemptCount Int       @default(0)
+  //> P: Schema field or clause.
   maxAttempts  Int       @default(3)
+  //> P: Schema field or clause.
   nextAttemptAt DateTime @default(now())
+  //> P: Schema field or clause.
   lastFailureCode String?
+  //> P: Schema field or clause.
   lastFailureKind String?
+  //> P: Schema field or clause.
   deadLetteredAt DateTime?
+  //> P: Schema field or clause.
   issueNumber Int?
+  //> P: Schema field or clause.
   threadId    String?
+  //> P: Schema field or clause.
   title       String
+  //> P: Schema field or clause.
   payload     Json?
+  //> P: Schema field or clause.
   createdById String?
+  //> P: Schema field or clause.
   startedAt   DateTime?
+  //> P: Schema field or clause.
   finishedAt  DateTime?
+  //> P: Schema field or clause.
   error       String?
+  //> P: Schema field or clause.
   createdAt   DateTime   @default(now())
+  //> P: Schema field or clause.
   updatedAt   DateTime   @updatedAt
 
+  //> P: Schema field or clause.
   agent     Agent      @relation(fields: [agentKey], references: [key], onDelete: Cascade)
+  //> P: Schema field or clause.
   createdBy User?      @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  //> P: Schema field or clause.
   thread    ChatThread? @relation(fields: [threadId], references: [id], onDelete: SetNull)
+  //> P: Schema field or clause.
   promptPackageInvariant TaskPromptPackageInvariant?
 
+  //> P: Prisma attribute.
   @@index([agentKey, status, createdAt])
+  //> P: Prisma attribute.
   @@index([status, nextAttemptAt, createdAt])
+  //> P: Prisma attribute.
   @@index([issueNumber])
+//> P: Block delimiter.
 }
 
+//> P: Data model definition.
 model TaskPromptPackageInvariant {
+  //> P: Schema field or clause.
   id             String   @id @default(cuid())
+  //> P: Schema field or clause.
   taskId         String   @unique
+  //> P: Schema field or clause.
   sourceKind     String
+  //> P: Schema field or clause.
   sourceRef      String?
+  //> P: Schema field or clause.
   issueNumber    Int?
+  //> P: Schema field or clause.
   snapshotHash   String
+  //> P: Schema field or clause.
   promptText     String
+  //> P: Schema field or clause.
   packageBody    String?
+  //> P: Schema field or clause.
   packageSections Json?
+  //> P: Schema field or clause.
   payloadSnapshot Json?
+  //> P: Schema field or clause.
   createdAt      DateTime @default(now())
 
+  //> P: Schema field or clause.
   task AgentTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
 
+  //> P: Prisma attribute.
   @@index([issueNumber, createdAt])
+  //> P: Prisma attribute.
   @@index([sourceKind, createdAt])
+  //> P: Prisma attribute.
   @@index([createdAt])
+//> P: Block delimiter.
 }
 
+//> P: Data model definition.
 model OrchestratorLease {
+  //> P: Schema field or clause.
   id              String   @id
+  //> P: Schema field or clause.
   ownerId         String?
+  //> P: Schema field or clause.
   ownerHost       String?
+  //> P: Schema field or clause.
   ownerPid        Int?
+  //> P: Schema field or clause.
   ownerAgentKey   String?
+  //> P: Schema field or clause.
   expiresAt       DateTime?
+  //> P: Schema field or clause.
   lastHeartbeatAt DateTime?
+  //> P: Schema field or clause.
   heartbeatCount  Int      @default(0)
+  //> P: Schema field or clause.
   acquiredAt      DateTime?
+  //> P: Schema field or clause.
   createdAt       DateTime @default(now())
+  //> P: Schema field or clause.
   updatedAt       DateTime @updatedAt
 
+  //> P: Schema field or clause.
   audits OrchestratorLeaseAudit[]
 
+  //> P: Prisma attribute.
   @@index([ownerId])
+  //> P: Prisma attribute.
   @@index([expiresAt])
+//> P: Block delimiter.
 }
 
+//> P: Data model definition.
 model OrchestratorLeaseAudit {
+  //> P: Schema field or clause.
   id              String   @id @default(cuid())
+  //> P: Schema field or clause.
   leaseId         String
+  //> P: Schema field or clause.
   code            String
+  //> P: Schema field or clause.
   message         String
+  //> P: Schema field or clause.
   ownerId         String?
+  //> P: Schema field or clause.
   previousOwnerId String?
+  //> P: Schema field or clause.
   metadata        Json?
+  //> P: Schema field or clause.
   createdAt       DateTime @default(now())
 
+  //> P: Schema field or clause.
   lease OrchestratorLease @relation(fields: [leaseId], references: [id], onDelete: Cascade)
 
+  //> P: Prisma attribute.
   @@index([leaseId, createdAt])
+  //> P: Prisma attribute.
   @@index([code, createdAt])
+//> P: Block delimiter.
 }
 
+//> P: Data model definition.
 model LifecycleAuditEvent {
+  //> P: Schema field or clause.
   id        String   @id @default(cuid())
+  //> P: Schema field or clause.
   entityType String
+  //> P: Schema field or clause.
   entityId   String?
+  //> P: Schema field or clause.
   actorRole  String
+  //> P: Schema field or clause.
   action     String
+  //> P: Schema field or clause.
   fromState  String?
+  //> P: Schema field or clause.
   toState    String?
+  //> P: Schema field or clause.
   allowed    Boolean
+  //> P: Schema field or clause.
   reason     String
+  //> P: Schema field or clause.
   metadata   Json?
+  //> P: Schema field or clause.
   createdAt  DateTime @default(now())
 
+  //> P: Prisma attribute.
   @@index([entityType, entityId, createdAt])
+  //> P: Prisma attribute.
   @@index([actorRole, action, createdAt])
+  //> P: Prisma attribute.
   @@index([createdAt])
+//> P: Block delimiter.
 }
 
+//> P: Data model definition.
 model InboundEmailEvent {
+  //> P: Schema field or clause.
   id                  String   @id @default(cuid())
+  //> P: Schema field or clause.
   externalMessageId   String?  @unique
+  //> P: Schema field or clause.
   channel             String   @default("email")
+  //> P: Schema field or clause.
   senderEmail         String
+  //> P: Schema field or clause.
   senderName          String?
+  //> P: Schema field or clause.
   subject             String
+  //> P: Schema field or clause.
   bodyText            String
+  //> P: Schema field or clause.
   authorized          Boolean  @default(false)
+  //> P: Schema field or clause.
   authorizationReason String
+  //> P: Schema field or clause.
   status              String
+  //> P: Schema field or clause.
   attemptCount        Int      @default(0)
+  //> P: Schema field or clause.
   maxAttempts         Int      @default(3)
+  //> P: Schema field or clause.
   nextAttemptAt       DateTime?
+  //> P: Schema field or clause.
   lastFailureCode     String?
+  //> P: Schema field or clause.
   lastFailureMessage  String?
+  //> P: Schema field or clause.
   threadId            String?
+  //> P: Schema field or clause.
   taskId              String?
+  //> P: Schema field or clause.
   meta                Json?
+  //> P: Schema field or clause.
   createdAt           DateTime @default(now())
+  //> P: Schema field or clause.
   updatedAt           DateTime @updatedAt
 
+  //> P: Prisma attribute.
   @@index([status, createdAt])
+  //> P: Prisma attribute.
   @@index([senderEmail, createdAt])
+  //> P: Prisma attribute.
   @@index([channel, createdAt])
+//> P: Block delimiter.
 }
 
+//> P: Data model definition.
 model AlphaContextWindow {
+  //> P: Schema field or clause.
   id                    String             @id @default(cuid())
+  //> P: Schema field or clause.
   projectKey            String
+  //> P: Schema field or clause.
   projectName           String
+  //> P: Schema field or clause.
   ownerAgentKey         String
+  //> P: Schema field or clause.
   status                AlphaContextStatus @default(OPEN)
+  //> P: Schema field or clause.
   activationHandoverRef String?
+  //> P: Schema field or clause.
   transferHandoverRef   String?
+  //> P: Schema field or clause.
   closeHandoverRef      String?
+  //> P: Schema field or clause.
   continuityNote        String?
+  //> P: Schema field or clause.
   contextUsagePercent   Int                @default(0)
+  //> P: Schema field or clause.
   contextUsageUpdatedAt DateTime?
+  //> P: Schema field or clause.
   contextWarningAt      DateTime?
+  //> P: Schema field or clause.
   contextBlockedAt      DateTime?
+  //> P: Schema field or clause.
   handoverPackageRef    String?
+  //> P: Schema field or clause.
   continuationPromptRef String?
+  //> P: Schema field or clause.
   handoverPackageReadyAt DateTime?
+  //> P: Schema field or clause.
   guardrailOverrideUntil DateTime?
+  //> P: Schema field or clause.
   guardrailOverrideReason String?
+  //> P: Schema field or clause.
   predecessorId         String?
+  //> P: Schema field or clause.
   activatedAt           DateTime?
+  //> P: Schema field or clause.
   transferredAt         DateTime?
+  //> P: Schema field or clause.
   closedAt              DateTime?
+  //> P: Schema field or clause.
   createdById           String?
+  //> P: Schema field or clause.
   createdAt             DateTime           @default(now())
+  //> P: Schema field or clause.
   updatedAt             DateTime           @updatedAt
 
+  //> P: Schema field or clause.
   ownerAgent Agent @relation(fields: [ownerAgentKey], references: [key], onDelete: Cascade)
+  //> P: Schema field or clause.
   createdBy User? @relation("AlphaContextWindowCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  //> P: Schema field or clause.
   predecessor AlphaContextWindow? @relation("AlphaContextWindowPredecessor", fields: [predecessorId], references: [id], onDelete: SetNull)
+  //> P: Schema field or clause.
   successors AlphaContextWindow[] @relation("AlphaContextWindowPredecessor")
+  //> P: Schema field or clause.
   lock ProjectAlphaLock?
+  //> P: Schema field or clause.
   auditEvents AlphaContextAuditEvent[]
+  //> P: Schema field or clause.
   packageInvariants AlphaContextPackageInvariant[]
 
+  //> P: Prisma attribute.
   @@index([projectKey, status, createdAt])
+  //> P: Prisma attribute.
   @@index([ownerAgentKey, status, createdAt])
+  //> P: Prisma attribute.
   @@index([projectName, createdAt])
+//> P: Block delimiter.
 }
 
+//> P: Data model definition.
 model AlphaContextPackageInvariant {
+  //> P: Schema field or clause.
   id                    String                         @id @default(cuid())
+  //> P: Schema field or clause.
   windowId              String
+  //> P: Schema field or clause.
   projectKey            String
+  //> P: Schema field or clause.
   projectName           String
+  //> P: Schema field or clause.
   snapshotKind          AlphaContextPackageSnapshotKind
+  //> P: Schema field or clause.
   predecessorSnapshotId String?
+  //> P: Schema field or clause.
   sourceRef             String?
+  //> P: Schema field or clause.
   snapshotHash          String
+  //> P: Schema field or clause.
   handoverRef           String?
+  //> P: Schema field or clause.
   handoverPackageRef    String?
+  //> P: Schema field or clause.
   continuationPromptRef String?
+  //> P: Schema field or clause.
   continuityNote        String?
+  //> P: Schema field or clause.
   payloadSnapshot       Json?
+  //> P: Schema field or clause.
   createdById           String?
+  //> P: Schema field or clause.
   createdAt             DateTime                       @default(now())
 
+  //> P: Schema field or clause.
   window AlphaContextWindow @relation(fields: [windowId], references: [id], onDelete: Cascade)
+  //> P: Schema field or clause.
   predecessor AlphaContextPackageInvariant? @relation("AlphaContextPackageInvariantLineage", fields: [predecessorSnapshotId], references: [id], onDelete: SetNull)
+  //> P: Schema field or clause.
   successors AlphaContextPackageInvariant[] @relation("AlphaContextPackageInvariantLineage")
+  //> P: Schema field or clause.
   createdBy User? @relation("AlphaContextPackageInvariantCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
 
+  //> P: Prisma attribute.
   @@index([projectKey, createdAt])
+  //> P: Prisma attribute.
   @@index([windowId, createdAt])
+  //> P: Prisma attribute.
   @@index([snapshotKind, createdAt])
+  //> P: Prisma attribute.
   @@index([predecessorSnapshotId])
+//> P: Block delimiter.
 }
 
+//> P: Data model definition.
 model ProjectAlphaLock {
+  //> P: Schema field or clause.
   projectKey          String   @id
+  //> P: Schema field or clause.
   projectName         String
+  //> P: Schema field or clause.
   activeWindowId      String?  @unique
+  //> P: Schema field or clause.
   activeOwnerAgentKey String?
+  //> P: Schema field or clause.
   activatedAt         DateTime?
+  //> P: Schema field or clause.
   continuityRef       String?
+  //> P: Schema field or clause.
   createdAt           DateTime @default(now())
+  //> P: Schema field or clause.
   updatedAt           DateTime @updatedAt
 
+  //> P: Schema field or clause.
   activeWindow AlphaContextWindow? @relation(fields: [activeWindowId], references: [id], onDelete: SetNull)
+  //> P: Schema field or clause.
   activeOwnerAgent Agent? @relation("ProjectAlphaLockOwner", fields: [activeOwnerAgentKey], references: [key], onDelete: SetNull)
 
+  //> P: Prisma attribute.
   @@index([activeOwnerAgentKey])
+  //> P: Prisma attribute.
   @@index([projectName])
+//> P: Block delimiter.
 }
 
+//> P: Data model definition.
 model AlphaContextAuditEvent {
+  //> P: Schema field or clause.
   id                  String   @id @default(cuid())
+  //> P: Schema field or clause.
   projectKey          String
+  //> P: Schema field or clause.
   projectName         String
+  //> P: Schema field or clause.
   actorRole           String
+  //> P: Schema field or clause.
   action              String
+  //> P: Schema field or clause.
   allowed             Boolean
+  //> P: Schema field or clause.
   reason              String
+  //> P: Schema field or clause.
   windowId            String?
+  //> P: Schema field or clause.
   conflictingWindowId String?
+  //> P: Schema field or clause.
   metadata            Json?
+  //> P: Schema field or clause.
   createdAt           DateTime @default(now())
 
+  //> P: Schema field or clause.
   window AlphaContextWindow? @relation(fields: [windowId], references: [id], onDelete: SetNull)
 
+  //> P: Prisma attribute.
   @@index([projectKey, createdAt])
+  //> P: Prisma attribute.
   @@index([action, createdAt])
+  //> P: Prisma attribute.
   @@index([windowId, createdAt])
+//> P: Block delimiter.
 }
 
+//> P: Data model definition.
 model AlphaFailureEvent {
+  //> P: Schema field or clause.
   id              String   @id @default(cuid())
+  //> P: Schema field or clause.
   failureClass    String
+  //> P: Schema field or clause.
   severity        String
+  //> P: Schema field or clause.
   fallbackAction  String
+  //> P: Schema field or clause.
   projectKey      String?
+  //> P: Schema field or clause.
   projectName     String?
+  //> P: Schema field or clause.
   issueNumber     Int?
+  //> P: Schema field or clause.
   taskId          String?
+  //> P: Schema field or clause.
   threadId        String?
+  //> P: Schema field or clause.
   leaseHealth     String?
+  //> P: Schema field or clause.
   contextWindowId String?
+  //> P: Schema field or clause.
   remediation     String
+  //> P: Schema field or clause.
   metadata        Json?
+  //> P: Schema field or clause.
   createdAt       DateTime @default(now())
 
+  //> P: Prisma attribute.
   @@index([failureClass, createdAt])
+  //> P: Prisma attribute.
   @@index([projectKey, createdAt])
+  //> P: Prisma attribute.
   @@index([issueNumber, createdAt])
+  //> P: Prisma attribute.
   @@index([severity, createdAt])
+//> P: Block delimiter.
 }
 
+//> P: Data model definition.
 model MemoryAppInstance {
+  //> P: Schema field or clause.
   id          String   @id @default(cuid())
+  //> P: Schema field or clause.
   key         String   @unique
+  //> P: Schema field or clause.
   displayName String
+  //> P: Schema field or clause.
   description String?
+  //> P: Schema field or clause.
   metadata    Json?
+  //> P: Schema field or clause.
   createdAt   DateTime @default(now())
+  //> P: Schema field or clause.
   updatedAt   DateTime @updatedAt
 
+  //> P: Schema field or clause.
   sources MemorySource[]
+  //> P: Schema field or clause.
   records MemoryRecord[]
 
+  //> P: Prisma attribute.
   @@index([displayName])
+  //> P: Prisma attribute.
   @@index([createdAt])
+//> P: Block delimiter.
 }
 
+//> P: Data model definition.
 model MemoryUserProfile {
+  //> P: Schema field or clause.
   id          String   @id @default(cuid())
+  //> P: Schema field or clause.
   key         String   @unique
+  //> P: Schema field or clause.
   displayName String?
+  //> P: Schema field or clause.
   metadata    Json?
+  //> P: Schema field or clause.
   userId      String?  @unique
+  //> P: Schema field or clause.
   createdAt   DateTime @default(now())
+  //> P: Schema field or clause.
   updatedAt   DateTime @updatedAt
 
+  //> P: Schema field or clause.
   user    User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  //> P: Schema field or clause.
   sources MemorySource[]
+  //> P: Schema field or clause.
   records MemoryRecord[]
 
+  //> P: Prisma attribute.
   @@index([displayName])
+  //> P: Prisma attribute.
   @@index([createdAt])
+//> P: Block delimiter.
 }
 
+//> P: Data model definition.
 model MemorySource {
+  //> P: Schema field or clause.
   id               String           @id @default(cuid())
+  //> P: Schema field or clause.
   kind             MemorySourceKind
+  //> P: Schema field or clause.
   ref              String?
+  //> P: Schema field or clause.
   title            String?
+  //> P: Schema field or clause.
   contentHash      String?
+  //> P: Schema field or clause.
   metadata         Json?
+  //> P: Schema field or clause.
   appInstanceId    String?
+  //> P: Schema field or clause.
   userProfileId    String?
+  //> P: Schema field or clause.
   createdByUserId  String?
+  //> P: Schema field or clause.
   createdAt        DateTime         @default(now())
+  //> P: Schema field or clause.
   updatedAt        DateTime         @updatedAt
 
+  //> P: Schema field or clause.
   appInstance   MemoryAppInstance? @relation(fields: [appInstanceId], references: [id], onDelete: SetNull)
+  //> P: Schema field or clause.
   userProfile   MemoryUserProfile? @relation(fields: [userProfileId], references: [id], onDelete: SetNull)
+  //> P: Schema field or clause.
   createdByUser User?              @relation("MemorySourceCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  //> P: Schema field or clause.
   records       MemoryRecord[]
 
+  //> P: Prisma attribute.
   @@index([kind, createdAt])
+  //> P: Prisma attribute.
   @@index([appInstanceId, createdAt])
+  //> P: Prisma attribute.
   @@index([userProfileId, createdAt])
+//> P: Block delimiter.
 }
 
+//> P: Data model definition.
 model MemoryRecord {
+  //> P: Schema field or clause.
   id                String               @id @default(cuid())
+  //> P: Schema field or clause.
   scope             MemoryScope
+  //> P: Schema field or clause.
   lifecycleState    MemoryLifecycleState @default(DRAFT)
+  //> P: Schema field or clause.
   recordType        String
+  //> P: Schema field or clause.
   title             String?
+  //> P: Schema field or clause.
   content           String
+  //> P: Schema field or clause.
   summary           String?
+  //> P: Schema field or clause.
   keywords          String[]
+  //> P: Schema field or clause.
   confidence        Float?
+  //> P: Schema field or clause.
   appInstanceId     String?
+  //> P: Schema field or clause.
   userProfileId     String?
+  //> P: Schema field or clause.
   sharedChannelKey  String?
+  //> P: Schema field or clause.
   sourceId          String?
+  //> P: Schema field or clause.
   authoredByUserId  String?
+  //> P: Schema field or clause.
   reviewedByUserId  String?
+  //> P: Schema field or clause.
   approvedAt        DateTime?
+  //> P: Schema field or clause.
   revokedAt         DateTime?
+  //> P: Schema field or clause.
   supersededById    String?
+  //> P: Schema field or clause.
   metadata          Json?
+  //> P: Schema field or clause.
   createdAt         DateTime             @default(now())
+  //> P: Schema field or clause.
   updatedAt         DateTime             @updatedAt
 
+  //> P: Schema field or clause.
   appInstance    MemoryAppInstance? @relation(fields: [appInstanceId], references: [id], onDelete: SetNull)
+  //> P: Schema field or clause.
   userProfile    MemoryUserProfile? @relation(fields: [userProfileId], references: [id], onDelete: SetNull)
+  //> P: Schema field or clause.
   source         MemorySource?      @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+  //> P: Schema field or clause.
   authoredByUser User?              @relation("MemoryRecordAuthoredBy", fields: [authoredByUserId], references: [id], onDelete: SetNull)
+  //> P: Schema field or clause.
   reviewedByUser User?              @relation("MemoryRecordReviewedBy", fields: [reviewedByUserId], references: [id], onDelete: SetNull)
+  //> P: Schema field or clause.
   supersededBy   MemoryRecord?      @relation("MemoryRecordSupersession", fields: [supersededById], references: [id], onDelete: SetNull)
+  //> P: Schema field or clause.
   supersedes     MemoryRecord[]     @relation("MemoryRecordSupersession")
+  //> P: Schema field or clause.
   events         MemoryEvent[]
 
+  //> P: Prisma attribute.
   @@index([scope, lifecycleState, createdAt])
+  //> P: Prisma attribute.
   @@index([appInstanceId, scope, createdAt])
+  //> P: Prisma attribute.
   @@index([userProfileId, scope, createdAt])
+  //> P: Prisma attribute.
   @@index([sharedChannelKey, lifecycleState, createdAt])
+  //> P: Prisma attribute.
   @@index([recordType, createdAt])
+//> P: Block delimiter.
 }
 
+//> P: Data model definition.
 model MemoryEvent {
+  //> P: Schema field or clause.
   id             String   @id @default(cuid())
+  //> P: Schema field or clause.
   recordId       String?
+  //> P: Schema field or clause.
   eventType      String
+  //> P: Schema field or clause.
   actorRole      String
+  //> P: Schema field or clause.
   actorUserId    String?
+  //> P: Schema field or clause.
   reason         String
+  //> P: Schema field or clause.
   metadata       Json?
+  //> P: Schema field or clause.
   createdAt      DateTime @default(now())
 
+  //> P: Schema field or clause.
   record    MemoryRecord? @relation(fields: [recordId], references: [id], onDelete: SetNull)
+  //> P: Schema field or clause.
   actorUser User?         @relation("MemoryEventAuthoredBy", fields: [actorUserId], references: [id], onDelete: SetNull)
 
+  //> P: Prisma attribute.
   @@index([recordId, createdAt])
+  //> P: Prisma attribute.
   @@index([eventType, createdAt])
+  //> P: Prisma attribute.
   @@index([actorRole, createdAt])
+//> P: Block delimiter.
 }
+

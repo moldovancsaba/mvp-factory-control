@@ -3,19 +3,31 @@
  *
  * Server component: reads session for optional user label. Wraps page content in `ui-shell` layout tokens.
  */
+//> Import bindings from a module.
 import Link from "next/link";
+//> Import bindings from a module.
 import { getServerSession } from "next-auth";
+//> Import bindings from a module.
 import { authOptions } from "@/lib/auth";
+//> Import bindings from a module.
 import { SignOutButton } from "@/components/SignOutButton";
+//> Import bindings from a module.
 import { badgeClassName } from "@/components/ui";
 
+//> Export declaration.
 export async function Shell(props: {
+  //> Source statement or expression.
   title: string;
+  //> Source statement or expression.
   subtitle?: string;
+  //> Source statement or expression.
   children: React.ReactNode;
+//> Source statement or expression.
 }) {
+  //> Variable declaration.
   const session = await getServerSession(authOptions);
 
+  //> Return a value.
   return (
     <div className="ui-shell">
       <header className="ui-shell__header">
@@ -73,4 +85,5 @@ export async function Shell(props: {
       </main>
     </div>
   );
+//> Brace or statement terminator.
 }

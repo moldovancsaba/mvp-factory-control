@@ -1,53 +1,95 @@
 /**
  * **Memory** UI: list apps, profiles, recent records; search form hits `retrieveMemoryContext`; create forms post to actions.
  */
+//> Import bindings from a module.
 import { redirect } from "next/navigation";
+//> Import bindings from a module.
 import { Shell } from "@/components/Shell";
+//> Import bindings from a module.
 import { badgeClassName, buttonClassName } from "@/components/ui";
+//> Import bindings from a module.
 import { requireSession } from "@/lib/session";
+//> Import bindings from a module.
 import {
+  //> Source statement or expression.
   listMemoryAppInstances,
+  //> Source statement or expression.
   listMemoryUserProfiles,
+  //> Source statement or expression.
   listRecentMemoryRecords,
+  //> Source statement or expression.
   retrieveMemoryContext
+//> Source statement or expression.
 } from "@/lib/memory-platform";
+//> Import bindings from a module.
 import {
+  //> Source statement or expression.
   createMemoryRecordAction,
+  //> Source statement or expression.
   provisionMemoryAppInstanceAction,
+  //> Source statement or expression.
   provisionMemoryUserProfileAction
+//> Source statement or expression.
 } from "@/app/memory/actions";
 
+//> Export declaration.
 export default async function MemoryPage(props: {
+  //> Source statement or expression.
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
+//> Source statement or expression.
 }) {
+  //> Variable declaration.
   const session = await requireSession();
+  //> Conditional branch.
   if (!session) redirect("/signin");
 
+  //> Const with function or expression.
   const searchParams = (await props.searchParams) ?? {};
+  //> Variable declaration.
   const query = typeof searchParams.query === "string" ? searchParams.query : "";
+  //> Variable declaration.
   const selectedApp = typeof searchParams.app === "string" ? searchParams.app : "";
+  //> Variable declaration.
   const includeShared = searchParams.includeShared === "true";
 
+  //> Variable declaration.
   const [apps, profiles, recentRecords] = await Promise.all([
+    //> Source statement or expression.
     listMemoryAppInstances(),
+    //> Source statement or expression.
     listMemoryUserProfiles(),
+    //> Source statement or expression.
     listRecentMemoryRecords({ limit: 12 })
+  //> Delimiter or separator.
   ]);
 
+  //> Variable declaration.
   const effectiveProfileKey =
+    //> Source statement or expression.
     (profiles.find((profile) => profile.userId === (session.user as { id?: string }).id)?.key ?? profiles[0]?.key) || "";
 
+  //> Variable declaration.
   const retrieval =
+    //> Source statement or expression.
     query || selectedApp || effectiveProfileKey ?
+      //> Await async value.
       await retrieveMemoryContext({
+        //> Source statement or expression.
         query,
+        //> Source statement or expression.
         appKey: selectedApp || null,
+        //> Source statement or expression.
         userProfileKey: effectiveProfileKey || null,
+        //> Source statement or expression.
         includeShared,
+        //> Source statement or expression.
         limit: 8
+      //> Source statement or expression.
       }) :
+      //> Source statement or expression.
       null;
 
+  //> Return a value.
   return (
     <Shell
       title="Memory"
@@ -299,4 +341,5 @@ export default async function MemoryPage(props: {
       </div>
     </Shell>
   );
+//> Brace or statement terminator.
 }

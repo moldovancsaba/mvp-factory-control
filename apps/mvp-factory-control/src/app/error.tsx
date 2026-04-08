@@ -1,3 +1,4 @@
+//> String literal line.
 "use client";
 
 /**
@@ -5,10 +6,15 @@
  * (errors can occur outside the root layout). Surfaces `error.message`, stack, and a hint for DB
  * issues pointing to `docs/BUILD_AND_RUN.md`. `reset()` re-runs the failed segment.
  */
+//> Export declaration.
 export default function GlobalError(props: {
+  //> Source statement or expression.
   error: Error & { digest?: string };
+  //> Source statement or expression.
   reset: () => void;
+//> Source statement or expression.
 }) {
+  //> Return a value.
   return (
     <html lang="en">
       <body style={{ padding: 24, fontFamily: "ui-sans-serif, system-ui" }}>
@@ -47,4 +53,5 @@ export default function GlobalError(props: {
       </body>
     </html>
   );
+//> Brace or statement terminator.
 }
