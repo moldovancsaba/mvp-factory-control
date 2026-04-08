@@ -1,5 +1,7 @@
 # CardMass
 
+This file describes **portfolio routing and boundaries** only. Executable behavior and code comments live in the product repository path below, not in `apps/mvp-factory-control`.
+
 ## Portfolio Role
 
 - product repository managed through `mvp-factory-control`

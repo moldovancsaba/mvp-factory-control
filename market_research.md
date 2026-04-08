@@ -1,5 +1,7 @@
 # Market Research: MVP Factory Control
 
+**Scope:** Product/strategy narrative for the control plane name and positioning. Runtime and env facts: [docs/BUILD_AND_RUN.md](docs/BUILD_AND_RUN.md).
+
 ## Company Overview
 
 **MVP Factory Control** is a portfolio management system designed to orchestrate delivery across multiple product projects. It serves as the central control layer for a portfolio of interconnected software products.

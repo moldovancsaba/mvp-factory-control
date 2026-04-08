@@ -1,3 +1,8 @@
+/**
+ * **Dashboard**: portfolio snapshot from GitHub project board, Prisma tasks, alpha locks, orchestrator introspection.
+ *
+ * Auth: `requireSession`. Project key from `MVP_FACTORY_CONTROL_DASHBOARD_PRODUCT` (default `mvp-factory-control`).
+ */
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Shell } from "@/components/Shell";

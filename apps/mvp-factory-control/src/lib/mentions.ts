@@ -1,3 +1,9 @@
+/**
+ * Parses a leading `@AgentKey remainder` mention from chat or email bodies.
+ *
+ * Returns `none` if no `@`, `invalid` with reason for bad syntax, or `agent` with normalized key and command text.
+ * Agent keys must match `^[A-Za-z0-9_-]+$`.
+ */
 export type AgentMentionParseResult =
   | { kind: "none" }
   | { kind: "invalid"; reason: string; raw: string }

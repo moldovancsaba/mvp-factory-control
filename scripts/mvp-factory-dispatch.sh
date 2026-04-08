@@ -1,6 +1,8 @@
 #!/bin/bash
-
-# Configuration
+#
+# Legacy/automation bridge: polls GitHub Project "Ready" column via gh CLI, triggers Paperclip URL.
+# IDs below are org/project-specific; treat as deployment configuration, not library code.
+#
 COMPANY_ID="96fc6f38-b26a-446b-a174-bf36dfe86733"
 PROJECT_ID="PVT_kwHOACGtF84BOtVF"
 READY_COLUMN_NAME="Ready (NEXT)"

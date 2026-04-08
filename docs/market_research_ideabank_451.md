@@ -1,5 +1,7 @@
 # Market Research Analysis: Job Definition & Schema System (IDEABANK #451)
 
+**Scope:** External market analysis. Implementation truth for the control app remains in repository source headers and Prisma schema.
+
 ## Market Need
 
 ### Market Size

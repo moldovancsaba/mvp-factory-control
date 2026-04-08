@@ -1,5 +1,7 @@
 # MVP Factory Playbook
 
+**Scope:** Operating playbook for humans. Executable control-app behavior is documented per-module under `apps/mvp-factory-control/src` (see [READMEDEV.md](READMEDEV.md)).
+
 ## What is the MVP Factory?
 
 The MVP Factory is our system for rapidly turning ideas into delivered minimum viable products while ensuring every deliverable receives proper executive oversight.

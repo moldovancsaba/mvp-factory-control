@@ -1,3 +1,9 @@
+/**
+ * HMAC-signed, time-limited **approval tokens** for high-risk tool execution (War Room tool approval).
+ *
+ * Payload includes approver id/email, action fingerprint, expiry. Verified with `MVP_FACTORY_CONTROL_TOOL_APPROVAL_SECRET`
+ * (or dev fallback). Token prefix `TOKEN_PREFIX` identifies format version in wire strings.
+ */
 import crypto from "node:crypto";
 import type { ToolCallProtocolEnvelope } from "@/lib/tool-call-protocol";
 

@@ -1,3 +1,9 @@
+/**
+ * Classifies which runtime-related env keys may be edited from the settings UI vs immutable endpoints.
+ *
+ * Used to diff agent/project setting mutations and to guard `runtime-config` inputs. Immutable set includes
+ * endpoint and API-key env names; mutable set includes models and timeout.
+ */
 import type { AgentSetting, ProjectVar } from "@/lib/settings-store";
 
 export type RuntimeSettingMutabilityClass = "IMMUTABLE" | "MUTABLE";

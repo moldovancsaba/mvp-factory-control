@@ -1,5 +1,7 @@
 # MVP Factory Playbook
 
+**Scope:** Duplicate playbook copy in repo; prefer [mvp_factory_playbook.md](mvp_factory_playbook.md) as canonical. Executable behavior: [READMEDEV.md](READMEDEV.md) source map.
+
 ## What is the MVP Factory?
 
 The MVP Factory is our system for rapidly turning ideas into delivered minimum viable products while ensuring every deliverable receives proper executive oversight.

@@ -1,3 +1,12 @@
+/**
+ * Resolves **effective** runtime (LOCAL vs CLOUD) model/endpoint/API key env for workers and tasks.
+ *
+ * Builds a deterministic digest and `sourceChain` describing overlays: env defaults, agent settings,
+ * project vars, and optional ALPHA context overlay. Only keys in `SAFE_RUNTIME_KEYS` participate;
+ * mutability for settings UI is gated by `runtime-settings-mutability`.
+ *
+ * Consumed when enqueueing tasks and when surfacing config in the UI.
+ */
 import { createHash } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { readMVPFactoryControlSettings } from "@/lib/settings-store";

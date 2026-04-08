@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-
-# Automated Docker portability gate for the internal control app.
-# Validates compose parse + startup + health expectations with concise remediation output.
-
+#
+# CI/local gate: docker compose config + up for Postgres + Next app, health check on APP_PORT.
+# Invoked by .github/workflows/mvp-factory-control-docker-portability-gate.yml (check name portability-gate).
+#
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

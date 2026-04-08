@@ -40,3 +40,9 @@ These are shared engineering standards for projects managed through `mvp-factory
 - keep documentation specific, verified, and maintainable
 - never use placeholder text such as `TBD`
 - treat undocumented behavior as incomplete delivery
+
+## Module headers (`apps/mvp-factory-control`)
+
+- Every `src/**/*.ts`, `src/**/*.tsx`, and worker `scripts/**/*.js` file carries a **file-level** `/** ... */` (or `#` / `"""` in Python) block at the top stating purpose, key dependencies, and non-obvious invariants.
+- Prefer updating that block when behavior changes rather than scattering duplicate explanations across docs.
+- The human-readable index of modules is [../READMEDEV.md](../READMEDEV.md) (**Source map**); keep it in sync when adding or renaming major modules.

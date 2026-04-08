@@ -2,6 +2,8 @@
 
 This document maps the central control repository to the individual product repositories.
 
+**Internal app:** Source layout for `apps/mvp-factory-control` is indexed in [READMEDEV.md](../READMEDEV.md) (*Source map*). Product repos listed below own their own code comments.
+
 ## Central Repository
 
 `mvp-factory-control` is the central repository for:

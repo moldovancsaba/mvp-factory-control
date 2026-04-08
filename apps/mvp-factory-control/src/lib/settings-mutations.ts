@@ -1,3 +1,9 @@
+/**
+ * Validated **mutations** to `settings.json` entities (agents, projects, taste rubric) with audit trails.
+ *
+ * Applies runtime mutability diffs, Prisma lifecycle audit events, and UUID generation for new ids.
+ * All exported functions are used exclusively from `src/app/settings/actions.ts` after RBAC checks.
+ */
 import { randomUUID } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import {

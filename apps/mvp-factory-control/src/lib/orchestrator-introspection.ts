@@ -1,3 +1,9 @@
+/**
+ * **Read-only** snapshot for dashboards: orchestrator lease health + alpha context locks + queue/task stats.
+ *
+ * Aggregates `orchestrator-lease`, `alpha-context` active locks, and Prisma counts into a single JSON-safe
+ * object for `src/app/api/orchestrator/state` and server-rendered dashboard sections.
+ */
 import { getOrchestratorLeaseSnapshot } from "@/lib/orchestrator-lease";
 import { listActiveProjectAlphaLocks } from "@/lib/alpha-context";
 import { prisma } from "@/lib/prisma";

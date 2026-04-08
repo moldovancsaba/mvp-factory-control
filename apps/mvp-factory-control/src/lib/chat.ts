@@ -1,3 +1,7 @@
+/**
+ * Chat persistence: threads keyed by `(kind, ref)` and ordered messages with optional user relation.
+ * Used by `src/app/chat/*` and mention-driven task creation. `authorType` distinguishes human, agent, system.
+ */
 import { prisma } from "@/lib/prisma";
 
 export async function getOrCreateThread(params: {

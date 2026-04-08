@@ -1,3 +1,6 @@
+/**
+ * `GET` JSON snapshot of orchestrator lease + alpha locks + queue health (`getOrchestratorIntrospectionSnapshot`). Session required.
+ */
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";

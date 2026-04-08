@@ -1,3 +1,8 @@
+/**
+ * **Email ingress** webhook: `POST` JSON payloads to `handleInboundEmail`. Auth via shared token env/header (optional if unset).
+ *
+ * Token: `MVP_FACTORY_CONTROL_EMAIL_INGRESS_TOKEN` matched against `x-mvp-factory-control-ingress-token` or `Authorization: Bearer`.
+ */
 import { NextRequest, NextResponse } from "next/server";
 import { handleInboundEmail } from "@/lib/email-ingress";
 

@@ -1,9 +1,11 @@
 /**
- * Validates GitHub issue bodies for the Executable Prompt Package shape.
+ * Validates GitHub issue bodies for the **Executable Prompt Package** shape (markdown headings).
  *
- * Enforced sections match docs/EXECUTABLE_PROMPT_PACKAGE.md **except** "Product":
- * that heading is portfolio metadata for humans; this module does not parse or
- * require it (routing uses labels / fields elsewhere).
+ * - Parses ATX headings with `HEADING_RE`, classifies sections via `classifyHeading` / `normalizeHeading`.
+ * - Enforced sections match `docs/EXECUTABLE_PROMPT_PACKAGE.md` **except** "Product" (human/portfolio metadata only).
+ * - `hasSubstance` strips markdown noise and rejects placeholders (tbd, todo, ...).
+ * - Acceptance checks must include bullet or `- [ ]` checklist lines per `hasAcceptanceChecklist`.
+ * - `promptPackageMissingSummary` builds a single operator-facing string for UI.
  */
 export type ExecutablePromptSectionKey =
   | "objective"

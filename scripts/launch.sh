@@ -1,8 +1,8 @@
 #!/bin/bash
-
-# MVP Factory Control Launcher
-# This script ensures the tray app is running with the latest code.
-
+#
+# Launches/refreshes the macOS Control tray app: ensures .venv, runs bootstrap if missing,
+# reloads LaunchAgent plist (Sovereign Watchdog), opens Control.app / python control_mvp.py as needed.
+#
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 VIRTUAL_ENV="$REPO_ROOT/.venv"
 CONTROL_SCRIPT="$REPO_ROOT/scripts/control_mvp.py"

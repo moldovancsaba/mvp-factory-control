@@ -1,5 +1,6 @@
 "use server";
 
+/** Server actions for product rows in settings JSON + GitHub project bootstrap/clean; RBAC operator/admin. */
 import path from "node:path";
 import { revalidatePath } from "next/cache";
 import { ensureSingleSelectOption, getProjectMeta } from "@/lib/github";

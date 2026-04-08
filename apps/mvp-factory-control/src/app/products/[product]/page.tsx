@@ -1,3 +1,6 @@
+/**
+ * Single **product** settings editor: env vars text area, GitHub URL, save/delete via `products/actions`.
+ */
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Shell } from "@/components/Shell";

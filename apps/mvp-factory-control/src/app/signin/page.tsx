@@ -1,3 +1,6 @@
+/**
+ * Sign-in page: redirects authenticated users to `/dashboard`; renders `SignInCard` with provider flags from env.
+ */
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";

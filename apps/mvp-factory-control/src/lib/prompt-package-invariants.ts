@@ -1,3 +1,9 @@
+/**
+ * Persisted **invariants** for executable prompt packages and alpha context packages (hashes, snapshots).
+ *
+ * Records rows for audit and idempotency; uses SHA-256 over normalized JSON. Integrates with task enqueue
+ * and alpha context mutations inside Prisma transactions where passed a transaction client.
+ */
 import { createHash } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import type { AlphaContextPackageSnapshotKind, Prisma } from "@prisma/client";

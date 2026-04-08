@@ -1,3 +1,7 @@
+/**
+ * Worker implementation of filesystem.* tool calls (read/write/search within allowed repo roots).
+ * Behavior must match expectations of `src/lib` worker integration and policy classes.
+ */
 const fs = require("node:fs");
 const fsp = require("node:fs/promises");
 const path = require("node:path");

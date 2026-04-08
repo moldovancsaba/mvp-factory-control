@@ -1,5 +1,7 @@
 # Evolutionary History: Reaching the "Actual Stage" (v1.4.1-sovereign)
 
+**Scope:** Historical narrative. For current technical facts (env vars, ports, modules), use [BUILD_AND_RUN.md](BUILD_AND_RUN.md) and [READMEDEV.md](../READMEDEV.md).
+
 This document chronicles the journey of the MVP Factory from its early, fragile state to the current robust, local-first, autonomous ecosystem.
 
 ## Milestones Achieved

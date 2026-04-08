@@ -1,5 +1,7 @@
 # Command Access Policy
 
+**Related implementation:** In-app tool execution policy for structured tool calls is `apps/mvp-factory-control/src/lib/tool-command-policy.ts` (and CommonJS twin `scripts/lib/tool-command-policy.js` for the worker).
+
 This document defines how local command access is governed for agents operating through `mvp-factory-control`.
 
 ## Purpose

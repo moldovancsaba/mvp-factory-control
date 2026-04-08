@@ -1,5 +1,7 @@
 # Checklist Sync Reliability
 
+**Scope:** Operational model for the Checklist worker and supervision. It does not replace per-module comments in `scripts/control_mvp.py`, `scripts/bootstrap.sh`, or `apps/mvp-factory-control` for how the tray starts services.
+
 This document captures the operational reliability rules for the Checklist local AI worker.
 
 The current design is intentionally narrow:

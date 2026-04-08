@@ -2,6 +2,8 @@
 
 The MVP Factory is designed to be a high-availability, fully autonomous ecosystem. This guide provides a 100% clear roadmap for installation, including prerequisites and troubleshooting.
 
+**Internal app configuration:** After install, running the Next app from `apps/mvp-factory-control` requires PostgreSQL and the environment variables listed in [BUILD_AND_RUN.md](BUILD_AND_RUN.md) (section **Internal control app — environment**). GitHub CLI project scopes for board scripts are unchanged from the `gh auth refresh` notes below.
+
 ## 1. Pre-flight Check (Foundational Requirements)
 
 Before running the installer, ensure your macOS system meets these industry standards:

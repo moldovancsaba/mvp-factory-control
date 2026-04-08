@@ -2,6 +2,8 @@
 
 This page is the shared knowledge index for the MVP Factory portfolio.
 
+**Control app detail index:** [READMEDEV.md](../READMEDEV.md) → *Source map: `apps/mvp-factory-control`*.
+
 ## Canonical Truths
 
 - `mvp-factory-control` is the central control repository for the portfolio

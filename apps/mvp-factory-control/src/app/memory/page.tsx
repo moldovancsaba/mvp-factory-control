@@ -1,3 +1,6 @@
+/**
+ * **Memory** UI: list apps, profiles, recent records; search form hits `retrieveMemoryContext`; create forms post to actions.
+ */
 import { redirect } from "next/navigation";
 import { Shell } from "@/components/Shell";
 import { badgeClassName, buttonClassName } from "@/components/ui";

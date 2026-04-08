@@ -1,5 +1,8 @@
 "use server";
 
+/**
+ * Issue-scoped server actions: chat messages, task enqueue, GitHub field updates, full alpha context lifecycle, guardrail override.
+ */
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";

@@ -2,6 +2,8 @@
 
 This is the main navigation page for `mvp-factory-control`.
 
+**Code and docs alignment:** Implementation behavior for the internal app lives under `apps/mvp-factory-control`. Every TypeScript module and major script includes a top-of-file comment describing scope; the maintainer index table is in [../READMEDEV.md](../READMEDEV.md) (section **Source map**). When you change behavior, update that module’s comment and any doc linked from this wiki in the same change.
+
 Select "🌐 Open Dashboard" to access `http://localhost:3100`.
 
 ## Start Here

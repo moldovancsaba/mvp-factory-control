@@ -1,3 +1,12 @@
+/**
+ * GitHub GraphQL API client and board/project helpers for the control plane.
+ *
+ * - Token resolution: `MVP_FACTORY_CONTROL_GITHUB_TOKEN` (preferred), then `GITHUB_TOKEN`, then
+ *   `MVP_PROJECT_TOKEN`. Missing token throws at request time.
+ * - All requests use `fetch` to `https://api.github.com/graphql` with `cache: "no-store"`.
+ * - Exports types and functions used by dashboard, issues UI, agents/products reconciliation, and
+ *   task/issue automation. See call sites in `src/app/*` and `src/lib/tasks.ts`.
+ */
 type GraphQLResponse<T> =
   | { data: T; errors?: undefined }
   | { data?: undefined; errors: Array<{ message: string }> };

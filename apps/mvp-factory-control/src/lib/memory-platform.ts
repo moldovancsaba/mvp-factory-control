@@ -1,3 +1,10 @@
+/**
+ * Durable memory platform: Prisma-backed memory records, app instances, user profiles, retrieval scoring.
+ *
+ * Implements create/list/search flows used by `src/app/api/memory/records` and the Memory UI.
+ * Types align with Prisma models (`MemoryRecord`, `MemoryScope`, etc.). All public exports are
+ * async and accept an optional transaction client for call-site composability.
+ */
 import { prisma } from "@/lib/prisma";
 import type {
   MemoryAppInstance,

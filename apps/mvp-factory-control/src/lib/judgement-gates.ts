@@ -1,3 +1,9 @@
+/**
+ * Pre-enqueue **judgement** for tasks: agent readiness, runtime, and ALPHA/BETA control boundary.
+ *
+ * `evaluateTaskJudgementGate` returns QUEUED vs MANUAL_REQUIRED with structured `checks`. BETA agents
+ * are blocked for “control intent” titles (heuristic regex). Exported reason strings are stable UI copy.
+ */
 type AgentJudgementSnapshot = {
   enabled: boolean;
   runtime: "MANUAL" | "LOCAL" | "CLOUD";

@@ -2,6 +2,8 @@
 
 This document defines the role of the internal control app stored in [`apps/mvp-factory-control`](../apps/mvp-factory-control).
 
+**Documentation rule:** Each source file under `apps/mvp-factory-control/src` and the worker `scripts/` tree includes a maintainer-oriented header comment. [READMEDEV.md](../READMEDEV.md) lists modules in a single index table; [ARCHITECTURE.md](ARCHITECTURE.md) summarizes orchestration boundaries.
+
 ## Role
 
 The app is internal control-plane tooling for `mvp-factory-control`.

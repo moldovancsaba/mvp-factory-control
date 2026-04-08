@@ -1,5 +1,10 @@
 "use server";
 
+/**
+ * Server actions for chat: post global message, parse `@agent` / tool-call / approval commands, enqueue tasks.
+ *
+ * Revalidates `/chat` after mutations. Tool protocol validation and approval token creation live here.
+ */
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";

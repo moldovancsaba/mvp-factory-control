@@ -1,3 +1,9 @@
+/**
+ * Inbound **email** pipeline: validates sender, parses `@Agent` mentions, enqueues tasks, records chat.
+ *
+ * Invoked from `src/app/api/ingress/email/route.ts`. Defines payload shape, allowlists, retry/dead-letter
+ * behavior, and audit metadata for abuse and delivery diagnostics.
+ */
 import { createMessage, getOrCreateThread } from "@/lib/chat";
 import { parseAgentMention } from "@/lib/mentions";
 import { prisma } from "@/lib/prisma";

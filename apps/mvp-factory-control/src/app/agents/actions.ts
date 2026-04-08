@@ -1,5 +1,8 @@
 "use server";
 
+/**
+ * Server actions for agents: CRUD settings merge, readiness transitions, worker start/stop, lifecycle audits, RBAC operator.
+ */
 import { revalidatePath } from "next/cache";
 import type { Prisma } from "@prisma/client";
 import {

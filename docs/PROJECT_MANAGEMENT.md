@@ -2,6 +2,8 @@
 
 `mvp-factory-control` is the portfolio delivery-management repository.
 
+**Implementation cross-reference:** Automation that touches issues/boards may use `src/lib/github.ts`, `scripts/mvp-factory-*.sh`, and GitHub Actions under `.github/workflows/`. Prefer the module header comments in those files when verifying behavior.
+
 ## Source Of Truth
 
 Delivery truth lives in:

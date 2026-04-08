@@ -1,5 +1,6 @@
 "use server";
 
+/** Server actions for global settings file and taste rubric versions; RBAC admin/operator. */
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireRbacAccess } from "@/lib/rbac";

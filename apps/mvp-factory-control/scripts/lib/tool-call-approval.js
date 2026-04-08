@@ -1,3 +1,6 @@
+/**
+ * CommonJS port of `src/lib/tool-call-approval.ts` — verify/create approval tokens for worker-side tool execution.
+ */
 const crypto = require("node:crypto");
 
 const TOKEN_PREFIX = "wrtoa1";

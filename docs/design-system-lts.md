@@ -7,6 +7,8 @@ Status: LTS baseline
 
 This design system exists so UI changes can be made from the system layer instead of screen-by-screen edits.
 
+**Code references:** `apps/mvp-factory-control/src/app/globals.css` (tokens and layout classes), `apps/mvp-factory-control/src/components/ui.tsx` (`buttonClassName`, `badgeClassName`), and `src/components/Shell.tsx` (chrome). Each file’s top comment summarizes its contract with this document.
+
 ## Principles
 
 1. Layout before ornament.

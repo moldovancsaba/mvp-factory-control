@@ -2,6 +2,8 @@
 
 This document defines the implementation plan for a durable AI memory platform inside `mvp-factory-control`.
 
+**As implemented in repo:** Prisma models and API/UI are in `apps/mvp-factory-control` — see `src/lib/memory-platform.ts`, `src/app/memory/*`, and `src/app/api/memory/records/route.ts` (each file has a top comment). This plan remains the design narrative; when the two diverge, treat **code + schema** as source of truth and update this document.
+
 The goal is not online model training.
 
 The goal is a reliable, maintainable, supportable, fail-safe memory and retrieval system that lets:

@@ -1,5 +1,8 @@
 #!/usr/bin/env node
-
+/**
+ * CLI: validates an Executable Prompt Package markdown file (same heading rules as
+ * apps/mvp-factory-control/src/lib/executable-prompt.ts). Used in CI / ready gates; exits non-zero if invalid.
+ */
 const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 

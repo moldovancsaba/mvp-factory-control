@@ -2,6 +2,8 @@
 
 This file stores reusable prompt guidance for agents working in the MVP Factory portfolio.
 
+When changing the internal Next app, read the **top-of-file comment** in each touched module (see [READMEDEV.md](../READMEDEV.md) source map) so prompts and code stay aligned.
+
 ## Prompt: Control Repository Work
 
 ```text

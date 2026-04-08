@@ -1,3 +1,8 @@
+/**
+ * Builds autocomplete **mentionables** from agent keys and human display names (slug handles, de-duplicated).
+ *
+ * Normalizes unicode to ASCII-ish handles for `MentionInput`. Agents win over humans on handle collision.
+ */
 export type Mentionable = {
   handle: string;
   label: string;

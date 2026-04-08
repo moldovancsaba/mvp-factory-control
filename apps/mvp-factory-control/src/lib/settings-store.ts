@@ -1,3 +1,10 @@
+/**
+ * JSON settings persistence for operators: agents, projects, local folder root, taste rubric.
+ *
+ * File path: `<cwd>/.mvp-factory-control/settings.json` (created on first write). Default project
+ * root when unset: `/Users/moldovancsaba/Projects` or `MVP_FACTORY_CONTROL_LOCAL_PROJECT_ROOT`.
+ * Used by settings UI server actions, runtime resolution, and task enqueue for rubric version.
+ */
 import fs from "node:fs/promises";
 import path from "node:path";
 

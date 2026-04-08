@@ -1,3 +1,9 @@
+/**
+ * Task and agent lifecycle **policy** (pure rules) plus audit recording to Prisma.
+ *
+ * `evaluateTaskTransition` / `evaluateAgentReadinessTransition` return allow/deny with reasons.
+ * `recordLifecycleAudit` persists `LifecycleAuditEvent` rows. Used by `tasks.ts`, workers, and admin flows.
+ */
 import type { AgentReadiness, Prisma, TaskStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 

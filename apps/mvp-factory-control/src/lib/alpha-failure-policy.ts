@@ -1,3 +1,9 @@
+/**
+ * Alpha **failure classification** metadata and event recording (lease, guardrails, stale running, retries).
+ *
+ * `FAILURE_DECISIONS` holds operator-facing remediation copy; CONTEXT_GUARDRAIL_WARNING text matches
+ * `alpha-context` thresholds (warning 60%, block 70%). Persists failure events for analytics and gates.
+ */
 import { prisma } from "@/lib/prisma";
 import { evaluateTaskTransition, recordLifecycleAudit } from "@/lib/lifecycle-policy";
 import { recordTaskPromptPackageInvariant } from "@/lib/prompt-package-invariants";

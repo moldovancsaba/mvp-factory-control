@@ -1,3 +1,11 @@
+/**
+ * Alpha **context windows**: project-scoped locks, usage guardrails (warning 60%, block 70% without handover),
+ * handover/continuation refs, overrides, activation/transfer/close lifecycle, and scope gates for tasks.
+ *
+ * Large module: DB helpers (`mapWindow`, audits), `deriveGuardrailState`, lease queries for active projects,
+ * mutations called from server actions and workers. Constants `WARNING_THRESHOLD` / `BLOCK_THRESHOLD` /
+ * `DEFAULT_SCOPE_INCREMENT` drive guardrail behavior; keep in sync with `alpha-failure-policy` copy.
+ */
 import { prisma } from "@/lib/prisma";
 import { validateAlphaHandoverPackage } from "@/lib/handover-package";
 import {

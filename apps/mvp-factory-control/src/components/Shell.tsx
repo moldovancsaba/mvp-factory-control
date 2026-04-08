@@ -1,3 +1,8 @@
+/**
+ * App **chrome**: header, nav links (dashboard, issues, agents, products, chat, memory, settings), sign-out.
+ *
+ * Server component: reads session for optional user label. Wraps page content in `ui-shell` layout tokens.
+ */
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";

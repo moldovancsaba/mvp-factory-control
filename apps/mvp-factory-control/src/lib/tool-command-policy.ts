@@ -1,3 +1,9 @@
+/**
+ * Maps each tool call in an envelope to a **policy class**, effective risk, approval requirement, allow/deny.
+ *
+ * Implements allowlists for filesystem, git, shell, and chat tools; unknown tools are denied. Dangerous
+ * shell patterns are hard-denied. `evaluateToolCommandPolicy` aggregates decisions for the worker/UI.
+ */
 import type {
   ToolCallDefinition,
   ToolCallProtocolEnvelope,

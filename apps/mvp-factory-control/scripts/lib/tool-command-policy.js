@@ -1,3 +1,6 @@
+/**
+ * CommonJS port of `src/lib/tool-command-policy.ts` for the Node worker. Keep allowlists/denylists in sync.
+ */
 const RISK_RANK = {
   LOW: 1,
   MEDIUM: 2,

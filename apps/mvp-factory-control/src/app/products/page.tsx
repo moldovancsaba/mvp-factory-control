@@ -1,3 +1,6 @@
+/**
+ * **Products** index: links to per-product config, board item counts, bootstrap/clean actions for MVP Factory project.
+ */
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Shell } from "@/components/Shell";

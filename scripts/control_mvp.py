@@ -1,3 +1,10 @@
+"""
+macOS Control.app (rumps): menu-bar supervisor for Colima/Docker, env-variables server, settings panel,
+https gateway, MVP Factory Control Next app, and related LaunchAgent wiring.
+
+Paths derive from REPO_ROOT (parent of scripts/). Mutates PATH and forces DOCKER_HOST/DOCKER_CONTEXT for Colima.
+See docs/INTERNAL_CONTROL_APP.md and scripts/bootstrap.sh for operator-facing setup.
+"""
 import rumps
 import subprocess
 import os

@@ -1,3 +1,7 @@
+"""
+Background poller: hits Paperclip health URL on an interval, writes status file for Control.app / panels.
+Configurable via SCRUM_MASTER_* env vars.
+"""
 import datetime
 import json
 import os

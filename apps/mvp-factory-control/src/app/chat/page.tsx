@@ -1,3 +1,6 @@
+/**
+ * **Global chat** UI: thread kind GLOBAL, messages, mention input, handoff metadata rendering from message meta.
+ */
 import { redirect } from "next/navigation";
 import { Shell } from "@/components/Shell";
 import { requireSession } from "@/lib/session";

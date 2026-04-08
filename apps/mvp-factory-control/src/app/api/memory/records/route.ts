@@ -1,3 +1,7 @@
+/**
+ * REST-style JSON API for memory records (GET retrieve / POST create) authenticated via session cookie.
+ * Mirrors capabilities of memory actions for programmatic clients.
+ */
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";

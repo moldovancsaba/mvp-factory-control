@@ -2,6 +2,8 @@
 
 These are the global operating rules for the MVP Factory portfolio.
 
+**Code truth:** Portfolio automation and the internal app are implemented under this repo’s `apps/` and `scripts/` trees; module headers describe enforceable behavior.
+
 ## Delivery Rules
 
 - create and manage delivery issues in `mvp-factory-control`

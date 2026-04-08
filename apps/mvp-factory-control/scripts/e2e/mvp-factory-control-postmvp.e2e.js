@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
+/**
+ * Post-MVP E2E-style script: exercises tool protocol validation, policy, and tool executors without Next.js.
+ * Run via package script / CI when wired; uses local `scripts/lib/*` mirrors.
+ */
 const os = require("node:os");
 const path = require("node:path");
 const fsp = require("node:fs/promises");

@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+"""
+Local HTTPS reverse proxy/gateway: terminates TLS with certs from local_tls, forwards to upstream dev servers.
+Started by control_mvp/bootstrap for secure localhost development.
+"""
 from __future__ import annotations
 
 import os

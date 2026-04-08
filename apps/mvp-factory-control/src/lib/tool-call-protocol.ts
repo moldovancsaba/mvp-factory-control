@@ -1,3 +1,10 @@
+/**
+ * Structured **tool call protocol** envelope (versioned): validation, normalization, and summaries.
+ *
+ * Defines allowed tool name/id patterns, risk classes, approval requirements, and expected artifacts.
+ * Used when persisting tool plans on tasks and when evaluating command policy. Protocol name/major exported
+ * for compatibility checks across workers and UI.
+ */
 const TOOL_CALL_NAME_RE = /^[a-z][a-z0-9_.-]{1,63}$/;
 const TOOL_CALL_ID_RE = /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$/;
 const SUPPORTED_RISK_CLASS = new Set(["LOW", "MEDIUM", "HIGH", "CRITICAL"]);

@@ -1,3 +1,9 @@
+/**
+ * Alpha **handover package** validation: markdown structure, required sections, and filesystem artifact checks.
+ *
+ * Spec version `ALPHA_HANDOVER_SPEC_VERSION`. Used by alpha context flows before recording handover refs.
+ * Reads optional files from disk when refs point to paths under the repo / allowed roots.
+ */
 import fs from "node:fs/promises";
 import path from "node:path";
 

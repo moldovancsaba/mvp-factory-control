@@ -1,5 +1,7 @@
 # Market Research: MVP Factory
 
+**Scope:** Business and positioning narrative. Not a specification for `apps/mvp-factory-control` runtime behavior.
+
 ## Company Overview
 
 **MVP Factory** is a virtual research and development company focused on systematically transforming signals and opportunities into validated, launch-ready digital products.

@@ -1,5 +1,6 @@
 "use server";
 
+/** Server actions for memory platform CRUD after RBAC; revalidates `/memory`. */
 import { revalidatePath } from "next/cache";
 import { requireRbacAccess } from "@/lib/rbac";
 import {

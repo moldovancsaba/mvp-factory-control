@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Next.js App Router **global** error boundary (`app/error.tsx`). Renders a minimal HTML document
+ * (errors can occur outside the root layout). Surfaces `error.message`, stack, and a hint for DB
+ * issues pointing to `docs/BUILD_AND_RUN.md`. `reset()` re-runs the failed segment.
+ */
 export default function GlobalError(props: {
   error: Error & { digest?: string };
   reset: () => void;

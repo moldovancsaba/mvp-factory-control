@@ -2,6 +2,8 @@
 
 These are shared UI/UX rules across the portfolio.
 
+**War Room (internal app) baseline:** [design-system-lts.md](design-system-lts.md), `apps/mvp-factory-control/src/app/globals.css`, `src/components/Shell.tsx`, `src/components/ui.tsx`.
+
 ## Global Rules
 
 - no baked-in style systems that prevent reuse or theming

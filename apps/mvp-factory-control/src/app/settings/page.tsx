@@ -1,3 +1,6 @@
+/**
+ * **Settings** UI: local project root path, taste rubric editor (principles, version metadata).
+ */
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Shell } from "@/components/Shell";

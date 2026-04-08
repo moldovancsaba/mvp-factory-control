@@ -1,5 +1,7 @@
 # MVP Factory Pipeline
 
+**Scope:** Process pipeline description. Technical automation for the control repository is implemented in `scripts/` and `apps/mvp-factory-control` (see [READMEDEV.md](READMEDEV.md)).
+
 ## Overview
 
 This document describes the pipeline for turning ideas into delivered MVPs. Every deliverable must be approved by the executive committee (CEO, CMO, CTO) before implementation begins.

@@ -1,3 +1,6 @@
+"""
+Unit tests for Control.app update-engine paths (mocks rumps). Run with pytest/unittest from repo root.
+"""
 import unittest
 from unittest.mock import MagicMock, patch
 import sys

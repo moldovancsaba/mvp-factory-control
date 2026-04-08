@@ -1,4 +1,9 @@
 /* eslint-disable no-console */
+/**
+ * Node worker: claims tasks from Prisma, runs tool-call envelopes (filesystem, git, shell) with policy + approval tokens,
+ * updates task state and orchestrator lease heartbeats. Loads `.env` from app root. Mirrors TS modules under `scripts/lib/`.
+ * Spawned by `worker-process.ts` / agents UI; long-running process per agent/runtime.
+ */
 const { PrismaClient } = require("@prisma/client");
 const fs = require("node:fs");
 const os = require("node:os");

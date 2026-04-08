@@ -1,3 +1,12 @@
+/**
+ * Task queue orchestration: enqueue work, lifecycle transitions, retries, and prompt-package invariants.
+ *
+ * Integrates: `lifecycle-policy` (state machine), `judgement-gates` (agent readiness / control role),
+ * `tool-call-protocol` + `tool-command-policy` (structured tool envelopes), `settings-store` (taste
+ * rubric), `runtime-config` (optional resolution snapshot on enqueue), and Prisma task rows.
+ *
+ * Environment: `MVP_FACTORY_CONTROL_TASK_MAX_ATTEMPTS` (default 3, clamped 1–10).
+ */
 import { prisma } from "@/lib/prisma";
 import { evaluateTaskTransition, recordLifecycleAudit } from "@/lib/lifecycle-policy";
 import {

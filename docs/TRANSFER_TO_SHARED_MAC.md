@@ -1,5 +1,7 @@
 # Transfer To Shared Mac Path
 
+**Implementation note:** `control_mvp.py` and `settings-store.ts` resolve `REPO_ROOT` / cwd at runtime, so absolute paths in this doc are examples; the internal app default project root can be overridden with `MVP_FACTORY_CONTROL_LOCAL_PROJECT_ROOT`.
+
 Use this layout on the target Mac:
 
 ```text

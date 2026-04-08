@@ -23,7 +23,7 @@ We use a decentralized, autonomous architecture to manage full-stack delivery wi
 ## Start Here
 
 - Wiki: [docs/WIKI.md](docs/WIKI.md)
-- Developer and agent guide: [READMEDEV.md](READMEDEV.md)
+- Developer and agent guide: [READMEDEV.md](READMEDEV.md) (includes **Source map** for every `apps/mvp-factory-control` module)
 - Portfolio operating model: [docs/PROJECT_MANAGEMENT.md](docs/PROJECT_MANAGEMENT.md)
 - Repository boundary map: [docs/PROJECT_REPOSITORIES.md](docs/PROJECT_REPOSITORIES.md)
 - Command and environment policy: [docs/COMMAND_ACCESS_POLICY.md](docs/COMMAND_ACCESS_POLICY.md)

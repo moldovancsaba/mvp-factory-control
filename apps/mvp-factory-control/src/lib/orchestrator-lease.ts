@@ -1,3 +1,9 @@
+/**
+ * Single-row **orchestrator lease** in Prisma: which process/agent holds the soft lock, TTL, heartbeats.
+ *
+ * Lease id is constant `ORCHESTRATOR_LEASE_ID`. TTL from `MVP_FACTORY_CONTROL_ORCHESTRATOR_LEASE_TTL_MS`
+ * (default 20s, clamped). Health: HEALTHY | EXPIRING | STALE | UNHELD. Consumed by API route and worker UI.
+ */
 import { prisma } from "@/lib/prisma";
 
 export const ORCHESTRATOR_LEASE_ID = "mvp-factory-control-primary-orchestrator";

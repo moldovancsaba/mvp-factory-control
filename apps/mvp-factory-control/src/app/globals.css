@@ -1,3 +1,8 @@
+/*
+ * Global design tokens and layout for the War Room UI.
+ * Defines CSS variables (--bg-*, --text-*, --accent, radii), `.ui-shell` / `.ui-panel` / `.ui-button` components,
+ * and Tailwind v4 `@import "tailwindcss"`. Keep in sync with `docs/design-system-lts.md` and `components/ui.tsx`.
+ */
 @import "tailwindcss";
 
 :root {

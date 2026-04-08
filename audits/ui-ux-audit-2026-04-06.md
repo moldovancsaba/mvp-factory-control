@@ -3,6 +3,8 @@
 Date: 2026-04-06
 Scope: `/Users/Shared/Projects/mvp-factory-control/apps/mvp-factory-control/src`
 
+**Post-audit:** Referenced files now include top-of-file maintainer comments and [docs/design-system-lts.md](docs/design-system-lts.md) for the LTS baseline.
+
 ## Executive Summary
 
 The app had a recognizable visual flavor, but not a true design system.

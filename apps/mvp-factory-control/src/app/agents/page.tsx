@@ -1,3 +1,8 @@
+/**
+ * **Agents** admin UI: Prisma agents, readiness checklists, GitHub board reconciliation, lease snapshot, workers.
+ *
+ * Forms post to `agents/actions.ts`. Permission matrix from `lifecycle-policy` for documentation in-page.
+ */
 import { redirect } from "next/navigation";
 import { Shell } from "@/components/Shell";
 import { getProjectMeta, reconcileBoardAgentOptions } from "@/lib/github";

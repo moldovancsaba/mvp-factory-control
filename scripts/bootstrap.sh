@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
-
-# MVP Factory: Autonomous Zero-Config Installer
-# One command to rule the local-first AI factory.
-
+#
+# MVP Factory — local-first bootstrap (zero-config installer).
+# - Resolves REPO_ROOT, optional sibling ../paperclip, Python .venv, Node deps for apps/mvp-factory-control
+# - Installs LaunchAgent plist, Control.app wrapper, Prisma generate/migrate when DB available
+# - Documents missing pieces (Paperclip, Postgres) without hard-failing the whole script
+#
 set -euo pipefail
 
 # --- Configuration & Discovery ---

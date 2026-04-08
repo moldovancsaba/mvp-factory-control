@@ -1,5 +1,8 @@
 "use client";
 
+/**
+ * Sign-in **card** for `/signin`: Google OAuth and/or dev credentials based on props from server page.
+ */
 import { signIn } from "next-auth/react";
 import { buttonClassName } from "@/components/ui";
 

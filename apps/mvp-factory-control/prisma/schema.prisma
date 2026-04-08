@@ -1,3 +1,5 @@
+// Prisma schema for the internal control app: agents, tasks, chat, orchestrator lease, alpha context,
+// memory platform, audits, NextAuth tables. PostgreSQL via DATABASE_URL. Migrations under prisma/migrations/.
 generator client {
   provider = "prisma-client-js"
 }

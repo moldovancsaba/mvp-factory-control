@@ -1,3 +1,14 @@
+/**
+ * Role-based access control for server-side operations (email allowlists + default role).
+ *
+ * Roles: ADMIN, OPERATOR, VIEWER, CLIENT. Resolved from env allowlists:
+ * - `MVP_FACTORY_CONTROL_RBAC_ADMIN_EMAILS` (comma/newline/space separated)
+ * - `..._OPERATOR_EMAILS`, `..._VIEWER_EMAILS`, `..._CLIENT_EMAILS`
+ * - `MVP_FACTORY_CONTROL_RBAC_DEFAULT_ROLE` when email matches no list (default OPERATOR)
+ *
+ * `requireRbacAccess()` loads the session, resolves role, writes a `lifecycleAuditEvent` row
+ * (entityType RBAC), and throws if the role is not in `allowedRoles`.
+ */
 import type { Prisma } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";

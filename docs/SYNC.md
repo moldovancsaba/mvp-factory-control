@@ -2,6 +2,8 @@
 
 This document explains how issues, board state, product repos, and shared docs stay in sync.
 
+GitHub integration code: `apps/mvp-factory-control/src/lib/github.ts` (see file header for token env vars and GraphQL usage).
+
 ## Sync Model
 
 - issues live in `mvp-factory-control`

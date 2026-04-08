@@ -169,6 +169,67 @@ Delivery quality bar:
 
 The prompt library is maintained in [docs/AGENT_PROMPTS.md](docs/AGENT_PROMPTS.md).
 
+## Source map: `apps/mvp-factory-control`
+
+Maintain **file-level documentation in source** (`/** ... */` at top of each module). This table is the navigation index; behavior details live in those comments and in Prisma schema.
+
+### `src/lib` (domain + integration)
+
+| Module | Responsibility |
+|--------|----------------|
+| `prisma.ts` | PrismaClient singleton (dev global reuse) |
+| `auth.ts` | NextAuth options (Google, dev credentials, Prisma adapter) |
+| `session.ts` | `getServerSession` wrapper |
+| `rbac.ts` | Email allowlists → role; `requireRbacAccess` + audit |
+| `github.ts` | GraphQL client, project/issue/field helpers |
+| `tasks.ts` | Enqueue, transitions, retries, tool envelopes on tasks |
+| `lifecycle-policy.ts` | Task/agent transition rules + audit helper |
+| `judgement-gates.ts` | Pre-enqueue readiness and BETA control-intent gate |
+| `chat.ts` | Chat threads and messages |
+| `mentions.ts` / `mentionables.ts` | Parse `@Agent` / build autocomplete list |
+| `orchestrator-lease.ts` | Single-row lease + health |
+| `orchestrator-introspection.ts` | Dashboard/API aggregate snapshot |
+| `runtime-config.ts` | Effective model/endpoint resolution + digest |
+| `runtime-settings-mutability.ts` | Which settings keys are editable |
+| `settings-store.ts` / `settings-mutations.ts` | JSON settings file + validated mutations |
+| `agent-readiness.ts` | Readiness checklist for UI |
+| `executable-prompt.ts` | Issue body validation (Executable Prompt Package) |
+| `prompt-package-invariants.ts` | Hash/snapshot invariants for prompts/context |
+| `alpha-context.ts` | Alpha windows, guardrails (60%/70%), transfers, scope gates |
+| `alpha-failure-policy.ts` | Failure class metadata + event recording |
+| `handover-package.ts` | Handover markdown validation |
+| `tool-call-protocol.ts` / `tool-command-policy.ts` / `tool-call-approval.ts` | Tool envelope + policy + HMAC tokens |
+| `email-ingress.ts` | Inbound email → chat/task pipeline |
+| `memory-platform.ts` | Memory records, apps, profiles, retrieval |
+| `worker-process.ts` | List/spawn worker OS processes |
+| `cn.ts` | className join helper |
+
+### `src/app` (UI + API)
+
+| Path | Responsibility |
+|------|----------------|
+| `layout.tsx` / `page.tsx` / `error.tsx` | Root layout, `/` → redirect, global error boundary |
+| `signin/page.tsx` | Sign-in; `Shell` nav in other pages |
+| `dashboard/page.tsx` | Board + DB + alpha + orchestrator snapshot |
+| `issues/[number]/` | Issue detail, alpha controls, chat, prompt validation |
+| `agents/` | Agents, workers, readiness, board reconciliation |
+| `products/` | Product settings from JSON + GitHub bootstrap |
+| `chat/` | Global chat + mention-driven enqueue |
+| `memory/` | Memory UI |
+| `settings/` | Local folder + taste rubric |
+| `api/auth/[...nextauth]/route.ts` | NextAuth handler |
+| `api/ingress/email/route.ts` | Email webhook (bearer / header token) |
+| `api/orchestrator/state/route.ts` | JSON introspection |
+| `api/memory/records/route.ts` | Memory API |
+
+### Worker and Prisma
+
+| Path | Responsibility |
+|------|----------------|
+| `scripts/worker.js` | Task runner, tool execution loop |
+| `scripts/lib/tool-*.js` | CommonJS ports aligned with `src/lib` TS |
+| `prisma/schema.prisma` | All control-app tables and enums |
+
 ## Build/Run
 
 Build and run instructions for this repository are documented in [docs/BUILD_AND_RUN.md](docs/BUILD_AND_RUN.md).

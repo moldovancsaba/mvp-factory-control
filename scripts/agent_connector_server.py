@@ -1,3 +1,7 @@
+"""
+Local health dashboard HTTP server: probes Paperclip/OpenCode (and related) HTTPS endpoints on localhost,
+returns JSON/HTML status. Used by Control.app / operator visibility (port PORT).
+"""
 import datetime
 import http.server
 import json

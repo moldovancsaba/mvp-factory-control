@@ -4,6 +4,8 @@
 **Auditor:** Marketing Trainee (Market Research)  
 **Scope:** Documents created/updated in the last 24 hours
 
+**Follow-up (2026-04):** Repository-wide module headers added under `apps/mvp-factory-control` and aligned docs per [READMEDEV.md](../READMEDEV.md) / [docs/WIKI.md](../docs/WIKI.md).
+
 ---
 
 ## Files Audited

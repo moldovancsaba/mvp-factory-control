@@ -1,3 +1,9 @@
+/**
+ * Agent **readiness checklist** derived from Prisma `Agent` rows plus optional `AgentSetting` from JSON store.
+ *
+ * Computes checklist items (runtime config, API key env, heartbeat, smoke test) and blocking reasons for UI.
+ * Reason strings mirror `judgement-gates` where overlap exists for consistent operator messaging.
+ */
 import type { Agent, AgentReadiness } from "@prisma/client";
 import type { AgentSetting } from "@/lib/settings-store";
 

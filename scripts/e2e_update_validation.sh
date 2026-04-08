@@ -1,7 +1,8 @@
 #!/bin/bash
-# MVP Factory Control - v1.4.1-sovereign E2E Update Logic Validation
-# This script verifies the integrity of the automated update engine's dependencies and command paths.
-
+#
+# E2E validation for Control.app update-engine paths: verifies binaries and simulates git/bootstrap phases.
+# Complements scripts/e2e_update_validation.py (unittest). See comments in scripts/control_mvp.py for live behavior.
+#
 set -e
 
 echo "--- Industrial E2E Validation: Sovereign Update Engine ---"

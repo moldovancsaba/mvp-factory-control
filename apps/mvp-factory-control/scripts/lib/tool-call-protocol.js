@@ -1,3 +1,6 @@
+/**
+ * CommonJS port of `src/lib/tool-call-protocol.ts` for the Node worker. Keep validation rules in sync.
+ */
 const TOOL_CALL_NAME_RE = /^[a-z][a-z0-9_.-]{1,63}$/;
 const TOOL_CALL_ID_RE = /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$/;
 const SUPPORTED_RISK_CLASS = new Set(["LOW", "MEDIUM", "HIGH", "CRITICAL"]);

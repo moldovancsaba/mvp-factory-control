@@ -1,5 +1,7 @@
 # Checklist System Refactoring
 
+**Scope:** Target architecture for Checklist vs local supervisor. For what the control repository actually runs today, cross-check `docs/ARCHITECTURE.md` (internal app section) and tray code comments in `scripts/control_mvp.py`.
+
 This document records the target refactoring for Checklist and the implementation work completed to establish a simpler and more reliable foundation.
 
 ## Objective

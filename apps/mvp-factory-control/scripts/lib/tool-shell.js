@@ -1,3 +1,6 @@
+/**
+ * Worker implementation of shell.exec (spawn shell, timeouts, output size limits, cwd guards).
+ */
 const fsp = require("node:fs/promises");
 const path = require("node:path");
 const { spawn } = require("node:child_process");

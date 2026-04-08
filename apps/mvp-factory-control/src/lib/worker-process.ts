@@ -1,3 +1,9 @@
+/**
+ * **Process-level** worker introspection on the host: discover running worker PIDs from `ps`, spawn helpers.
+ *
+ * Uses `ps -eo pid=,args=` for macOS/Linux portability (not BSD `command` column). `spawnDetachedWorker`
+ * starts the Node worker script with stdio to log files under `.mvp-factory-control`. Used by agents UI/API.
+ */
 import fs from "node:fs";
 import path from "node:path";
 import { execSync, spawn } from "node:child_process";

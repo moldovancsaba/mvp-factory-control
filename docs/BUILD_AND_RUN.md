@@ -79,3 +79,27 @@ bash scripts/bootstrap.sh
 ```
 
 For a full technical overview of how the systems interconnect, see [docs/ARCHITECTURE.md](ARCHITECTURE.md).
+
+## Internal control app (Next.js) — environment
+
+Run from `apps/mvp-factory-control` (e.g. `npm run dev`). Prisma expects **PostgreSQL** (`DATABASE_URL`).
+
+**Auth (NextAuth)** — optional Google OAuth: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`. Optional dev login: `MVP_FACTORY_CONTROL_DEV_LOGIN_PASSWORD`, optional `MVP_FACTORY_CONTROL_DEV_LOGIN_EMAIL`.
+
+**GitHub API** — token lookup order (see `src/lib/github.ts`): `MVP_FACTORY_CONTROL_GITHUB_TOKEN`, then `GITHUB_TOKEN`, then `MVP_PROJECT_TOKEN`.
+
+**RBAC** — `MVP_FACTORY_CONTROL_RBAC_ADMIN_EMAILS`, `..._OPERATOR_EMAILS`, `..._VIEWER_EMAILS`, `..._CLIENT_EMAILS` (comma/newline/space separated), and `MVP_FACTORY_CONTROL_RBAC_DEFAULT_ROLE` (default OPERATOR).
+
+**Email ingress** — `MVP_FACTORY_CONTROL_EMAIL_INGRESS_TOKEN`; requests must send the same value in `x-mvp-factory-control-ingress-token` or `Authorization: Bearer ...` (if unset, route allows all — dev only).
+
+**Tool approval** — `MVP_FACTORY_CONTROL_TOOL_APPROVAL_SECRET` (or falls back to `NEXTAUTH_SECRET` in worker JS).
+
+**Dashboard project** — `MVP_FACTORY_CONTROL_DASHBOARD_PRODUCT` (default `mvp-factory-control`).
+
+**Orchestrator lease TTL** — `MVP_FACTORY_CONTROL_ORCHESTRATOR_LEASE_TTL_MS` (default 20000).
+
+**Task retries** — `MVP_FACTORY_CONTROL_TASK_MAX_ATTEMPTS` (default 3, clamped 1–10).
+
+**Local project root (settings file)** — `MVP_FACTORY_CONTROL_LOCAL_PROJECT_ROOT` overrides default `/Users/moldovancsaba/Projects` in `settings-store.ts`.
+
+**Docker CI** — `scripts/mvp-factory-control-docker-portability-gate.sh` uses `MVP_FACTORY_CONTROL_DB_PORT`, `MVP_FACTORY_CONTROL_APP_PORT`, `NEXTAUTH_URL`; GitHub required check name: `portability-gate`.

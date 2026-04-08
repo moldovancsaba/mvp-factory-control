@@ -2,6 +2,8 @@
 
 This playbook provides the essential information developers need to work with the MVP Factory Control project.
 
+**Canonical module index:** [READMEDEV.md](READMEDEV.md) → *Source map: `apps/mvp-factory-control`* — use it when navigating the internal Next app.
+
 ## Project Overview
 
 `mvp-factory-control` is the central portfolio management repository for the MVP Factory. It manages delivery issues, board workflow, prompts, standards, and shared cross-project knowledge.

@@ -1,3 +1,8 @@
+/**
+ * **Issue** war room: GitHub issue body, project fields, alpha context panel, chat thread, executable prompt validation.
+ *
+ * Dynamic segment `[number]` is the GitHub issue number in the configured repo/project.
+ */
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Shell } from "@/components/Shell";

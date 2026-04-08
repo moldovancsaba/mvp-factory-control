@@ -1,3 +1,7 @@
+"""
+Shared helper: ensure loopback TLS cert/key exist under .mvp-factory-control/tls (mkcert/openssl fallback).
+Used by https-gateway and other local HTTPS services.
+"""
 from __future__ import annotations
 
 import os

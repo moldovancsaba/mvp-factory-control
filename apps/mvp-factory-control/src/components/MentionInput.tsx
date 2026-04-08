@@ -1,5 +1,9 @@
 "use client";
 
+/**
+ * Text input with **@mention** autocomplete (agents/humans). Detects `@query` before caret; Tab/Enter selects.
+ * Submits composed value through the wrapping form; mentionables passed from server page.
+ */
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Mentionable } from "@/lib/mentionables";
 

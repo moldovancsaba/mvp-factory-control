@@ -209,6 +209,36 @@ The Checklist path is considered healthy when all of the following are true:
 - No multi-service local inference chain for Checklist.
 - No dependence on public tunnel URLs for worker execution.
 
+## Internal control app in this repository (`apps/mvp-factory-control`)
+
+The Next.js App Router application is **portfolio control-plane UI and API**, not the hosted Checklist product. It uses **PostgreSQL** via Prisma (`prisma/schema.prisma`), NextAuth (Google + optional dev credentials), and the GitHub GraphQL API for board/project fields.
+
+### Runtime layout
+
+| Area | Path | Role |
+|------|------|------|
+| Pages (RSC) | `src/app/**/page.tsx` | Dashboard, issues, agents, products, chat, memory, settings, sign-in |
+| Server actions | `src/app/**/actions.ts` | Mutations after session/RBAC; revalidate paths |
+| API routes | `src/app/api/**/route.ts` | NextAuth, email ingress, orchestrator JSON, memory REST |
+| Domain logic | `src/lib/*.ts` | Tasks, alpha context, GitHub client, tool policy, memory platform, RBAC, etc. |
+| Worker | `scripts/worker.js` + `scripts/lib/*.js` | CommonJS mirrors of tool protocol/policy/executors; runs tasks out-of-band |
+| Design tokens | `src/app/globals.css`, `src/components/ui.tsx` | War Room styling; see `docs/design-system-lts.md` |
+| Operator settings file | `.mvp-factory-control/settings.json` | Written by `settings-store.ts` / settings UI |
+
+### Guardrails and orchestration (code truth)
+
+- **Task lifecycle** — `lifecycle-policy.ts` (pure rules) + audits in Prisma.
+- **Pre-enqueue gates** — `judgement-gates.ts` (readiness, ALPHA/BETA control intent).
+- **Alpha context** — `alpha-context.ts`: window lifecycle, **60%** warning / **70%** block without handover package (`deriveGuardrailState`).
+- **Tool execution** — `tool-call-protocol.ts`, `tool-command-policy.ts`, `tool-call-approval.ts`; worker enforces the same shapes in `scripts/lib/*`.
+- **Orchestrator lease** — `orchestrator-lease.ts` + introspection snapshot `orchestrator-introspection.ts`.
+
+### Related Documents
+
+- [INTERNAL_CONTROL_APP.md](./INTERNAL_CONTROL_APP.md)
+- [BUILD_AND_RUN.md](./BUILD_AND_RUN.md)
+- [EXECUTABLE_PROMPT_PACKAGE.md](./EXECUTABLE_PROMPT_PACKAGE.md)
+
 ## Related Documents
 
 - [CHECKLIST_SYNC_RELIABILITY.md](./CHECKLIST_SYNC_RELIABILITY.md)

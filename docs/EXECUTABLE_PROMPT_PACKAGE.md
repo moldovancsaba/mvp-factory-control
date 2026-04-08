@@ -2,6 +2,8 @@
 
 This is the minimum structure a delivery issue should have before it is considered truly executable.
 
+**Code reference:** `apps/mvp-factory-control/src/lib/executable-prompt.ts` (file header + `validateExecutablePromptPackage`). CI script: `scripts/mvp-factory-validate-prompt-package.js`.
+
 Recommended sections for a complete issue description:
 
 - Objective

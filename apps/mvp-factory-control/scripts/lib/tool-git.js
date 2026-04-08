@@ -1,3 +1,6 @@
+/**
+ * Worker implementation of git.* tool calls (spawn git with timeouts, branch allowlists, output caps).
+ */
 const fsp = require("node:fs/promises");
 const path = require("node:path");
 const { spawn } = require("node:child_process");

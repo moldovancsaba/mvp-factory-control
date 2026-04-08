@@ -1,3 +1,15 @@
+/**
+ * NextAuth configuration for the internal control app.
+ *
+ * Providers (enabled only when env vars are present):
+ * - Google OAuth: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
+ * - Dev credentials: `MVP_FACTORY_CONTROL_DEV_LOGIN_PASSWORD`; optional `MVP_FACTORY_CONTROL_DEV_LOGIN_EMAIL`
+ *
+ * Session strategy is **database** (Prisma adapter). The session callback attaches `user.id` onto
+ * `session.user` for server actions and RBAC. Custom sign-in page: `/signin`.
+ *
+ * @see `src/app/api/auth/[...nextauth]/route.ts`
+ */
 import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";

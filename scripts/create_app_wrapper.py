@@ -1,3 +1,7 @@
+"""
+Builds Control.app in /Applications: generates .icns from assets/icon.png, bundles control_mvp.py launcher.
+Run manually or from bootstrap when packaging the menu bar app.
+"""
 import os
 import subprocess
 import sys
