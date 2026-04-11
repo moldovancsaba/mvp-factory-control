@@ -287,6 +287,7 @@ SERVICES = {
         "port": 10005,
         "cwd": os.path.join(CONTROL_PANEL_SETTINGS["checklistRoot"], "scripts"),
         "cmd": ["/opt/homebrew/bin/node", "sync.js"],
+        "proc_pattern": "node sync.js",
         "env": {
             "PORT": "10005",
             "OLLAMA_MODEL": "gemma4:latest",
@@ -499,14 +500,16 @@ class ControlApp(rumps.App):
             return False
 
     def is_process_running(self, pattern):
+        return len(self.find_process_pids(pattern)) > 0
+
+    def find_process_pids(self, pattern):
         try:
-            # Check for the process using pgrep -f
-            subprocess.check_output(["pgrep", "-f", pattern])
-            return True
+            out = subprocess.check_output(["pgrep", "-f", pattern])
+            return [int(line.strip()) for line in out.decode().splitlines() if line.strip()]
         except subprocess.CalledProcessError:
-            return False
+            return []
         except Exception:
-            return False
+            return []
 
     def check_status(self, _=None):
         reload_control_panel_settings()
@@ -528,7 +531,7 @@ class ControlApp(rumps.App):
                     running, mode = self.is_docker_running(config["docker_name"])
                     if mode == "infrastructure_down":
                         infra_failure = True
-                elif config.get("port") == 0 and "proc_pattern" in config:
+                elif "proc_pattern" in config:
                     running = self.is_process_running(config["proc_pattern"])
                 else:
                     running = self.is_port_open(config["port"])
@@ -941,6 +944,8 @@ class ControlApp(rumps.App):
         running = False
         if config.get("is_docker"):
             running, _ = self.is_docker_running(config["docker_name"])
+        elif "proc_pattern" in config:
+            running = self.is_process_running(config["proc_pattern"])
         else:
             running = self.is_port_open(config["port"])
 
@@ -986,7 +991,7 @@ class ControlApp(rumps.App):
             if running:
                 print(f"Skipping {name}: already running.")
                 return
-        elif config.get("port") == 0 and "proc_pattern" in config:
+        elif "proc_pattern" in config:
             if self.is_process_running(config["proc_pattern"]):
                 print(f"Skipping {name}: daemon already running.")
                 return
@@ -1065,6 +1070,12 @@ class ControlApp(rumps.App):
                 ],
                 env=os.environ,
             )
+        elif "proc_pattern" in SERVICES[name]:
+            for pid in self.find_process_pids(SERVICES[name]["proc_pattern"]):
+                try:
+                    os.kill(pid, signal.SIGTERM)
+                except ProcessLookupError:
+                    pass
         else:
             # Fallback: kill by port if it's not in our tracking (e.g. orphan)
             port = SERVICES[name]["port"]
@@ -1072,13 +1083,14 @@ class ControlApp(rumps.App):
 
     def start_all(self, _=None):
         for name in SERVICES:
-            if name == "Docker" or not (
-                self.is_port_open(SERVICES[name]["port"])
-                or (
-                    SERVICES[name].get("is_docker")
-                    and self.is_docker_running(SERVICES[name]["docker_name"])
-                )
-            ):
+            service = SERVICES[name]
+            if service.get("is_docker"):
+                running = self.is_docker_running(service["docker_name"])[0]
+            elif "proc_pattern" in service:
+                running = self.is_process_running(service["proc_pattern"])
+            else:
+                running = self.is_port_open(service["port"])
+            if name == "Docker" or not running:
                 self.start_service(name)
 
     @rumps.clicked("Restart All")
