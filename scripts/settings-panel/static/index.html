@@ -111,11 +111,97 @@
       border-color: rgba(125, 211, 252, 0.7);
       box-shadow: 0 0 0 3px rgba(125, 211, 252, 0.12);
     }
+    .switch-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .switch-row:last-of-type { border-bottom: 0; }
+    .switch-row .meta { flex: 1; min-width: 0; }
+    .switch-row .meta strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .switch-row .meta span {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .switch {
+      position: relative;
+      width: 44px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+    .switch .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: rgba(36, 48, 65, 0.95);
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      transition: background 0.2s ease;
+    }
+    .switch .slider::before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 2px;
+      bottom: 2px;
+      background: var(--muted);
+      border-radius: 50%;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+    .switch input:checked + .slider {
+      background: rgba(56, 189, 248, 0.25);
+      border-color: rgba(125, 211, 252, 0.5);
+    }
+    .switch input:checked + .slider::before {
+      transform: translateX(18px);
+      background: var(--accent);
+    }
+    .switch input:focus-visible + .slider {
+      box-shadow: 0 0 0 3px rgba(125, 211, 252, 0.12);
+    }
     .actions {
       display: flex;
       align-items: center;
       gap: 12px;
       flex-wrap: wrap;
+    }
+    .section-heading {
+      margin: 16px 0 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.01em;
+    }
+    .section-copy {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .section-anchor {
+      scroll-margin-top: 24px;
     }
     button {
       border: 0;
@@ -203,6 +289,7 @@
     @media (max-width: 920px) {
       .two { grid-template-columns: 1fr; }
       header { flex-direction: column; }
+      .two-col { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -223,6 +310,9 @@
         <h2>General Settings</h2>
         <p>These values define where the control layer finds local projects and sibling app repositories.</p>
         <form id="settingsForm">
+          <div class="section-anchor" id="general-settings"></div>
+          <div class="section-heading">Paths</div>
+          <p class="section-copy">Repository roots and env paths used by the local control plane.</p>
           <label>
             Local project folder
             <input id="localProjectFolder" name="localProjectFolder" placeholder="/Users/Shared/Projects" />
@@ -243,6 +333,84 @@
             Checklist env path
             <input id="checklistEnvPath" name="checklistEnvPath" placeholder="/Users/Shared/Projects/checklist/.env" />
           </label>
+
+          <div class="section-anchor" id="checklist-settings"></div>
+          <div class="section-heading">Checklist Settings</div>
+          <p class="section-copy">
+            Control how often ChecklistSync polls, revisits cards, replays feedback, maintains hashtags, and runs maintenance work. These values apply to the local AI worker after restart.
+          </p>
+
+          <div class="two-col">
+            <label>
+              Poll interval (seconds)
+              <input id="checklistPollIntervalSeconds" name="checklistPollIntervalSeconds" type="number" min="30" max="3600" placeholder="300" />
+            </label>
+            <label>
+              Flashcard revisit interval (minutes)
+              <input id="checklistFlashcardRevisitMinutes" name="checklistFlashcardRevisitMinutes" type="number" min="5" max="1440" placeholder="15" />
+            </label>
+            <label>
+              Flashcard revisit batch size
+              <input id="checklistFlashcardRevisitBatchSize" name="checklistFlashcardRevisitBatchSize" type="number" min="1" max="100" placeholder="5" />
+            </label>
+            <label>
+              Task revisit interval (minutes)
+              <input id="checklistTaskRevisitMinutes" name="checklistTaskRevisitMinutes" type="number" min="5" max="1440" placeholder="30" />
+            </label>
+            <label>
+              Task revisit batch size
+              <input id="checklistTaskRevisitBatchSize" name="checklistTaskRevisitBatchSize" type="number" min="1" max="100" placeholder="2" />
+            </label>
+            <label>
+              Feedback replay interval (minutes)
+              <input id="checklistFeedbackReplayMinutes" name="checklistFeedbackReplayMinutes" type="number" min="5" max="1440" placeholder="30" />
+            </label>
+            <label>
+              Feedback replay batch size
+              <input id="checklistFeedbackReplayBatchSize" name="checklistFeedbackReplayBatchSize" type="number" min="1" max="100" placeholder="2" />
+            </label>
+            <label>
+              Hashtag maintenance interval (hours)
+              <input id="checklistHashtagMaintenanceHours" name="checklistHashtagMaintenanceHours" type="number" min="1" max="720" placeholder="24" />
+            </label>
+            <label>
+              Hashtag maintenance batch size
+              <input id="checklistHashtagMaintenanceBatchSize" name="checklistHashtagMaintenanceBatchSize" type="number" min="1" max="100" placeholder="1" />
+            </label>
+            <label>
+              Cleanup interval (hours)
+              <input id="checklistCleanupHours" name="checklistCleanupHours" type="number" min="1" max="720" placeholder="24" />
+            </label>
+            <label>
+              Cleanup batch size
+              <input id="checklistCleanupBatchSize" name="checklistCleanupBatchSize" type="number" min="1" max="250" placeholder="25" />
+            </label>
+            <label>
+              Minimum task ICE score
+              <input id="checklistTaskMinIce" name="checklistTaskMinIce" type="number" min="0" max="1000" placeholder="100" />
+            </label>
+            <label>
+              Flashcard minimum confidence
+              <input id="checklistFlashcardMinConfidence" name="checklistFlashcardMinConfidence" type="number" min="1" max="100" placeholder="60" />
+            </label>
+            <label>
+              Flashcard minimum impact
+              <input id="checklistFlashcardMinImpact" name="checklistFlashcardMinImpact" type="number" min="1" max="100" placeholder="40" />
+            </label>
+            <label>
+              Flashcard minimum weight
+              <input id="checklistFlashcardMinWeight" name="checklistFlashcardMinWeight" type="number" min="1" max="100" placeholder="40" />
+            </label>
+          </div>
+
+          <div style="margin-top: 8px;">
+            <h3 style="margin: 0 0 4px; font-size: 13px; color: var(--text); font-weight: 600;">Solutions</h3>
+            <p style="margin: 0 0 8px; font-size: 12px; color: var(--muted); line-height: 1.5;">
+              Turn local stack services on or off. The menu-bar Control app reloads these flags about every 10 seconds (no restart for toggles alone).
+            </p>
+            <div id="solutionsFields"></div>
+          </div>
+
           <div class="actions">
             <button type="submit">Save settings</button>
             <div class="note">Watcher-facing changes apply on the next `mvp-factory-control` restart.</div>
@@ -333,22 +501,66 @@
       }
     }
 
+    const SOLUTION_DEFS = [
+      { key: "paperclip", title: "Paperclip", hint: "Dashboard UI (port 3100 via gateway /dashboard/)" },
+      { key: "openCode", title: "OpenCode", hint: "Local coding service (port 18788)" },
+      { key: "ollama", title: "Ollama", hint: "Local model server (port 11434)" },
+      { key: "scrumMaster", title: "ScrumMaster", hint: "Daemon that watches Paperclip health" },
+      { key: "agentConnector", title: "Agent Connector", hint: "Connectors UI (port 3198)" },
+      { key: "checklistSync", title: "ChecklistSync", hint: "Checklist AI sync worker (port 10005)" },
+    ];
+
+    function renderSolutionToggles(solutions) {
+      const host = document.getElementById("solutionsFields");
+      host.innerHTML = "";
+      const sol = solutions && typeof solutions === "object" ? solutions : {};
+      for (const def of SOLUTION_DEFS) {
+        const on = sol[def.key] !== false;
+        const row = document.createElement("label");
+        row.className = "switch-row";
+        row.innerHTML = `
+          <div class="meta">
+            <strong>${def.title}</strong>
+            <span>${def.hint}</span>
+          </div>
+          <div class="switch">
+            <input type="checkbox" data-solution-key="${def.key}" ${on ? "checked" : ""} />
+            <span class="slider"></span>
+          </div>
+        `;
+        host.appendChild(row);
+      }
+    }
+
+    function collectSolutionsPayload() {
+      const out = {};
+      for (const def of SOLUTION_DEFS) {
+        const input = document.querySelector(`input[data-solution-key="${def.key}"]`);
+        out[def.key] = !!(input && input.checked);
+      }
+      return out;
+    }
+
     function renderTools(tools) {
       const host = document.getElementById("toolList");
       host.innerHTML = "";
       for (const tool of tools) {
         const div = document.createElement("div");
         div.className = "tool";
+        const disabled = tool.enabled === false;
+        const link = disabled
+          ? `<span class="name" style="color: var(--muted);">${tool.name} <span style="font-size: 11px;">(disabled)</span></span>`
+          : `<div class="name"><a href="${tool.url}" target="_blank" rel="noreferrer">${tool.name}</a></div>`;
         div.innerHTML = `
           <div class="row">
             <div>
-              <div class="name"><a href="${tool.url}" target="_blank" rel="noreferrer">${tool.name}</a></div>
+              ${link}
               <div class="path">${tool.url}</div>
               <div class="path">${tool.description}</div>
             </div>
             <div class="status">
-              <span class="dot ${tool.healthy ? "ok" : ""}"></span>
-              <span>${tool.healthy ? "Reachable" : "Unavailable"}</span>
+              <span class="dot ${disabled ? "" : tool.healthy ? "ok" : ""}"></span>
+              <span>${disabled ? "Off" : tool.healthy ? "Reachable" : "Unavailable"}</span>
             </div>
           </div>
         `;
@@ -364,6 +576,22 @@
       setValue("paperclipRoot", data.control.paperclipRoot);
       setValue("checklistRoot", data.control.checklistRoot);
       setValue("checklistEnvPath", data.control.checklistEnvPath);
+      setValue("checklistPollIntervalSeconds", data.control.checklistPollIntervalSeconds);
+      setValue("checklistFlashcardRevisitMinutes", data.control.checklistFlashcardRevisitMinutes);
+      setValue("checklistFlashcardRevisitBatchSize", data.control.checklistFlashcardRevisitBatchSize);
+      setValue("checklistTaskRevisitMinutes", data.control.checklistTaskRevisitMinutes);
+      setValue("checklistTaskRevisitBatchSize", data.control.checklistTaskRevisitBatchSize);
+      setValue("checklistFeedbackReplayMinutes", data.control.checklistFeedbackReplayMinutes);
+      setValue("checklistFeedbackReplayBatchSize", data.control.checklistFeedbackReplayBatchSize);
+      setValue("checklistHashtagMaintenanceHours", data.control.checklistHashtagMaintenanceHours);
+      setValue("checklistHashtagMaintenanceBatchSize", data.control.checklistHashtagMaintenanceBatchSize);
+      setValue("checklistCleanupHours", data.control.checklistCleanupHours);
+      setValue("checklistCleanupBatchSize", data.control.checklistCleanupBatchSize);
+      setValue("checklistTaskMinIce", data.control.checklistTaskMinIce);
+      setValue("checklistFlashcardMinConfidence", data.control.checklistFlashcardMinConfidence);
+      setValue("checklistFlashcardMinImpact", data.control.checklistFlashcardMinImpact);
+      setValue("checklistFlashcardMinWeight", data.control.checklistFlashcardMinWeight);
+      renderSolutionToggles(data.control.solutions);
       document.getElementById("updatedAt").textContent =
         data.general.updatedAt ? `Updated ${new Date(data.general.updatedAt).toLocaleString()}` : "Local settings";
       renderRepos(data.repos || []);
@@ -377,14 +605,36 @@
         sharedRoot: document.getElementById("sharedRoot").value.trim(),
         paperclipRoot: document.getElementById("paperclipRoot").value.trim(),
         checklistRoot: document.getElementById("checklistRoot").value.trim(),
-        checklistEnvPath: document.getElementById("checklistEnvPath").value.trim()
+        checklistEnvPath: document.getElementById("checklistEnvPath").value.trim(),
+        checklistPollIntervalSeconds: Number(document.getElementById("checklistPollIntervalSeconds").value || 300),
+        checklistFlashcardRevisitMinutes: Number(document.getElementById("checklistFlashcardRevisitMinutes").value || 15),
+        checklistFlashcardRevisitBatchSize: Number(document.getElementById("checklistFlashcardRevisitBatchSize").value || 5),
+        checklistTaskRevisitMinutes: Number(document.getElementById("checklistTaskRevisitMinutes").value || 30),
+        checklistTaskRevisitBatchSize: Number(document.getElementById("checklistTaskRevisitBatchSize").value || 2),
+        checklistFeedbackReplayMinutes: Number(document.getElementById("checklistFeedbackReplayMinutes").value || 30),
+        checklistFeedbackReplayBatchSize: Number(document.getElementById("checklistFeedbackReplayBatchSize").value || 2),
+        checklistHashtagMaintenanceHours: Number(document.getElementById("checklistHashtagMaintenanceHours").value || 24),
+        checklistHashtagMaintenanceBatchSize: Number(document.getElementById("checklistHashtagMaintenanceBatchSize").value || 1),
+        checklistCleanupHours: Number(document.getElementById("checklistCleanupHours").value || 24),
+        checklistCleanupBatchSize: Number(document.getElementById("checklistCleanupBatchSize").value || 25),
+        checklistTaskMinIce: Number(document.getElementById("checklistTaskMinIce").value || 100),
+        checklistFlashcardMinConfidence: Number(document.getElementById("checklistFlashcardMinConfidence").value || 60),
+        checklistFlashcardMinImpact: Number(document.getElementById("checklistFlashcardMinImpact").value || 40),
+        checklistFlashcardMinWeight: Number(document.getElementById("checklistFlashcardMinWeight").value || 40),
+        solutions: collectSolutionsPayload()
       };
       try {
         const result = await api("/api/settings", {
           method: "PUT",
           body: JSON.stringify(payload)
         });
-        showToast(result.requiresRestart ? "Saved. Restart mvp-factory-control to apply watcher settings." : "Saved.");
+        let msg = "Saved.";
+        if (result.requiresRestart) {
+          msg = "Saved. Restart mvp-factory-control to apply path / watcher settings.";
+        } else if (result.solutionsAppliedLive) {
+          msg = "Saved. Solution toggles apply within ~10s in Control (no restart).";
+        }
+        showToast(msg);
         await load();
       } catch (error) {
         showToast(error.message || "Save failed");

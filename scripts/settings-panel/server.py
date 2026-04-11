@@ -8,11 +8,15 @@ from __future__ import annotations
 import json
 import os
 import socket
-import urllib.error
-import urllib.request
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+_SCRIPTS_ROOT = Path(__file__).resolve().parents[1]
+if str(_SCRIPTS_ROOT) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_ROOT))
+from local_gateway_client import gateway_https_ok
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -37,10 +41,6 @@ app = FastAPI(title="MVP Factory Settings Panel")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://127.0.0.1",
-        f"http://127.0.0.1:{PORT}",
-        "http://localhost",
-        f"http://localhost:{PORT}",
         f"https://127.0.0.1:{_GATEWAY_PORT}",
         f"https://localhost:{_GATEWAY_PORT}",
     ],
@@ -50,12 +50,39 @@ app.add_middleware(
 )
 
 
+def default_solutions_flags() -> dict[str, bool]:
+    return {
+        "paperclip": True,
+        "openCode": True,
+        "ollama": True,
+        "scrumMaster": True,
+        "agentConnector": True,
+        "checklistSync": True,
+    }
+
+
 class SettingsSaveRequest(BaseModel):
     localProjectFolder: str = Field(..., min_length=1)
     sharedRoot: str = Field(..., min_length=1)
     paperclipRoot: str = Field(..., min_length=1)
     checklistRoot: str = Field(..., min_length=1)
     checklistEnvPath: str = Field(..., min_length=1)
+    checklistPollIntervalSeconds: int = Field(300, ge=30, le=3600)
+    checklistFlashcardRevisitMinutes: int = Field(15, ge=5, le=1440)
+    checklistFlashcardRevisitBatchSize: int = Field(5, ge=1, le=100)
+    checklistTaskRevisitMinutes: int = Field(30, ge=5, le=1440)
+    checklistTaskRevisitBatchSize: int = Field(2, ge=1, le=100)
+    checklistFeedbackReplayMinutes: int = Field(30, ge=5, le=1440)
+    checklistFeedbackReplayBatchSize: int = Field(2, ge=1, le=100)
+    checklistHashtagMaintenanceHours: int = Field(24, ge=1, le=720)
+    checklistHashtagMaintenanceBatchSize: int = Field(1, ge=1, le=100)
+    checklistCleanupHours: int = Field(24, ge=1, le=720)
+    checklistCleanupBatchSize: int = Field(25, ge=1, le=250)
+    checklistTaskMinIce: int = Field(100, ge=0, le=1000)
+    checklistFlashcardMinConfidence: int = Field(60, ge=1, le=100)
+    checklistFlashcardMinImpact: int = Field(40, ge=1, le=100)
+    checklistFlashcardMinWeight: int = Field(40, ge=1, le=100)
+    solutions: dict[str, bool] = Field(default_factory=dict)
 
 
 def ensure_state_dir() -> None:
@@ -90,13 +117,29 @@ def default_app_settings() -> dict[str, Any]:
     }
 
 
-def default_control_settings() -> dict[str, str]:
+def default_control_settings() -> dict[str, Any]:
     shared_root = normalize_path(DEFAULT_SHARED_ROOT)
     return {
         "sharedRoot": shared_root,
         "paperclipRoot": normalize_path(os.path.join(shared_root, "paperclip")),
         "checklistRoot": normalize_path(os.path.join(shared_root, "checklist")),
         "checklistEnvPath": normalize_path(os.path.join(shared_root, "checklist", ".env")),
+        "checklistPollIntervalSeconds": 300,
+        "checklistFlashcardRevisitMinutes": 15,
+        "checklistFlashcardRevisitBatchSize": 5,
+        "checklistTaskRevisitMinutes": 30,
+        "checklistTaskRevisitBatchSize": 2,
+        "checklistFeedbackReplayMinutes": 30,
+        "checklistFeedbackReplayBatchSize": 2,
+        "checklistHashtagMaintenanceHours": 24,
+        "checklistHashtagMaintenanceBatchSize": 1,
+        "checklistCleanupHours": 24,
+        "checklistCleanupBatchSize": 25,
+        "checklistTaskMinIce": 100,
+        "checklistFlashcardMinConfidence": 60,
+        "checklistFlashcardMinImpact": 40,
+        "checklistFlashcardMinWeight": 40,
+        "solutions": default_solutions_flags(),
     }
 
 
@@ -112,14 +155,58 @@ def load_app_settings() -> dict[str, Any]:
     return settings
 
 
-def load_control_settings() -> dict[str, str]:
+_PATH_KEYS = frozenset(
+    {"sharedRoot", "paperclipRoot", "checklistRoot", "checklistEnvPath"}
+)
+
+
+def load_control_settings() -> dict[str, Any]:
     settings = default_control_settings()
     raw = read_json(CONTROL_SETTINGS_PATH, {})
-    for key in settings:
+    for key in _PATH_KEYS:
         value = str(raw.get(key, "")).strip()
         if value:
             settings[key] = normalize_path(value)
+    numeric_settings = {
+        "checklistPollIntervalSeconds": (30, 3600),
+        "checklistFlashcardRevisitMinutes": (5, 1440),
+        "checklistFlashcardRevisitBatchSize": (1, 100),
+        "checklistTaskRevisitMinutes": (5, 1440),
+        "checklistTaskRevisitBatchSize": (1, 100),
+        "checklistFeedbackReplayMinutes": (5, 1440),
+        "checklistFeedbackReplayBatchSize": (1, 100),
+        "checklistHashtagMaintenanceHours": (1, 720),
+        "checklistHashtagMaintenanceBatchSize": (1, 100),
+        "checklistCleanupHours": (1, 720),
+        "checklistCleanupBatchSize": (1, 250),
+        "checklistTaskMinIce": (0, 1000),
+        "checklistFlashcardMinConfidence": (1, 100),
+        "checklistFlashcardMinImpact": (1, 100),
+        "checklistFlashcardMinWeight": (1, 100),
+    }
+    for key, (min_value, max_value) in numeric_settings.items():
+        value = raw.get(key)
+        if isinstance(value, int) and min_value <= value <= max_value:
+            settings[key] = value
+    solutions = default_solutions_flags()
+    sol_raw = raw.get("solutions")
+    if isinstance(sol_raw, dict):
+        for k in solutions:
+            if k in sol_raw and isinstance(sol_raw[k], bool):
+                solutions[k] = sol_raw[k]
+    settings["solutions"] = solutions
     return settings
+
+
+def merge_solutions_from_request(
+    body: SettingsSaveRequest, current: dict[str, bool]
+) -> dict[str, bool]:
+    merged = dict(current)
+    allowed = frozenset(default_solutions_flags().keys())
+    for key, value in body.solutions.items():
+        if key in allowed and isinstance(value, bool):
+            merged[key] = value
+    return merged
 
 
 def build_repo_status(name: str, root_path: str, env_path: str | None = None) -> dict[str, Any]:
@@ -140,46 +227,50 @@ def port_open(port: int) -> bool:
         return sock.connect_ex(("127.0.0.1", port)) == 0
 
 
-def http_ok(url: str) -> bool:
-    try:
-        with urllib.request.urlopen(url, timeout=1.5) as response:
-            return 200 <= response.status < 400
-    except (urllib.error.URLError, TimeoutError, ValueError):
-        return False
-
-
-def build_support_tools() -> list[dict[str, Any]]:
+def build_support_tools(solutions: dict[str, bool] | None = None) -> list[dict[str, Any]]:
     gw = f"https://127.0.0.1:{_GATEWAY_PORT}"
+    repo = str(REPO_ROOT)
+    sol = solutions if solutions is not None else default_solutions_flags()
     tools = [
         {
             "name": "Dashboard",
-            "url": "http://127.0.0.1:3100/",
-            "description": "Paperclip UI (HTTP — root /api/*; daemons use TLS via gateway /dashboard/api/*)",
-            "healthy": http_ok("http://127.0.0.1:3100/api/health"),
+            "url": f"{gw}/dashboard/",
+            "description": "Paperclip UI (HTTPS gateway; dev server uses PAPERCLIP_PUBLIC_BASE_PATH=/dashboard)",
+            "healthy": gateway_https_ok(f"{gw}/dashboard/api/health", repo_root=repo),
+            "solutionKey": "paperclip",
+            "enabled": sol.get("paperclip", True),
         },
         {
             "name": "Environment Variables",
             "url": f"{gw}/variables/",
             "description": "Local env editor (HTTPS gateway; resolves /variables/api/* correctly)",
-            "healthy": http_ok("http://127.0.0.1:3199/api/health"),
+            "healthy": gateway_https_ok(f"{gw}/variables/api/health", repo_root=repo),
+            "solutionKey": None,
+            "enabled": True,
         },
         {
             "name": "Agent Connector",
             "url": f"{gw}/connectors/",
             "description": "Agent connector status and local endpoints",
-            "healthy": http_ok("http://127.0.0.1:3198/health"),
+            "healthy": gateway_https_ok(f"{gw}/connectors/health", repo_root=repo),
+            "solutionKey": "agentConnector",
+            "enabled": sol.get("agentConnector", True),
         },
         {
             "name": "ChecklistSync",
             "url": f"{gw}/checklistsync/",
             "description": "Checklist local AI sync health",
-            "healthy": http_ok("http://127.0.0.1:10005/health"),
+            "healthy": gateway_https_ok(f"{gw}/checklistsync/health", repo_root=repo),
+            "solutionKey": "checklistSync",
+            "enabled": sol.get("checklistSync", True),
         },
         {
             "name": "OpenCode",
             "url": f"{gw}/opencode/",
             "description": "Local coding service endpoint",
-            "healthy": port_open(18788),
+            "healthy": gateway_https_ok(f"{gw}/opencode/", repo_root=repo),
+            "solutionKey": "openCode",
+            "enabled": sol.get("openCode", True),
         },
     ]
     return tools
@@ -210,7 +301,7 @@ def get_settings() -> dict[str, Any]:
         },
         "control": control_settings,
         "repos": repos,
-        "supportTools": build_support_tools(),
+        "supportTools": build_support_tools(control_settings.get("solutions")),
     }
 
 
@@ -218,21 +309,73 @@ def get_settings() -> dict[str, Any]:
 def save_settings(body: SettingsSaveRequest) -> dict[str, Any]:
     ensure_state_dir()
 
+    prev_app = load_app_settings()
+    prev_control = load_control_settings()
+    control_paths_changed = any(
+        normalize_path(getattr(body, k)) != prev_control[k]
+        for k in _PATH_KEYS
+    )
+    checklist_settings_changed = any(
+        getattr(body, key) != prev_control.get(key)
+        for key in (
+            "checklistPollIntervalSeconds",
+            "checklistFlashcardRevisitMinutes",
+            "checklistFlashcardRevisitBatchSize",
+            "checklistTaskRevisitMinutes",
+            "checklistTaskRevisitBatchSize",
+            "checklistFeedbackReplayMinutes",
+            "checklistFeedbackReplayBatchSize",
+            "checklistHashtagMaintenanceHours",
+            "checklistHashtagMaintenanceBatchSize",
+            "checklistCleanupHours",
+            "checklistCleanupBatchSize",
+            "checklistTaskMinIce",
+            "checklistFlashcardMinConfidence",
+            "checklistFlashcardMinImpact",
+            "checklistFlashcardMinWeight",
+        )
+    )
+    folder_changed = normalize_path(body.localProjectFolder) != normalize_path(
+        str(prev_app.get("localProjectFolder", DEFAULT_LOCAL_PROJECT_FOLDER))
+    )
+    needs_restart = control_paths_changed or folder_changed or checklist_settings_changed
+
     app_settings = load_app_settings()
     app_settings["localProjectFolder"] = normalize_path(body.localProjectFolder)
     app_settings["updatedAt"] = datetime.now(timezone.utc).isoformat()
     write_json(APP_SETTINGS_PATH, app_settings)
 
+    solutions = merge_solutions_from_request(body, prev_control["solutions"])
     control_settings = {
         "sharedRoot": normalize_path(body.sharedRoot),
         "paperclipRoot": normalize_path(body.paperclipRoot),
         "checklistRoot": normalize_path(body.checklistRoot),
         "checklistEnvPath": normalize_path(body.checklistEnvPath),
+        "checklistPollIntervalSeconds": body.checklistPollIntervalSeconds,
+        "checklistFlashcardRevisitMinutes": body.checklistFlashcardRevisitMinutes,
+        "checklistFlashcardRevisitBatchSize": body.checklistFlashcardRevisitBatchSize,
+        "checklistTaskRevisitMinutes": body.checklistTaskRevisitMinutes,
+        "checklistTaskRevisitBatchSize": body.checklistTaskRevisitBatchSize,
+        "checklistFeedbackReplayMinutes": body.checklistFeedbackReplayMinutes,
+        "checklistFeedbackReplayBatchSize": body.checklistFeedbackReplayBatchSize,
+        "checklistHashtagMaintenanceHours": body.checklistHashtagMaintenanceHours,
+        "checklistHashtagMaintenanceBatchSize": body.checklistHashtagMaintenanceBatchSize,
+        "checklistCleanupHours": body.checklistCleanupHours,
+        "checklistCleanupBatchSize": body.checklistCleanupBatchSize,
+        "checklistTaskMinIce": body.checklistTaskMinIce,
+        "checklistFlashcardMinConfidence": body.checklistFlashcardMinConfidence,
+        "checklistFlashcardMinImpact": body.checklistFlashcardMinImpact,
+        "checklistFlashcardMinWeight": body.checklistFlashcardMinWeight,
+        "solutions": solutions,
         "updatedAt": datetime.now(timezone.utc).isoformat(),
     }
     write_json(CONTROL_SETTINGS_PATH, control_settings)
 
-    return {"status": "ok", "requiresRestart": True}
+    return {
+        "status": "ok",
+        "requiresRestart": needs_restart,
+        "solutionsAppliedLive": not needs_restart,
+    }
 
 
 @app.get("/")

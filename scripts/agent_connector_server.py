@@ -1,6 +1,8 @@
 """
 Local health dashboard HTTP server: probes Paperclip/OpenCode (and related) HTTPS endpoints on localhost,
 returns JSON/HTML status. Used by Control.app / operator visibility (port PORT).
+
+All service checks go through the MVP HTTPS gateway (TLS to 127.0.0.1); the gateway forwards to plain HTTP upstreams.
 """
 import datetime
 import http.server
@@ -8,20 +10,25 @@ import json
 import os
 import socket
 import socketserver
-import ssl
-import urllib.request
+import sys
+from pathlib import Path
 from urllib.parse import urlparse
 
+_SCRIPTS_ROOT = Path(__file__).resolve().parent
+if str(_SCRIPTS_ROOT) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_ROOT))
+from local_gateway_client import gateway_https_ok
 
 PORT = 3198
 _GW_PORT = os.environ.get("MVP_HTTPS_GATEWAY_PORT", "3443")
+REPO_ROOT = str(Path(__file__).resolve().parents[1])
+_GW = f"https://127.0.0.1:{_GW_PORT}"
 SERVICES = [
-    ("Paperclip", f"https://127.0.0.1:{_GW_PORT}/dashboard/api/health"),
-    ("OpenCode", f"https://127.0.0.1:{_GW_PORT}/opencode/"),
-    ("ChecklistSync", "http://127.0.0.1:10005/health"),
-    ("Ollama", "http://127.0.0.1:11434/api/tags"),
+    ("Paperclip", f"{_GW}/dashboard/api/health"),
+    ("OpenCode", f"{_GW}/opencode/"),
+    ("ChecklistSync", f"{_GW}/checklistsync/health"),
+    ("Ollama", f"{_GW}/ollama/api/tags"),
 ]
-LOCAL_TLS_CERT_PATH = os.environ.get("LOCAL_TLS_CERT_PATH", "")
 
 
 def is_port_open(port):
@@ -31,17 +38,11 @@ def is_port_open(port):
 
 
 def fetch_url_ok(url):
-    try:
-        context = None
-        if url.startswith("https://"):
-            if LOCAL_TLS_CERT_PATH and os.path.isfile(LOCAL_TLS_CERT_PATH):
-                context = ssl.create_default_context(cafile=LOCAL_TLS_CERT_PATH)
-            else:
-                raise RuntimeError("LOCAL_TLS_CERT_PATH missing for HTTPS connector health checks")
-        with urllib.request.urlopen(url, timeout=1.5, context=context) as response:
-            return 200 <= response.status < 400
-    except Exception:
+    if url.startswith("https://"):
+        return gateway_https_ok(url, timeout=1.5, repo_root=REPO_ROOT)
+    if url.startswith("http://"):
         return False
+    return is_port_open(int(urlparse(url).port or 80))
 
 
 def build_status():
@@ -51,9 +52,7 @@ def build_status():
             {
                 "name": name,
                 "url": url,
-                "up": fetch_url_ok(url)
-                if url.startswith("https://") or url.startswith("http://")
-                else is_port_open(int(urlparse(url).port or 80)),
+                "up": fetch_url_ok(url),
             }
             for name, url in SERVICES
         ],
@@ -83,7 +82,7 @@ def render_html(status):
 <body>
   <div class="card">
     <h1>Agent Connectors</h1>
-    <p>Local service status page served by <code>mvp-factory-control</code>.</p>
+    <p>Local service status (all checks use <strong>HTTPS</strong> via the gateway at <code>127.0.0.1:{_GW_PORT}</code>).</p>
     <ul>
       {''.join(rows)}
     </ul>
@@ -123,5 +122,5 @@ class ReusableTCPServer(socketserver.TCPServer):
 if __name__ == "__main__":
     os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     with ReusableTCPServer(("127.0.0.1", PORT), Handler) as httpd:
-        print(f"AgentConnector compatibility server listening on http://127.0.0.1:{PORT}")
+        print(f"AgentConnector compatibility server listening on http://127.0.0.1:{PORT} (status UI; probes use HTTPS gateway)")
         httpd.serve_forever()

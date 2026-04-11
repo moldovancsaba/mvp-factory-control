@@ -50,10 +50,13 @@ HTTPS_GATEWAY_PORT = int(os.environ.get("MVP_HTTPS_GATEWAY_PORT", "3443"))
 os.environ["MVP_HTTPS_GATEWAY_PORT"] = str(HTTPS_GATEWAY_PORT)
 HTTPS_GATEWAY_DIR = os.path.join(REPO_ROOT, "scripts", "https-gateway")
 HTTPS_GATEWAY_PY = os.path.join(HTTPS_GATEWAY_DIR, "server.py")
-# Browser URL for Paperclip: SPA uses root-relative /api/* — only works at origin / (not under /dashboard/).
+# Paperclip dev is started with PAPERCLIP_PUBLIC_BASE_PATH=/dashboard; prefer HTTPS gateway URL.
 DASHBOARD_BROWSER_URL = (
-    os.environ.get("MVP_FACTORY_CONTROL_DASHBOARD_BROWSER_URL", "http://127.0.0.1:3100/").strip()
-    or "http://127.0.0.1:3100/"
+    os.environ.get(
+        "MVP_FACTORY_CONTROL_DASHBOARD_BROWSER_URL",
+        f"https://127.0.0.1:{HTTPS_GATEWAY_PORT}/dashboard/",
+    ).strip()
+    or f"https://127.0.0.1:{HTTPS_GATEWAY_PORT}/dashboard/"
 )
 RUNTIME_STATE_DIR = os.path.join(REPO_ROOT, ".mvp-factory-control")
 APP_SETTINGS_PATH = os.path.join(RUNTIME_STATE_DIR, "settings.json")
@@ -61,6 +64,19 @@ CONTROL_PANEL_SETTINGS_PATH = os.path.join(RUNTIME_STATE_DIR, "control-panel-set
 TLS_DIR = os.path.join(RUNTIME_STATE_DIR, "tls")
 TLS_CERT_PATH = os.path.join(TLS_DIR, "localhost-cert.pem")
 PYTHON_CMD = sys.executable
+
+
+def ensure_loopback_tls_material():
+    """Create ``localhost-cert.pem`` / key under ``.mvp-factory-control/tls`` if missing."""
+    try:
+        scripts_dir = os.path.join(REPO_ROOT, "scripts")
+        if scripts_dir not in sys.path:
+            sys.path.insert(0, scripts_dir)
+        from local_tls import ensure_loopback_certificate
+
+        ensure_loopback_certificate(REPO_ROOT)
+    except Exception as exc:
+        print(f"Warning: ensure_loopback_tls_material failed: {exc}")
 
 
 def load_json_file(path, default):
@@ -74,6 +90,25 @@ def load_json_file(path, default):
         return default
 
 
+def default_solutions_flags():
+    return {
+        "paperclip": True,
+        "openCode": True,
+        "ollama": True,
+        "scrumMaster": True,
+        "agentConnector": True,
+        "checklistSync": True,
+    }
+
+
+_CONTROL_PANEL_PATH_KEYS = (
+    "sharedRoot",
+    "paperclipRoot",
+    "checklistRoot",
+    "checklistEnvPath",
+)
+
+
 def load_control_panel_settings():
     sibling_root = os.path.dirname(REPO_ROOT)
     defaults = {
@@ -84,16 +119,50 @@ def load_control_panel_settings():
     }
     stored = load_json_file(CONTROL_PANEL_SETTINGS_PATH, {})
     if not isinstance(stored, dict):
-        return defaults
+        merged = defaults.copy()
+        merged["solutions"] = default_solutions_flags()
+        return merged
     merged = defaults.copy()
-    for key in defaults:
+    for key in _CONTROL_PANEL_PATH_KEYS:
         value = stored.get(key)
         if isinstance(value, str) and value.strip():
             merged[key] = os.path.abspath(os.path.expanduser(value.strip()))
+    solutions = default_solutions_flags()
+    sol_raw = stored.get("solutions")
+    if isinstance(sol_raw, dict):
+        for k in solutions:
+            if k in sol_raw and isinstance(sol_raw[k], bool):
+                solutions[k] = sol_raw[k]
+    merged["solutions"] = solutions
     return merged
 
 
 CONTROL_PANEL_SETTINGS = load_control_panel_settings()
+
+
+def reload_control_panel_settings():
+    global CONTROL_PANEL_SETTINGS
+    CONTROL_PANEL_SETTINGS = load_control_panel_settings()
+
+
+SERVICE_SOLUTION_KEY = {
+    "Paperclip": "paperclip",
+    "OpenCode": "openCode",
+    "Ollama": "ollama",
+    "ScrumMaster": "scrumMaster",
+    "AgentConnector": "agentConnector",
+    "ChecklistSync": "checklistSync",
+}
+
+
+def is_solution_enabled(service_name):
+    sol = CONTROL_PANEL_SETTINGS.get("solutions")
+    if not isinstance(sol, dict):
+        return True
+    key = SERVICE_SOLUTION_KEY.get(service_name)
+    if not key:
+        return True
+    return bool(sol.get(key, True))
 os.environ.setdefault("MVP_FACTORY_SHARED_ROOT", CONTROL_PANEL_SETTINGS["sharedRoot"])
 os.environ.setdefault("CHECKLIST_ENV_PATH", CONTROL_PANEL_SETTINGS["checklistEnvPath"])
 PAPERCLIP_ROOT = CONTROL_PANEL_SETTINGS["paperclipRoot"]
@@ -172,6 +241,10 @@ SERVICES = {
         "port": 3100,
         "cwd": PAPERCLIP_ROOT,
         "cmd": ["/opt/homebrew/bin/pnpm", "dev"],
+        "env": {
+            "PAPERCLIP_PUBLIC_BASE_PATH": "/dashboard",
+            "PAPERCLIP_PUBLIC_URL": f"https://127.0.0.1:{HTTPS_GATEWAY_PORT}/dashboard",
+        },
     },
     "OpenCode": {
         "port": 18788,
@@ -223,6 +296,51 @@ SERVICES = {
             "CHECKLIST_RESEARCH_MAX_QUERIES": "2",
             "CHECKLIST_RESEARCH_MAX_RESULTS": "3",
             "CHECKLIST_RESEARCH_MAX_FETCHES": "3",
+            "CHECKLIST_POLL_INTERVAL_MS": str(
+                int(CONTROL_PANEL_SETTINGS.get("checklistPollIntervalSeconds", 300)) * 1000
+            ),
+            "CHECKLIST_FLASHCARD_REVISIT_INTERVAL_MINUTES": str(
+                CONTROL_PANEL_SETTINGS.get("checklistFlashcardRevisitMinutes", 15)
+            ),
+            "CHECKLIST_FLASHCARD_REVISIT_BATCH_SIZE": str(
+                CONTROL_PANEL_SETTINGS.get("checklistFlashcardRevisitBatchSize", 5)
+            ),
+            "CHECKLIST_TASK_REVISIT_INTERVAL_MINUTES": str(
+                CONTROL_PANEL_SETTINGS.get("checklistTaskRevisitMinutes", 30)
+            ),
+            "CHECKLIST_TASK_REVISIT_BATCH_SIZE": str(
+                CONTROL_PANEL_SETTINGS.get("checklistTaskRevisitBatchSize", 2)
+            ),
+            "CHECKLIST_FEEDBACK_REPLAY_INTERVAL_MINUTES": str(
+                CONTROL_PANEL_SETTINGS.get("checklistFeedbackReplayMinutes", 30)
+            ),
+            "CHECKLIST_FEEDBACK_REPLAY_BATCH_SIZE": str(
+                CONTROL_PANEL_SETTINGS.get("checklistFeedbackReplayBatchSize", 2)
+            ),
+            "CHECKLIST_HASHTAG_MAINTENANCE_HOURS": str(
+                CONTROL_PANEL_SETTINGS.get("checklistHashtagMaintenanceHours", 24)
+            ),
+            "CHECKLIST_HASHTAG_MAINTENANCE_BATCH_SIZE": str(
+                CONTROL_PANEL_SETTINGS.get("checklistHashtagMaintenanceBatchSize", 1)
+            ),
+            "CHECKLIST_CLEANUP_INTERVAL_HOURS": str(
+                CONTROL_PANEL_SETTINGS.get("checklistCleanupHours", 24)
+            ),
+            "CHECKLIST_CLEANUP_BATCH_SIZE": str(
+                CONTROL_PANEL_SETTINGS.get("checklistCleanupBatchSize", 25)
+            ),
+            "CHECKLIST_TASK_MIN_ICE_SCORE": str(
+                CONTROL_PANEL_SETTINGS.get("checklistTaskMinIce", 100)
+            ),
+            "CHECKLIST_FLASHCARD_MIN_CONFIDENCE": str(
+                CONTROL_PANEL_SETTINGS.get("checklistFlashcardMinConfidence", 60)
+            ),
+            "CHECKLIST_FLASHCARD_MIN_IMPACT": str(
+                CONTROL_PANEL_SETTINGS.get("checklistFlashcardMinImpact", 40)
+            ),
+            "CHECKLIST_FLASHCARD_MIN_WEIGHT": str(
+                CONTROL_PANEL_SETTINGS.get("checklistFlashcardMinWeight", 40)
+            ),
             "CHECKLIST_FACTCHECK_MIN_CITATIONS": "2",
             "CHECKLIST_FACTCHECK_MIN_DOMAINS": "2",
             "NEON_DB": os.environ.get("NEON_DB", os.environ.get("DATABASE_URL", "")),
@@ -241,20 +359,31 @@ class ControlApp(rumps.App):
             "🐳 Docker Infrastructure: Checking...", callback=self.toggle_infrastructure
         )
         self.cli_status_item = rumps.MenuItem("🤖 Agent CLIs: Checking...")
+        # Menu labels spell out HTTPS entrypoints (gateway); upstreams stay HTTP on loopback only.
+        _gw = f"https://127.0.0.1:{HTTPS_GATEWAY_PORT}"
         self.dashboard_link = rumps.MenuItem(
-            "🌐 Open Dashboard (Paperclip)", callback=self.open_dashboard
+            f"🌐 Paperclip · {_gw}/dashboard/",
+            callback=self.open_dashboard,
         )
         self.docs_link = rumps.MenuItem(
-            "📚 Open Documentation", callback=self.open_docs
+            "📚 Documentation · local WIKI (file)",
+            callback=self.open_docs,
         )
         self.variables_link = rumps.MenuItem(
-            "🔑 Open Variables", callback=self.open_variables
+            f"🔑 Env variables · {_gw}/variables/",
+            callback=self.open_variables,
         )
         self.settings_link = rumps.MenuItem(
-            "⚙️ Open Settings", callback=self.open_settings
+            f"⚙️ Settings · {_gw}/settings/",
+            callback=self.open_settings,
+        )
+        self.checklist_settings_link = rumps.MenuItem(
+            f"🧠 Checklist settings · {_gw}/settings/#checklist-settings",
+            callback=self.open_checklist_settings,
         )
         self.connector_link = rumps.MenuItem(
-            "🤖 Open Agent Connectors", callback=self.open_connectors
+            f"🤖 Connectors · {_gw}/connectors/",
+            callback=self.open_connectors,
         )
         self.update_link = rumps.MenuItem(
             "🔄 Check for Updates", callback=self.check_updates
@@ -268,6 +397,7 @@ class ControlApp(rumps.App):
             self.docs_link,
             self.variables_link,
             self.settings_link,
+            self.checklist_settings_link,
             self.connector_link,
             self.update_link,
             None,
@@ -285,7 +415,7 @@ class ControlApp(rumps.App):
         self.menu.add(None)  # Separator
         self.menu.add(rumps.MenuItem("Restart All", callback=self.restart_all))
         self.menu.add(None)  # Separator
-        self.menu.add(rumps.MenuItem("v1.4.0-sovereign"))
+        self.menu.add(rumps.MenuItem("v1.4.1-sovereign"))
 
         # Initial status check before starting timer
         self.check_status()
@@ -294,6 +424,7 @@ class ControlApp(rumps.App):
         self.timer = rumps.Timer(self.check_status, 10)
         self.timer.start()
 
+        ensure_loopback_tls_material()
         # Keep the local HTTPS gateway available for browser entrypoints.
         self.ensure_https_gateway_server()
 
@@ -301,14 +432,18 @@ class ControlApp(rumps.App):
         rumps.notification(
             "Factory Control",
             "Initializing Core...",
-            "Automatic bootstrap of Ollama, Checklist worker, and core local services.",
+            "Automatic bootstrap of enabled local services (see Factory Settings).",
         )
-        self.start_service("Ollama")
-        self.start_service("Paperclip")
-        self.start_service("OpenCode")
-        self.start_service("ScrumMaster")
-        self.start_service("AgentConnector")
-        self.start_service("ChecklistSync")
+        for _name in (
+            "Ollama",
+            "Paperclip",
+            "OpenCode",
+            "ScrumMaster",
+            "AgentConnector",
+            "ChecklistSync",
+        ):
+            if is_solution_enabled(_name):
+                self.start_service(_name)
 
     def is_port_open(self, port):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -367,6 +502,7 @@ class ControlApp(rumps.App):
             return False
 
     def check_status(self, _=None):
+        reload_control_panel_settings()
         statuses = []
         daemon_up = self.is_daemon_running()
         infra_emoji = "🟢" if daemon_up else "🔴"
@@ -378,6 +514,7 @@ class ControlApp(rumps.App):
 
         for name, config in SERVICES.items():
             try:
+                enabled = is_solution_enabled(name)
                 running = False
                 infra_failure = False
                 if config.get("is_docker"):
@@ -389,14 +526,24 @@ class ControlApp(rumps.App):
                 else:
                     running = self.is_port_open(config["port"])
 
-                status_emoji = "🟢" if running else ("⚠️" if infra_failure else "🔴")
+                if not enabled and not running:
+                    status_emoji = "⏸"
+                elif running:
+                    status_emoji = "🟢"
+                elif infra_failure:
+                    status_emoji = "⚠️"
+                else:
+                    status_emoji = "🔴"
                 statuses.append(status_emoji)
 
                 # Update menu item label correctly through the dictionary
                 item_data = self.menu_items.get(name)
                 if item_data:
                     action = "Stop" if running else "Start"
-                    new_title = f"{status_emoji} {action} {name}"
+                    if not enabled and not running:
+                        new_title = f"⏸ {action} {name} (off)"
+                    else:
+                        new_title = f"{status_emoji} {action} {name}"
                     old_title = item_data["current_title"]
 
                     if old_title != new_title:
@@ -408,7 +555,7 @@ class ControlApp(rumps.App):
                         item_data["current_title"] = new_title
 
                     # --- WATCHDOG LOGIC ---
-                    if not running and config.get("auto_restart"):
+                    if enabled and not running and config.get("auto_restart"):
                         now = time.time()
                         hist = self.restart_history.get(name, {"last_attempt": 0, "count": 0})
                         
@@ -434,6 +581,17 @@ class ControlApp(rumps.App):
         )
 
     def open_dashboard(self, _):
+        reload_control_panel_settings()
+        if not is_solution_enabled("Paperclip"):
+            rumps.alert(
+                title="Paperclip disabled",
+                message=(
+                    "Paperclip is turned off in Factory Settings.\n\n"
+                    f"Open https://127.0.0.1:{HTTPS_GATEWAY_PORT}/settings/ and enable Paperclip, "
+                    "then wait a few seconds or start it from the menu."
+                ),
+            )
+            return
         cfg = SERVICES["Paperclip"]
         if not self.is_port_open(cfg["port"]):
             self.start_service("Paperclip")
@@ -441,18 +599,21 @@ class ControlApp(rumps.App):
         url = DASHBOARD_BROWSER_URL
         if not url.endswith("/"):
             url = f"{url}/"
-        for _ in range(25):
-            if self.is_port_open(cfg["port"]):
+        for _ in range(50):
+            if (
+                self.is_port_open(cfg["port"])
+                and self.is_port_open(HTTPS_GATEWAY_PORT)
+            ):
                 webbrowser.open(url)
                 return
             time.sleep(0.15)
         rumps.alert(
             title="Dashboard",
             message=(
-                f"Could not reach Paperclip on port {cfg['port']}.\n\n"
-                f"Browser URL is {DASHBOARD_BROWSER_URL} (override with "
-                "MVP_FACTORY_CONTROL_DASHBOARD_BROWSER_URL).\n"
-                f"TLS health checks still use https://127.0.0.1:{HTTPS_GATEWAY_PORT}/dashboard/api/health."
+                f"Could not reach Paperclip on port {cfg['port']} and/or the HTTPS gateway on port {HTTPS_GATEWAY_PORT}.\n\n"
+                f"Browser URL (HTTPS only): {DASHBOARD_BROWSER_URL}\n"
+                "(override with MVP_FACTORY_CONTROL_DASHBOARD_BROWSER_URL).\n\n"
+                "If the gateway failed to start, see /tmp/mvp-https-gateway.log"
             ),
         )
 
@@ -486,6 +647,7 @@ class ControlApp(rumps.App):
         log_file.flush()
         env = os.environ.copy()
         env["MVP_ENV_UI_PORT"] = str(ENV_VARIABLES_PORT)
+        env["LOCAL_TLS_CERT_PATH"] = TLS_CERT_PATH
         try:
             subprocess.Popen(
                 [py, ENV_SERVER_PY],
@@ -499,6 +661,7 @@ class ControlApp(rumps.App):
             print(f"Failed to start env-variables server: {e}")
 
     def ensure_https_gateway_server(self):
+        ensure_loopback_tls_material()
         if self.is_port_open(HTTPS_GATEWAY_PORT):
             return
         if not os.path.isfile(HTTPS_GATEWAY_PY):
@@ -583,6 +746,7 @@ class ControlApp(rumps.App):
         log_file.flush()
         env = os.environ.copy()
         env["MVP_SETTINGS_PANEL_PORT"] = str(SETTINGS_PANEL_PORT)
+        env["LOCAL_TLS_CERT_PATH"] = TLS_CERT_PATH
         try:
             subprocess.Popen(
                 [py, SETTINGS_PANEL_PY],
@@ -614,7 +778,38 @@ class ControlApp(rumps.App):
             % SETTINGS_PANEL_PORT,
         )
 
+    def open_checklist_settings(self, _):
+        self.ensure_settings_panel_server()
+        self.ensure_https_gateway_server()
+        for _ in range(25):
+            if self.is_port_open(SETTINGS_PANEL_PORT) and self.is_port_open(HTTPS_GATEWAY_PORT):
+                webbrowser.open(
+                    f"https://127.0.0.1:{HTTPS_GATEWAY_PORT}/settings/#checklist-settings"
+                )
+                return
+            time.sleep(0.15)
+        rumps.alert(
+            title="Checklist Settings",
+            message=(
+                "Could not start the local checklist settings panel on port %s.\n\n"
+                "Install dependencies:\n"
+                "  pip3 install -r scripts/env-variables/requirements.txt\n\n"
+                "Log: /tmp/mvp-settings-panel.log"
+            )
+            % SETTINGS_PANEL_PORT,
+        )
+
     def open_connectors(self, _):
+        reload_control_panel_settings()
+        if not is_solution_enabled("AgentConnector"):
+            rumps.alert(
+                title="Agent Connector disabled",
+                message=(
+                    "Agent Connector is turned off in Factory Settings.\n\n"
+                    f"Open https://127.0.0.1:{HTTPS_GATEWAY_PORT}/settings/ to enable it."
+                ),
+            )
+            return
         cfg = SERVICES["AgentConnector"]
         if not self.is_port_open(cfg["port"]):
             self.start_service("AgentConnector")
@@ -733,6 +928,19 @@ class ControlApp(rumps.App):
         else:
             running = self.is_port_open(config["port"])
 
+        reload_control_panel_settings()
+        if not running and not is_solution_enabled(name):
+            rumps.alert(
+                title=f"{name} off",
+                message=(
+                    f"{name} is disabled in Factory Settings "
+                    f"(https://127.0.0.1:{HTTPS_GATEWAY_PORT}/settings/). "
+                    "Enable it there, then try again."
+                ),
+            )
+            self.check_status()
+            return
+
         if running:
             self.stop_service(name)
         else:
@@ -741,6 +949,10 @@ class ControlApp(rumps.App):
         self.check_status()
 
     def start_service(self, name):
+        reload_control_panel_settings()
+        if not is_solution_enabled(name):
+            print(f"Skipping {name}: disabled in Factory Settings (solutions).")
+            return
         config = SERVICES[name]
         cwd = config.get("cwd", REPO_ROOT)
 
