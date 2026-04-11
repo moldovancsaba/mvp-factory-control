@@ -287,6 +287,8 @@ SERVICES = {
         "port": 10005,
         "cwd": os.path.join(CONTROL_PANEL_SETTINGS["checklistRoot"], "scripts"),
         "cmd": ["/opt/homebrew/bin/node", "sync.js"],
+        # Manage the worker by process signature as well as port so we can replace
+        # stale launches that survived with outdated env/settings.
         "proc_pattern": "node sync.js",
         "env": {
             "PORT": "10005",
@@ -532,6 +534,8 @@ class ControlApp(rumps.App):
                     if mode == "infrastructure_down":
                         infra_failure = True
                 elif "proc_pattern" in config:
+                    # For long-running local workers, process identity is more reliable
+                    # than "port open" because the port can be held by a stale launch.
                     running = self.is_process_running(config["proc_pattern"])
                 else:
                     running = self.is_port_open(config["port"])
@@ -1071,6 +1075,8 @@ class ControlApp(rumps.App):
                 env=os.environ,
             )
         elif "proc_pattern" in SERVICES[name]:
+            # Kill matching worker processes directly so a fresh launch inherits the
+            # latest env/settings instead of reusing an orphan on the same port.
             for pid in self.find_process_pids(SERVICES[name]["proc_pattern"]):
                 try:
                     os.kill(pid, signal.SIGTERM)
