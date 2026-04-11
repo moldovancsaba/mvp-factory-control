@@ -386,6 +386,10 @@
               <input id="checklistCleanupBatchSize" name="checklistCleanupBatchSize" type="number" min="1" max="250" placeholder="25" />
             </label>
             <label>
+              Ollama timeout (ms)
+              <input id="checklistOllamaTimeoutMs" name="checklistOllamaTimeoutMs" type="number" min="5000" max="600000" placeholder="120000" />
+            </label>
+            <label>
               Minimum task ICE score
               <input id="checklistTaskMinIce" name="checklistTaskMinIce" type="number" min="0" max="1000" placeholder="100" />
             </label>
@@ -587,6 +591,7 @@
       setValue("checklistHashtagMaintenanceBatchSize", data.control.checklistHashtagMaintenanceBatchSize);
       setValue("checklistCleanupHours", data.control.checklistCleanupHours);
       setValue("checklistCleanupBatchSize", data.control.checklistCleanupBatchSize);
+      setValue("checklistOllamaTimeoutMs", data.control.checklistOllamaTimeoutMs);
       setValue("checklistTaskMinIce", data.control.checklistTaskMinIce);
       setValue("checklistFlashcardMinConfidence", data.control.checklistFlashcardMinConfidence);
       setValue("checklistFlashcardMinImpact", data.control.checklistFlashcardMinImpact);
@@ -617,6 +622,7 @@
         checklistHashtagMaintenanceBatchSize: Number(document.getElementById("checklistHashtagMaintenanceBatchSize").value || 1),
         checklistCleanupHours: Number(document.getElementById("checklistCleanupHours").value || 24),
         checklistCleanupBatchSize: Number(document.getElementById("checklistCleanupBatchSize").value || 25),
+        checklistOllamaTimeoutMs: Number(document.getElementById("checklistOllamaTimeoutMs").value || 120000),
         checklistTaskMinIce: Number(document.getElementById("checklistTaskMinIce").value || 100),
         checklistFlashcardMinConfidence: Number(document.getElementById("checklistFlashcardMinConfidence").value || 60),
         checklistFlashcardMinImpact: Number(document.getElementById("checklistFlashcardMinImpact").value || 40),

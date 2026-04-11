@@ -330,6 +330,9 @@ SERVICES = {
             "CHECKLIST_CLEANUP_BATCH_SIZE": str(
                 CONTROL_PANEL_SETTINGS.get("checklistCleanupBatchSize", 25)
             ),
+            "CHECKLIST_OLLAMA_TIMEOUT_MS": str(
+                CONTROL_PANEL_SETTINGS.get("checklistOllamaTimeoutMs", 120000)
+            ),
             "CHECKLIST_TASK_MIN_ICE_SCORE": str(
                 CONTROL_PANEL_SETTINGS.get("checklistTaskMinIce", 100)
             ),

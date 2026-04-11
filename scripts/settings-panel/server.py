@@ -78,6 +78,7 @@ class SettingsSaveRequest(BaseModel):
     checklistHashtagMaintenanceBatchSize: int = Field(1, ge=1, le=100)
     checklistCleanupHours: int = Field(24, ge=1, le=720)
     checklistCleanupBatchSize: int = Field(25, ge=1, le=250)
+    checklistOllamaTimeoutMs: int = Field(120000, ge=5000, le=600000)
     checklistTaskMinIce: int = Field(100, ge=0, le=1000)
     checklistFlashcardMinConfidence: int = Field(60, ge=1, le=100)
     checklistFlashcardMinImpact: int = Field(40, ge=1, le=100)
@@ -135,6 +136,7 @@ def default_control_settings() -> dict[str, Any]:
         "checklistHashtagMaintenanceBatchSize": 1,
         "checklistCleanupHours": 24,
         "checklistCleanupBatchSize": 25,
+        "checklistOllamaTimeoutMs": 120000,
         "checklistTaskMinIce": 100,
         "checklistFlashcardMinConfidence": 60,
         "checklistFlashcardMinImpact": 40,
@@ -179,6 +181,7 @@ def load_control_settings() -> dict[str, Any]:
         "checklistHashtagMaintenanceBatchSize": (1, 100),
         "checklistCleanupHours": (1, 720),
         "checklistCleanupBatchSize": (1, 250),
+        "checklistOllamaTimeoutMs": (5000, 600000),
         "checklistTaskMinIce": (0, 1000),
         "checklistFlashcardMinConfidence": (1, 100),
         "checklistFlashcardMinImpact": (1, 100),
@@ -329,6 +332,7 @@ def save_settings(body: SettingsSaveRequest) -> dict[str, Any]:
             "checklistHashtagMaintenanceBatchSize",
             "checklistCleanupHours",
             "checklistCleanupBatchSize",
+            "checklistOllamaTimeoutMs",
             "checklistTaskMinIce",
             "checklistFlashcardMinConfidence",
             "checklistFlashcardMinImpact",
@@ -362,6 +366,7 @@ def save_settings(body: SettingsSaveRequest) -> dict[str, Any]:
         "checklistHashtagMaintenanceBatchSize": body.checklistHashtagMaintenanceBatchSize,
         "checklistCleanupHours": body.checklistCleanupHours,
         "checklistCleanupBatchSize": body.checklistCleanupBatchSize,
+        "checklistOllamaTimeoutMs": body.checklistOllamaTimeoutMs,
         "checklistTaskMinIce": body.checklistTaskMinIce,
         "checklistFlashcardMinConfidence": body.checklistFlashcardMinConfidence,
         "checklistFlashcardMinImpact": body.checklistFlashcardMinImpact,
