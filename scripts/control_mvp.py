@@ -427,6 +427,8 @@ class ControlApp(rumps.App):
         ensure_loopback_tls_material()
         # Keep the local HTTPS gateway available for browser entrypoints.
         self.ensure_https_gateway_server()
+        self.ensure_env_variables_server()
+        self.ensure_settings_panel_server()
 
         # Auto-start core services on launch
         rumps.notification(
