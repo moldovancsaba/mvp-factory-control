@@ -67,17 +67,17 @@ class SettingsSaveRequest(BaseModel):
     paperclipRoot: str = Field(..., min_length=1)
     checklistRoot: str = Field(..., min_length=1)
     checklistEnvPath: str = Field(..., min_length=1)
-    checklistPollIntervalSeconds: int = Field(300, ge=30, le=3600)
-    checklistFlashcardRevisitMinutes: int = Field(15, ge=5, le=1440)
-    checklistFlashcardRevisitBatchSize: int = Field(5, ge=1, le=100)
-    checklistTaskRevisitMinutes: int = Field(30, ge=5, le=1440)
-    checklistTaskRevisitBatchSize: int = Field(2, ge=1, le=100)
-    checklistFeedbackReplayMinutes: int = Field(30, ge=5, le=1440)
-    checklistFeedbackReplayBatchSize: int = Field(2, ge=1, le=100)
-    checklistHashtagMaintenanceHours: int = Field(24, ge=1, le=720)
+    checklistPollIntervalSeconds: int = Field(7200, ge=30, le=172800)
+    checklistFlashcardRevisitMinutes: int = Field(0, ge=0, le=1440)
+    checklistFlashcardRevisitBatchSize: int = Field(1, ge=1, le=100)
+    checklistTaskRevisitMinutes: int = Field(0, ge=0, le=1440)
+    checklistTaskRevisitBatchSize: int = Field(1, ge=1, le=100)
+    checklistFeedbackReplayMinutes: int = Field(0, ge=0, le=1440)
+    checklistFeedbackReplayBatchSize: int = Field(1, ge=1, le=100)
+    checklistHashtagMaintenanceHours: int = Field(0, ge=0, le=720)
     checklistHashtagMaintenanceBatchSize: int = Field(1, ge=1, le=100)
-    checklistCleanupHours: int = Field(24, ge=1, le=720)
-    checklistCleanupBatchSize: int = Field(25, ge=1, le=250)
+    checklistCleanupHours: int = Field(0, ge=0, le=720)
+    checklistCleanupBatchSize: int = Field(1, ge=1, le=250)
     checklistOllamaTimeoutMs: int = Field(120000, ge=5000, le=600000)
     checklistTaskMinIce: int = Field(100, ge=0, le=1000)
     checklistFlashcardMinConfidence: int = Field(60, ge=1, le=100)
@@ -125,17 +125,17 @@ def default_control_settings() -> dict[str, Any]:
         "paperclipRoot": normalize_path(os.path.join(shared_root, "paperclip")),
         "checklistRoot": normalize_path(os.path.join(shared_root, "checklist")),
         "checklistEnvPath": normalize_path(os.path.join(shared_root, "checklist", ".env")),
-        "checklistPollIntervalSeconds": 300,
-        "checklistFlashcardRevisitMinutes": 15,
-        "checklistFlashcardRevisitBatchSize": 5,
-        "checklistTaskRevisitMinutes": 30,
-        "checklistTaskRevisitBatchSize": 2,
-        "checklistFeedbackReplayMinutes": 30,
-        "checklistFeedbackReplayBatchSize": 2,
-        "checklistHashtagMaintenanceHours": 24,
+        "checklistPollIntervalSeconds": 7200,
+        "checklistFlashcardRevisitMinutes": 0,
+        "checklistFlashcardRevisitBatchSize": 1,
+        "checklistTaskRevisitMinutes": 0,
+        "checklistTaskRevisitBatchSize": 1,
+        "checklistFeedbackReplayMinutes": 0,
+        "checklistFeedbackReplayBatchSize": 1,
+        "checklistHashtagMaintenanceHours": 0,
         "checklistHashtagMaintenanceBatchSize": 1,
-        "checklistCleanupHours": 24,
-        "checklistCleanupBatchSize": 25,
+        "checklistCleanupHours": 0,
+        "checklistCleanupBatchSize": 1,
         "checklistOllamaTimeoutMs": 120000,
         "checklistTaskMinIce": 100,
         "checklistFlashcardMinConfidence": 60,
@@ -170,16 +170,16 @@ def load_control_settings() -> dict[str, Any]:
         if value:
             settings[key] = normalize_path(value)
     numeric_settings = {
-        "checklistPollIntervalSeconds": (30, 3600),
-        "checklistFlashcardRevisitMinutes": (5, 1440),
+        "checklistPollIntervalSeconds": (30, 172800),
+        "checklistFlashcardRevisitMinutes": (0, 1440),
         "checklistFlashcardRevisitBatchSize": (1, 100),
-        "checklistTaskRevisitMinutes": (5, 1440),
+        "checklistTaskRevisitMinutes": (0, 1440),
         "checklistTaskRevisitBatchSize": (1, 100),
-        "checklistFeedbackReplayMinutes": (5, 1440),
+        "checklistFeedbackReplayMinutes": (0, 1440),
         "checklistFeedbackReplayBatchSize": (1, 100),
-        "checklistHashtagMaintenanceHours": (1, 720),
+        "checklistHashtagMaintenanceHours": (0, 720),
         "checklistHashtagMaintenanceBatchSize": (1, 100),
-        "checklistCleanupHours": (1, 720),
+        "checklistCleanupHours": (0, 720),
         "checklistCleanupBatchSize": (1, 250),
         "checklistOllamaTimeoutMs": (5000, 600000),
         "checklistTaskMinIce": (0, 1000),

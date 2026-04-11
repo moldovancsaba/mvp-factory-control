@@ -337,53 +337,53 @@
           <div class="section-anchor" id="checklist-settings"></div>
           <div class="section-heading">Checklist Settings</div>
           <p class="section-copy">
-            Control how often ChecklistSync polls, revisits cards, replays feedback, maintains hashtags, and runs maintenance work. These values apply to the local AI worker after restart.
+            ChecklistSync now runs as a serial company cycle. The poll interval is the company-cycle cooldown. The other timing values are per-step pauses inside that cycle, and <code>0</code> means continue immediately to keep delivery smooth.
           </p>
 
           <div class="two-col">
             <label>
-              Poll interval (seconds)
-              <input id="checklistPollIntervalSeconds" name="checklistPollIntervalSeconds" type="number" min="30" max="3600" placeholder="300" />
+              Company cycle cooldown (seconds)
+              <input id="checklistPollIntervalSeconds" name="checklistPollIntervalSeconds" type="number" min="30" max="172800" placeholder="7200" />
             </label>
             <label>
-              Flashcard revisit interval (minutes)
-              <input id="checklistFlashcardRevisitMinutes" name="checklistFlashcardRevisitMinutes" type="number" min="5" max="1440" placeholder="15" />
+              Flashcard step pause (minutes, 0 = immediate)
+              <input id="checklistFlashcardRevisitMinutes" name="checklistFlashcardRevisitMinutes" type="number" min="0" max="1440" placeholder="0" />
             </label>
             <label>
               Flashcard revisit batch size
-              <input id="checklistFlashcardRevisitBatchSize" name="checklistFlashcardRevisitBatchSize" type="number" min="1" max="100" placeholder="5" />
+              <input id="checklistFlashcardRevisitBatchSize" name="checklistFlashcardRevisitBatchSize" type="number" min="1" max="100" placeholder="1" />
             </label>
             <label>
-              Task revisit interval (minutes)
-              <input id="checklistTaskRevisitMinutes" name="checklistTaskRevisitMinutes" type="number" min="5" max="1440" placeholder="30" />
+              Task step pause (minutes, 0 = immediate)
+              <input id="checklistTaskRevisitMinutes" name="checklistTaskRevisitMinutes" type="number" min="0" max="1440" placeholder="0" />
             </label>
             <label>
               Task revisit batch size
-              <input id="checklistTaskRevisitBatchSize" name="checklistTaskRevisitBatchSize" type="number" min="1" max="100" placeholder="2" />
+              <input id="checklistTaskRevisitBatchSize" name="checklistTaskRevisitBatchSize" type="number" min="1" max="100" placeholder="1" />
             </label>
             <label>
-              Feedback replay interval (minutes)
-              <input id="checklistFeedbackReplayMinutes" name="checklistFeedbackReplayMinutes" type="number" min="5" max="1440" placeholder="30" />
+              Feedback step pause (minutes, 0 = immediate)
+              <input id="checklistFeedbackReplayMinutes" name="checklistFeedbackReplayMinutes" type="number" min="0" max="1440" placeholder="0" />
             </label>
             <label>
               Feedback replay batch size
-              <input id="checklistFeedbackReplayBatchSize" name="checklistFeedbackReplayBatchSize" type="number" min="1" max="100" placeholder="2" />
+              <input id="checklistFeedbackReplayBatchSize" name="checklistFeedbackReplayBatchSize" type="number" min="1" max="100" placeholder="1" />
             </label>
             <label>
-              Hashtag maintenance interval (hours)
-              <input id="checklistHashtagMaintenanceHours" name="checklistHashtagMaintenanceHours" type="number" min="1" max="720" placeholder="24" />
+              Hashtag step pause (hours, 0 = immediate)
+              <input id="checklistHashtagMaintenanceHours" name="checklistHashtagMaintenanceHours" type="number" min="0" max="720" placeholder="0" />
             </label>
             <label>
               Hashtag maintenance batch size
               <input id="checklistHashtagMaintenanceBatchSize" name="checklistHashtagMaintenanceBatchSize" type="number" min="1" max="100" placeholder="1" />
             </label>
             <label>
-              Cleanup interval (hours)
-              <input id="checklistCleanupHours" name="checklistCleanupHours" type="number" min="1" max="720" placeholder="24" />
+              Cleanup step pause (hours, 0 = immediate)
+              <input id="checklistCleanupHours" name="checklistCleanupHours" type="number" min="0" max="720" placeholder="0" />
             </label>
             <label>
               Cleanup batch size
-              <input id="checklistCleanupBatchSize" name="checklistCleanupBatchSize" type="number" min="1" max="250" placeholder="25" />
+              <input id="checklistCleanupBatchSize" name="checklistCleanupBatchSize" type="number" min="1" max="250" placeholder="1" />
             </label>
             <label>
               Ollama timeout (ms)
@@ -611,17 +611,17 @@
         paperclipRoot: document.getElementById("paperclipRoot").value.trim(),
         checklistRoot: document.getElementById("checklistRoot").value.trim(),
         checklistEnvPath: document.getElementById("checklistEnvPath").value.trim(),
-        checklistPollIntervalSeconds: Number(document.getElementById("checklistPollIntervalSeconds").value || 300),
-        checklistFlashcardRevisitMinutes: Number(document.getElementById("checklistFlashcardRevisitMinutes").value || 15),
-        checklistFlashcardRevisitBatchSize: Number(document.getElementById("checklistFlashcardRevisitBatchSize").value || 5),
-        checklistTaskRevisitMinutes: Number(document.getElementById("checklistTaskRevisitMinutes").value || 30),
-        checklistTaskRevisitBatchSize: Number(document.getElementById("checklistTaskRevisitBatchSize").value || 2),
-        checklistFeedbackReplayMinutes: Number(document.getElementById("checklistFeedbackReplayMinutes").value || 30),
-        checklistFeedbackReplayBatchSize: Number(document.getElementById("checklistFeedbackReplayBatchSize").value || 2),
-        checklistHashtagMaintenanceHours: Number(document.getElementById("checklistHashtagMaintenanceHours").value || 24),
+        checklistPollIntervalSeconds: Number(document.getElementById("checklistPollIntervalSeconds").value || 7200),
+        checklistFlashcardRevisitMinutes: Number(document.getElementById("checklistFlashcardRevisitMinutes").value || 0),
+        checklistFlashcardRevisitBatchSize: Number(document.getElementById("checklistFlashcardRevisitBatchSize").value || 1),
+        checklistTaskRevisitMinutes: Number(document.getElementById("checklistTaskRevisitMinutes").value || 0),
+        checklistTaskRevisitBatchSize: Number(document.getElementById("checklistTaskRevisitBatchSize").value || 1),
+        checklistFeedbackReplayMinutes: Number(document.getElementById("checklistFeedbackReplayMinutes").value || 0),
+        checklistFeedbackReplayBatchSize: Number(document.getElementById("checklistFeedbackReplayBatchSize").value || 1),
+        checklistHashtagMaintenanceHours: Number(document.getElementById("checklistHashtagMaintenanceHours").value || 0),
         checklistHashtagMaintenanceBatchSize: Number(document.getElementById("checklistHashtagMaintenanceBatchSize").value || 1),
-        checklistCleanupHours: Number(document.getElementById("checklistCleanupHours").value || 24),
-        checklistCleanupBatchSize: Number(document.getElementById("checklistCleanupBatchSize").value || 25),
+        checklistCleanupHours: Number(document.getElementById("checklistCleanupHours").value || 0),
+        checklistCleanupBatchSize: Number(document.getElementById("checklistCleanupBatchSize").value || 1),
         checklistOllamaTimeoutMs: Number(document.getElementById("checklistOllamaTimeoutMs").value || 120000),
         checklistTaskMinIce: Number(document.getElementById("checklistTaskMinIce").value || 100),
         checklistFlashcardMinConfidence: Number(document.getElementById("checklistFlashcardMinConfidence").value || 60),

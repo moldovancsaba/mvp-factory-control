@@ -301,37 +301,37 @@ SERVICES = {
             "CHECKLIST_RESEARCH_MAX_RESULTS": "3",
             "CHECKLIST_RESEARCH_MAX_FETCHES": "3",
             "CHECKLIST_POLL_INTERVAL_MS": str(
-                int(CONTROL_PANEL_SETTINGS.get("checklistPollIntervalSeconds", 300)) * 1000
+                int(CONTROL_PANEL_SETTINGS.get("checklistPollIntervalSeconds", 7200)) * 1000
             ),
             "CHECKLIST_FLASHCARD_REVISIT_INTERVAL_MINUTES": str(
-                CONTROL_PANEL_SETTINGS.get("checklistFlashcardRevisitMinutes", 15)
+                CONTROL_PANEL_SETTINGS.get("checklistFlashcardRevisitMinutes", 0)
             ),
             "CHECKLIST_FLASHCARD_REVISIT_BATCH_SIZE": str(
-                CONTROL_PANEL_SETTINGS.get("checklistFlashcardRevisitBatchSize", 5)
+                CONTROL_PANEL_SETTINGS.get("checklistFlashcardRevisitBatchSize", 1)
             ),
             "CHECKLIST_TASK_REVISIT_INTERVAL_MINUTES": str(
-                CONTROL_PANEL_SETTINGS.get("checklistTaskRevisitMinutes", 30)
+                CONTROL_PANEL_SETTINGS.get("checklistTaskRevisitMinutes", 0)
             ),
             "CHECKLIST_TASK_REVISIT_BATCH_SIZE": str(
-                CONTROL_PANEL_SETTINGS.get("checklistTaskRevisitBatchSize", 2)
+                CONTROL_PANEL_SETTINGS.get("checklistTaskRevisitBatchSize", 1)
             ),
             "CHECKLIST_FEEDBACK_REPLAY_INTERVAL_MINUTES": str(
-                CONTROL_PANEL_SETTINGS.get("checklistFeedbackReplayMinutes", 30)
+                CONTROL_PANEL_SETTINGS.get("checklistFeedbackReplayMinutes", 0)
             ),
             "CHECKLIST_FEEDBACK_REPLAY_BATCH_SIZE": str(
-                CONTROL_PANEL_SETTINGS.get("checklistFeedbackReplayBatchSize", 2)
+                CONTROL_PANEL_SETTINGS.get("checklistFeedbackReplayBatchSize", 1)
             ),
             "CHECKLIST_HASHTAG_MAINTENANCE_HOURS": str(
-                CONTROL_PANEL_SETTINGS.get("checklistHashtagMaintenanceHours", 24)
+                CONTROL_PANEL_SETTINGS.get("checklistHashtagMaintenanceHours", 0)
             ),
             "CHECKLIST_HASHTAG_MAINTENANCE_BATCH_SIZE": str(
                 CONTROL_PANEL_SETTINGS.get("checklistHashtagMaintenanceBatchSize", 1)
             ),
             "CHECKLIST_CLEANUP_INTERVAL_HOURS": str(
-                CONTROL_PANEL_SETTINGS.get("checklistCleanupHours", 24)
+                CONTROL_PANEL_SETTINGS.get("checklistCleanupHours", 0)
             ),
             "CHECKLIST_CLEANUP_BATCH_SIZE": str(
-                CONTROL_PANEL_SETTINGS.get("checklistCleanupBatchSize", 25)
+                CONTROL_PANEL_SETTINGS.get("checklistCleanupBatchSize", 1)
             ),
             "CHECKLIST_OLLAMA_TIMEOUT_MS": str(
                 CONTROL_PANEL_SETTINGS.get("checklistOllamaTimeoutMs", 120000)
