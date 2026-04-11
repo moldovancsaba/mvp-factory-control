@@ -10,9 +10,10 @@ Before running the installer, ensure your macOS system meets these industry stan
 
 - **Homebrew**: Required for package management. [Install here](https://brew.sh/).
 - **Xcode Command Line Tools**: Required for Git and Python runtimes. Run `xcode-select --install` if not already present.
-- **Sibling Repositories**: The Factory Dashboard (`http://localhost:3100`) is served by the `paperclip` repository. 
+- **Sibling Repositories**: The Factory Dashboard (Paperclip) is served from the `paperclip` repository.
     - **Strongly Recommended**: Clone `paperclip` into the same parent folder as `mvp-factory-control`.
     - **Control-Only Mode**: If Paperclip is missing, the Control App will still monitor service health, but the board will be unavailable.
+    - **URLs**: Use **HTTPS only** for Paperclip in the browser: **`https://127.0.0.1:<MVP_HTTPS_GATEWAY_PORT>/dashboard/`** (default **3443**). The Control app starts Paperclip with `PAPERCLIP_PUBLIC_BASE_PATH=/dashboard` and keeps the local TLS gateway running. The gateway uses plain HTTP only on the final hop to `127.0.0.1:3100` inside your machine (Paperclip does not speak TLS on that port).
 
 ## 2. 1-Step Installation
 
@@ -32,7 +33,7 @@ Once the installer finishes:
 2. **24/7/365 Sovereign Watchdog**: The background service is now active.
     - > [!IMPORTANT]
     - > **macOS Permission**: Go to `System Settings` -> `General` -> `Login Items` and ensure **"Control"** is allowed to run in the background.
-3. **Dashboard Health**: If Paperclip is present, visit [http://localhost:3100](http://localhost:3100) to begin delivery.
+3. **Dashboard Health**: Open Paperclip only via **HTTPS** (Control app **Open Dashboard** or `https://127.0.0.1:3443/dashboard/`). Health: `curl --cacert .mvp-factory-control/tls/localhost-cert.pem -fsS https://127.0.0.1:3443/dashboard/api/health`.
 
 ---
 

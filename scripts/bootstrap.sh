@@ -21,7 +21,7 @@ PLIST_SOURCE="$SCRIPT_DIR/$PLIST_NAME"
 # --- Discovery Validation ---
 if [ -z "$PAPERCLIP_DIR" ] || [ ! -d "$PAPERCLIP_DIR" ]; then
   echo -e "\n⚠️  WARNING: Sibling 'paperclip' repository not found."
-  echo "👉 Dashboard features (http://localhost:3100) will be unavailable."
+  echo "👉 Dashboard features (Paperclip via the local HTTPS gateway) will be unavailable."
   echo "👉 To enable the full factory, clone 'paperclip' into the same parent folder as this repo."
   echo -e "--------------------------------------------------------\n"
 fi
@@ -198,14 +198,23 @@ check_port() {
   return 0
 }
 
+GW_PORT="${MVP_HTTPS_GATEWAY_PORT:-3443}"
+
 if [ -n "$PAPERCLIP_DIR" ] && [ -d "$PAPERCLIP_DIR" ] && check_port 3100; then
+  python3 -c "import sys; sys.path.insert(0, '$REPO_ROOT/scripts'); from local_tls import ensure_loopback_certificate; ensure_loopback_certificate('$REPO_ROOT')" 2>/dev/null || true
+  if ! (echo >/dev/tcp/127.0.0.1/"$GW_PORT") &>/dev/null; then
+    echo "Starting local HTTPS gateway on 127.0.0.1:${GW_PORT}..."
+    MVP_HTTPS_GATEWAY_PORT="$GW_PORT" nohup python3 "$REPO_ROOT/scripts/https-gateway/server.py" >>/tmp/mvp-https-gateway.log 2>&1 &
+    disown 2>/dev/null || true
+    sleep 0.5
+  fi
   echo -e "\n✨ FACTORY READY ✨"
   echo "--------------------------------------------------------"
   echo "The MVP Factory is now fully autonomous."
-  echo "👉 Dashboard: http://localhost:3100"
-  echo "👉 Monitoring: macOS Menu Bar icon"
+  echo "👉 Paperclip (HTTPS only): https://127.0.0.1:${GW_PORT}/dashboard/"
+  echo "👉 Monitoring: macOS Menu Bar icon (Control.app also keeps the gateway running)"
   echo "--------------------------------------------------------"
-  open "http://localhost:3100"
+  open "https://127.0.0.1:${GW_PORT}/dashboard/"
 else
   echo -e "\n✨ CONTROL READY (LITE) ✨"
   echo "--------------------------------------------------------"

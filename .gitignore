@@ -17,3 +17,4 @@ apps/mvp-factory-control/.mvp-factory-control/
 apps/mvp-factory-control/output/
 apps/mvp-factory-control/test-results/
 apps/mvp-factory-control/tsconfig.tsbuildinfo
+.srl

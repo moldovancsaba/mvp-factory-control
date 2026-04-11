@@ -102,7 +102,8 @@ export async function bootstrapMVPFactoryControlProjectAction() {
 
   await upsertProjectSetting({
     projectName: "mvp-factory-control",
-    projectUrl: "http://localhost:3007",
+    projectUrl:
+      (process.env.NEXTAUTH_URL && process.env.NEXTAUTH_URL.replace(/\/$/, "")) || "http://localhost:3007",
     projectGithub: `https://github.com/${repoOwner}/${repoName}.git`,
     vars: [
       { key: "APP_PATH", value: path.join(repoRoot, "apps", "mvp-factory-control") },

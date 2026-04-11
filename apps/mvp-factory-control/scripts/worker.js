@@ -50,7 +50,9 @@ const RAW_AGENT_KEY =
 const POLL_MS = Number(process.env.MVP_FACTORY_CONTROL_WORKER_POLL_MS || "1200");
 const WORKER_MODEL = process.env.MVP_FACTORY_CONTROL_WORKER_MODEL || null;
 const WORKER_HOST = process.env.MVP_FACTORY_CONTROL_WORKER_HOST || os.hostname();
-const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || "http://127.0.0.1:11434";
+const _gw = process.env.MVP_HTTPS_GATEWAY_PORT || "3443";
+const OLLAMA_BASE_URL =
+  process.env.OLLAMA_BASE_URL || `https://127.0.0.1:${_gw}/ollama`;
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL || "gemma4:latest";
 const OPENAI_BASE_URL = process.env.OPENAI_BASE_URL || "https://api.openai.com/v1";
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";

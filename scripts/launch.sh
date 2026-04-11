@@ -20,10 +20,16 @@ echo "ℹ️  Refreshing Sovereign Watchdog..."
 PLIST_NAME="com.moldovancsaba.control-mvp.plist"
 PLIST_DEST="$HOME/Library/LaunchAgents/$PLIST_NAME"
 
-# Copy latest plist
+# Copy latest plist and pin every path to this checkout (works from any clone location).
 cp "$REPO_ROOT/scripts/$PLIST_NAME" "$PLIST_DEST"
-# Fix paths in the copied plist
 sed -i '' "s|/Users/moldovancsaba/Projects/mvp-factory-control|$REPO_ROOT|g" "$PLIST_DEST"
+sed -i '' "s|/Users/Shared/Projects/mvp-factory-control|$REPO_ROOT|g" "$PLIST_DEST"
+PY="$REPO_ROOT/.venv/bin/python3"
+if [ -x "$PY" ]; then
+  /usr/libexec/PlistBuddy -c "Set :ProgramArguments:0 $PY" "$PLIST_DEST"
+  /usr/libexec/PlistBuddy -c "Set :ProgramArguments:1 $REPO_ROOT/scripts/control_mvp.py" "$PLIST_DEST"
+  /usr/libexec/PlistBuddy -c "Set :WorkingDirectory $REPO_ROOT" "$PLIST_DEST"
+fi
 
 # Force a restart of the service via launchctl
 # bootout might fail if not loaded, hence '|| true'

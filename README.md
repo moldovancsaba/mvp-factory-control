@@ -58,7 +58,7 @@ bash scripts/bootstrap.sh
 
 - **Apple Silicon (M1/M2/M3)**: Highly recommended for LLM performance.
 - **macOS 13+**: For background service persistence.
-- **Sibling Repos**: Clone `paperclip` next to this folder for full dashboard access.
+- **Sibling Repos**: Clone `paperclip` next to this folder for full dashboard access. With the Control tray app, Paperclip is started under **`PAPERCLIP_PUBLIC_BASE_PATH=/dashboard`** and the browser opens **`https://127.0.0.1:3443/dashboard/`** (local HTTPS gateway on `MVP_HTTPS_GATEWAY_PORT`, default **3443**). See [docs/SETUP.md](docs/SETUP.md) for TLS gateway layout (no browser `http://` to Paperclip).
 
 ## System Boundary
 

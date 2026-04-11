@@ -204,7 +204,8 @@ export async function resolveRuntimeConfigForTask(params: {
     runtime,
     endpoint:
       runtime === "LOCAL"
-        ? normalizeText(process.env.OLLAMA_BASE_URL) || "http://127.0.0.1:11434"
+        ? normalizeText(process.env.OLLAMA_BASE_URL) ||
+          `https://127.0.0.1:${normalizeText(process.env.MVP_HTTPS_GATEWAY_PORT) || "3443"}/ollama`
         : normalizeText(process.env.OPENAI_BASE_URL) || "https://api.openai.com/v1",
     model:
       runtime === "LOCAL"
@@ -219,7 +220,12 @@ export async function resolveRuntimeConfigForTask(params: {
     ref: "process.env",
     appliedKeys:
       runtime === "LOCAL"
-        ? ["OLLAMA_BASE_URL", "OLLAMA_MODEL", "MVP_FACTORY_CONTROL_WORKER_REQUEST_TIMEOUT_MS"]
+        ? [
+            "OLLAMA_BASE_URL",
+            "OLLAMA_MODEL",
+            "MVP_HTTPS_GATEWAY_PORT",
+            "MVP_FACTORY_CONTROL_WORKER_REQUEST_TIMEOUT_MS"
+          ]
         : [
             "OPENAI_BASE_URL",
             "OPENAI_MODEL",

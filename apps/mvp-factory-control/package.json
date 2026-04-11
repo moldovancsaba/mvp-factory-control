@@ -4,7 +4,7 @@
   "private": true,
   "description": "MVP Factory Control (v1.4.1-sovereign) internal control-plane app",
   "scripts": {
-    "dev": "next dev -p 3007",
+    "dev": "bash scripts/dev-with-gateway-ca.sh",
     "build": "next build",
     "start": "next start -p 3007",
     "e2e:mvp-factory-control": "node scripts/e2e/mvp-factory-control-postmvp.e2e.js",

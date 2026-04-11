@@ -9,7 +9,16 @@ PROJECT_ID="PVT_kwHOACGtF84BOtVF"
 PULL_QUEUE_STATUS="Todo (NEXT)"
 STATUS_FIELD_ID="PVTSSF_lAHOACGtF84BOtVFzg9VH2o"
 IN_PROGRESS_OPTION_ID="47fc9ee4"
-PAPERCLIP_URL="http://localhost:3100"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+GW_PORT="${MVP_HTTPS_GATEWAY_PORT:-3443}"
+CA_CERT="${REPO_ROOT}/.mvp-factory-control/tls/localhost-cert.pem"
+PAPERCLIP_URL="https://127.0.0.1:${GW_PORT}/dashboard"
+
+if [ ! -f "$CA_CERT" ]; then
+  echo "Missing TLS CA at $CA_CERT (run Control.app once or bootstrap) — cannot call Paperclip over HTTPS." >&2
+  exit 1
+fi
 
 echo "MVP Factory Automation Bridge starting..."
 echo "Polling Status: $PULL_QUEUE_STATUS"
@@ -39,7 +48,7 @@ while true; do
 
     # 2. Dispatch to Paperclip
     echo "Sending to Paperclip..."
-    curl -s -X POST "$PAPERCLIP_URL/api/companies/$COMPANY_ID/issues" \
+    curl --cacert "$CA_CERT" -s -X POST "$PAPERCLIP_URL/api/companies/$COMPANY_ID/issues" \
       -H "Content-Type: application/json" \
       -d "$(jq -n --arg t "$TITLE" --arg d "$BODY" '{title: $t, description: $d, status: "todo"}')" > /dev/null
 

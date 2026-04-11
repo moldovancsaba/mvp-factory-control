@@ -4,7 +4,7 @@ This is the main navigation page for `mvp-factory-control`.
 
 **Code and docs alignment:** Implementation behavior for the internal app lives under `apps/mvp-factory-control`. Every TypeScript module and major script includes a top-of-file comment describing scope; the maintainer index table is in [../READMEDEV.md](../READMEDEV.md) (section **Source map**). When you change behavior, update that module’s comment and any doc linked from this wiki in the same change.
 
-Select "🌐 Open Dashboard" to access `http://localhost:3100`.
+Select "🌐 Open Dashboard" to open Paperclip at **`https://127.0.0.1:3443/dashboard/`** (local HTTPS gateway; port from `MVP_HTTPS_GATEWAY_PORT`). Do not use plain `http://` for dashboard or API traffic—use the gateway and trust the cert under `.mvp-factory-control/tls/`.
 
 ## Start Here
 
@@ -57,7 +57,7 @@ Each product page defines:
 - what work stays in `mvp-factory-control`
 - what work moves into the product repository
 
-- **Orchestrator**: `localhost:3100` (Paperclip)
+- **Orchestrator**: Paperclip — **`https://127.0.0.1:3443/dashboard/`** (TLS gateway → loopback upstream)
 - **Assistant**: `localhost:18789` (OpenClaw)
 - **Inference**: `localhost:11434` (Ollama)
 - **Control**: `localhost:3577` (Web App)

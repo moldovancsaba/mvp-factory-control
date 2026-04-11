@@ -18,7 +18,7 @@ For Checklist specifically, the local AI runtime is:
    *Note: This script ensures the tray app is always running the latest code from the repository.*
 2. **Start the core local services**: Use the tray app to launch Ollama, Paperclip, and the Checklist local AI worker.
 3. **Research mode**: The control plane enables Checklist research explicitly. The worker remains functional if public research is unavailable, but health output should still show the research configuration when enabled.
-4. **Open Dashboard**: Select "🌐 Open Dashboard" to access `http://localhost:3100`.
+4. **Open Dashboard**: Select "🌐 Open Dashboard" to open Paperclip at **`https://127.0.0.1:3443/dashboard/`** (default gateway port). The gateway terminates TLS, proxies HTTP/WebSocket to Paperclip on **3100**, and preserves `/dashboard`. Use **`curl --cacert .mvp-factory-control/tls/localhost-cert.pem`** when probing HTTPS from scripts.
 5. **Implementation**:
    - Tasks arrive as GitHub Issues in `mvp-factory-control`.
    - Local services are supervised by `mvp-factory-control`.
@@ -39,8 +39,8 @@ tail -f /tmp/control-checklistsync.log
 You can always fall back to the CLI for deep debugging:
 - **Docker**: `docker compose up -d`
 - **Control App**: `npm run dev` in `apps/mvp-factory-control`
-- **Ollama models**: `curl http://127.0.0.1:11434/api/tags`
-- **Checklist worker health**: `curl http://127.0.0.1:10005/health`
+- **Ollama models** (via gateway): `curl --cacert .mvp-factory-control/tls/localhost-cert.pem -fsS https://127.0.0.1:3443/ollama/api/tags`
+- **Checklist worker health** (via gateway): `curl --cacert .mvp-factory-control/tls/localhost-cert.pem -fsS https://127.0.0.1:3443/checklistsync/health`
 - **Checklist research refresh**: inspect `researchEnabled`, `researchProvider`, and fact-check settings in the worker health output
 
 <br/>

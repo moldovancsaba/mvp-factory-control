@@ -109,8 +109,8 @@ The worker must therefore support scheduled evidence refreshes so it can:
 
 Checklist local AI is healthy when:
 
-- Ollama is reachable on `http://127.0.0.1:11434`,
-- the worker is reachable on `http://127.0.0.1:10005/health`,
+- Ollama is reachable through the MVP HTTPS gateway at `https://127.0.0.1:3443/ollama` (with `NODE_EXTRA_CA_CERTS` or equivalent trust for `.mvp-factory-control/tls/localhost-cert.pem`),
+- the worker is reachable at `https://127.0.0.1:3443/checklistsync/health` (same TLS trust),
 - the worker reports database readiness,
 - the worker reports model readiness,
 - if research is enabled, the worker reports research configuration,
@@ -198,8 +198,8 @@ Mitigation:
 
 The following checks should be considered the minimum operational audit:
 
-- `GET http://127.0.0.1:10005/health`
-- `GET http://127.0.0.1:11434/api/tags`
+- `curl --cacert .mvp-factory-control/tls/localhost-cert.pem -fsS https://127.0.0.1:3443/checklistsync/health`
+- `curl --cacert .mvp-factory-control/tls/localhost-cert.pem -fsS https://127.0.0.1:3443/ollama/api/tags`
 - confirm `gemma4:latest` is installed
 - confirm the worker can authenticate `/sync`
 - confirm the worker can validate a company ID
