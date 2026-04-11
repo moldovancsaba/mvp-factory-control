@@ -64,6 +64,7 @@ CONTROL_PANEL_SETTINGS_PATH = os.path.join(RUNTIME_STATE_DIR, "control-panel-set
 TLS_DIR = os.path.join(RUNTIME_STATE_DIR, "tls")
 TLS_CERT_PATH = os.path.join(TLS_DIR, "localhost-cert.pem")
 PYTHON_CMD = sys.executable
+SERVICE_START_GRACE_SECONDS = 20
 
 
 def ensure_loopback_tls_material():
@@ -403,6 +404,7 @@ class ControlApp(rumps.App):
             None,
         ]
         self.processes = {}
+        self.starting_services = {}
 
         self.menu_items = {}
         for name in SERVICES:
@@ -528,8 +530,15 @@ class ControlApp(rumps.App):
                 else:
                     running = self.is_port_open(config["port"])
 
+                if running:
+                    self.starting_services.pop(name, None)
+                start_age = time.time() - self.starting_services.get(name, 0)
+                is_starting = not running and 0 < start_age < SERVICE_START_GRACE_SECONDS
+
                 if not enabled and not running:
                     status_emoji = "⏸"
+                elif is_starting:
+                    status_emoji = "🟡"
                 elif running:
                     status_emoji = "🟢"
                 elif infra_failure:
@@ -544,6 +553,8 @@ class ControlApp(rumps.App):
                     action = "Stop" if running else "Start"
                     if not enabled and not running:
                         new_title = f"⏸ {action} {name} (off)"
+                    elif is_starting:
+                        new_title = f"🟡 Start {name} (starting)"
                     else:
                         new_title = f"{status_emoji} {action} {name}"
                     old_title = item_data["current_title"]
@@ -557,7 +568,7 @@ class ControlApp(rumps.App):
                         item_data["current_title"] = new_title
 
                     # --- WATCHDOG LOGIC ---
-                    if enabled and not running and config.get("auto_restart"):
+                    if enabled and not running and not is_starting and config.get("auto_restart"):
                         now = time.time()
                         hist = self.restart_history.get(name, {"last_attempt": 0, "count": 0})
                         
@@ -955,6 +966,10 @@ class ControlApp(rumps.App):
         if not is_solution_enabled(name):
             print(f"Skipping {name}: disabled in Factory Settings (solutions).")
             return
+        start_age = time.time() - self.starting_services.get(name, 0)
+        if 0 < start_age < SERVICE_START_GRACE_SECONDS:
+            print(f"Skipping {name}: startup already in progress.")
+            return
         config = SERVICES[name]
         cwd = config.get("cwd", REPO_ROOT)
 
@@ -977,6 +992,7 @@ class ControlApp(rumps.App):
             return
 
         print(f"Starting {name} in {cwd}...")
+        self.starting_services[name] = time.time()
         if config.get("is_docker"):
             # Redirect Docker compose output to a dedicated log
             log_file = open(f"/tmp/control-{name.lower()}.log", "a")
@@ -1001,6 +1017,7 @@ class ControlApp(rumps.App):
                 )
             except Exception as e:
                 print(f"Error managing Docker {name}: {e}")
+                self.starting_services.pop(name, None)
         else:
             # Redirect stdout and stderr to a service-specific log file
             log_file = open(f"/tmp/control-{name.lower()}.log", "a")
@@ -1022,6 +1039,7 @@ class ControlApp(rumps.App):
 
     def stop_service(self, name):
         print(f"Stopping {name}...")
+        self.starting_services.pop(name, None)
         if name in self.processes:
             try:
                 proc = self.processes[name]
