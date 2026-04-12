@@ -46,6 +46,9 @@ ROUTES = {
     "/ollama/": "http://127.0.0.1:11434/",
 }
 
+UPSTREAM_TIMEOUT_DEFAULT_S = 15
+UPSTREAM_TIMEOUT_CHECKLIST_LONG_S = 300
+
 # Vite dev and index.html use root-absolute paths; Paperclip is mounted at /dashboard upstream.
 _PAPERCLIP_ROOT_EXACT = frozenset({"/favicon.ico", "/sw.js", "/site.webmanifest"})
 
@@ -228,6 +231,11 @@ class GatewayHandler(BaseHTTPRequestHandler):
                 return prefix, target
         return None, None
 
+    def _upstream_timeout_seconds(self, path_only: str) -> int:
+        if path_only.startswith("/checklistsync/force") or path_only.startswith("/checklistsync/sync"):
+            return UPSTREAM_TIMEOUT_CHECKLIST_LONG_S
+        return UPSTREAM_TIMEOUT_DEFAULT_S
+
     def _build_upstream_ws_request(
         self, upstream_host: str, upstream_port: int, request_target: str
     ) -> bytes:
@@ -353,7 +361,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
             method=self.command,
         )
         try:
-            with urllib.request.urlopen(request, timeout=15) as upstream:
+            with urllib.request.urlopen(request, timeout=self._upstream_timeout_seconds(path_only)) as upstream:
                 payload = upstream.read()
                 self.send_response(upstream.status)
                 for key, value in upstream.headers.items():
