@@ -19,6 +19,14 @@ import json
 import urllib.request
 import urllib.error
 
+from checklist_control_defaults import (
+    CHECKLIST_CONTROL_DEFAULTS,
+    build_checklist_sync_env_overlay,
+    checklist_behavioral_stall_reason,
+    checklist_settings_drift_reason,
+    merge_checklist_panel_fields_from_raw,
+)
+
 # Fix PATH for LaunchAgent execution
 local_bin = os.path.expanduser("~/.local/bin")
 os.environ["PATH"] = (
@@ -78,6 +86,14 @@ CHECKLIST_ENV_KEYS = (
 )
 
 
+def checklist_dotenv_override_keys():
+    keys = set(CHECKLIST_ENV_KEYS)
+    for name in list(os.environ.keys()):
+        if name.startswith("CHECKLIST_"):
+            keys.add(name)
+    return frozenset(keys)
+
+
 def ensure_loopback_tls_material():
     """Create ``localhost-cert.pem`` / key under ``.mvp-factory-control/tls`` if missing."""
     try:
@@ -133,6 +149,7 @@ def load_control_panel_settings():
     if not isinstance(stored, dict):
         merged = defaults.copy()
         merged["solutions"] = default_solutions_flags()
+        merged.update(CHECKLIST_CONTROL_DEFAULTS)
         return merged
     merged = defaults.copy()
     for key in _CONTROL_PANEL_PATH_KEYS:
@@ -146,6 +163,8 @@ def load_control_panel_settings():
             if k in sol_raw and isinstance(sol_raw[k], bool):
                 solutions[k] = sol_raw[k]
     merged["solutions"] = solutions
+    merged.update(CHECKLIST_CONTROL_DEFAULTS)
+    merge_checklist_panel_fields_from_raw(stored, merged)
     return merged
 
 
@@ -228,7 +247,8 @@ def build_checklist_env_candidates():
     return unique
 
 
-def load_dotenv(path):
+def load_dotenv(path, *, force_keys=None):
+    """Load KEY=VALUE lines. When ``force_keys`` is set, those keys overwrite existing env."""
     if not os.path.isfile(path):
         return
     try:
@@ -240,57 +260,44 @@ def load_dotenv(path):
                 key, value = line.split("=", 1)
                 key = key.strip()
                 value = value.strip().strip('"').strip("'")
-                os.environ.setdefault(key, value)
+                if force_keys is not None and key in force_keys:
+                    os.environ[key] = value
+                else:
+                    os.environ.setdefault(key, value)
     except OSError as exc:
         print(f"Failed to load env file {path}: {exc}")
 
 
-for env_path in [os.path.join(REPO_ROOT, ".env"), *build_checklist_env_candidates()]:
-    load_dotenv(env_path)
+_REPO_DOTENV = os.path.join(REPO_ROOT, ".env")
+load_dotenv(_REPO_DOTENV)
+_CHECKLIST_FORCE = checklist_dotenv_override_keys()
+for env_path in build_checklist_env_candidates():
+    load_dotenv(env_path, force_keys=_CHECKLIST_FORCE)
 
 
-def expected_checklist_worker_contract():
-    return {
-        "researchEnabled": True,
-        "settings": {
-            "schedulingMode": "company-serial-cycle",
-            "companyCycleCooldownMs": int(
-                CONTROL_PANEL_SETTINGS.get("checklistPollIntervalSeconds", 7200)
-            )
-            * 1000,
-            "researchHarvestBatchSize": 1,
-            "ollamaTimeoutMs": int(
-                CONTROL_PANEL_SETTINGS.get("checklistOllamaTimeoutMs", 120000)
-            ),
-            "taskMinIceScore": int(
-                CONTROL_PANEL_SETTINGS.get("checklistTaskMinIce", 100)
-            ),
-            "flashcardMinConfidence": int(
-                CONTROL_PANEL_SETTINGS.get("checklistFlashcardMinConfidence", 60)
-            ),
-            "flashcardMinImpact": int(
-                CONTROL_PANEL_SETTINGS.get("checklistFlashcardMinImpact", 40)
-            ),
-            "flashcardMinWeight": int(
-                CONTROL_PANEL_SETTINGS.get("checklistFlashcardMinWeight", 40)
-            ),
-            "flashcardRevisitBatchSize": int(
-                CONTROL_PANEL_SETTINGS.get("checklistFlashcardRevisitBatchSize", 1)
-            ),
-            "taskRevisitBatchSize": int(
-                CONTROL_PANEL_SETTINGS.get("checklistTaskRevisitBatchSize", 1)
-            ),
-            "feedbackReplayBatchSize": int(
-                CONTROL_PANEL_SETTINGS.get("checklistFeedbackReplayBatchSize", 1)
-            ),
-            "hashtagMaintenanceBatchSize": int(
-                CONTROL_PANEL_SETTINGS.get("checklistHashtagMaintenanceBatchSize", 1)
-            ),
-            "cleanupBatchSize": int(
-                CONTROL_PANEL_SETTINGS.get("checklistCleanupBatchSize", 1)
-            ),
-        },
-    }
+def resolve_node_command():
+    for candidate in (
+        os.path.expanduser("~/.local/bin/node"),
+        "/opt/homebrew/bin/node",
+        "/usr/local/bin/node",
+        shutil.which("node"),
+    ):
+        if candidate and os.path.isfile(candidate):
+            return candidate
+    return "node"
+
+
+def resolve_ollama_command():
+    for candidate in (
+        os.path.expanduser("~/.local/bin/ollama"),
+        "/opt/homebrew/bin/ollama",
+        "/usr/local/bin/ollama",
+        shutil.which("ollama"),
+    ):
+        if candidate and os.path.isfile(candidate):
+            return candidate
+    return "ollama"
+
 
 SERVICES = {
     "Paperclip": {
@@ -317,7 +324,7 @@ SERVICES = {
             "18788",
         ],
     },
-    "Ollama": {"port": 11434, "cmd": ["/opt/homebrew/bin/ollama", "serve"]},
+    "Ollama": {"port": 11434, "cmd": [resolve_ollama_command(), "serve"]},
     "ScrumMaster": {
         "port": 0,  # Daemon only
         "cwd": REPO_ROOT,
@@ -345,72 +352,11 @@ SERVICES = {
     "ChecklistSync": {
         "port": 10005,
         "cwd": os.path.join(CONTROL_PANEL_SETTINGS["checklistRoot"], "scripts"),
-        "cmd": ["/opt/homebrew/bin/node", "sync.js"],
+        "cmd": [resolve_node_command(), "sync.js"],
         # Manage the worker by process signature as well as port so we can replace
         # stale launches that survived with outdated env/settings.
         "proc_pattern": "node sync.js",
-        "env": {
-            "PORT": "10005",
-            "OLLAMA_MODEL": "gemma4:latest",
-            "OLLAMA_HOST": "http://127.0.0.1:11434",
-            "CHECKLIST_RESEARCH_ENABLED": "true",
-            "CHECKLIST_RESEARCH_PROVIDER": "duckduckgo-html",
-            "CHECKLIST_RESEARCH_REFRESH_HOURS": "24",
-            "CHECKLIST_RESEARCH_MAX_QUERIES": "2",
-            "CHECKLIST_RESEARCH_MAX_RESULTS": "3",
-            "CHECKLIST_RESEARCH_MAX_FETCHES": "3",
-            "CHECKLIST_POLL_INTERVAL_MS": str(
-                int(CONTROL_PANEL_SETTINGS.get("checklistPollIntervalSeconds", 7200)) * 1000
-            ),
-            "CHECKLIST_FLASHCARD_REVISIT_INTERVAL_MINUTES": str(
-                CONTROL_PANEL_SETTINGS.get("checklistFlashcardRevisitMinutes", 0)
-            ),
-            "CHECKLIST_FLASHCARD_REVISIT_BATCH_SIZE": str(
-                CONTROL_PANEL_SETTINGS.get("checklistFlashcardRevisitBatchSize", 1)
-            ),
-            "CHECKLIST_TASK_REVISIT_INTERVAL_MINUTES": str(
-                CONTROL_PANEL_SETTINGS.get("checklistTaskRevisitMinutes", 0)
-            ),
-            "CHECKLIST_TASK_REVISIT_BATCH_SIZE": str(
-                CONTROL_PANEL_SETTINGS.get("checklistTaskRevisitBatchSize", 1)
-            ),
-            "CHECKLIST_FEEDBACK_REPLAY_INTERVAL_MINUTES": str(
-                CONTROL_PANEL_SETTINGS.get("checklistFeedbackReplayMinutes", 0)
-            ),
-            "CHECKLIST_FEEDBACK_REPLAY_BATCH_SIZE": str(
-                CONTROL_PANEL_SETTINGS.get("checklistFeedbackReplayBatchSize", 1)
-            ),
-            "CHECKLIST_HASHTAG_MAINTENANCE_HOURS": str(
-                CONTROL_PANEL_SETTINGS.get("checklistHashtagMaintenanceHours", 0)
-            ),
-            "CHECKLIST_HASHTAG_MAINTENANCE_BATCH_SIZE": str(
-                CONTROL_PANEL_SETTINGS.get("checklistHashtagMaintenanceBatchSize", 1)
-            ),
-            "CHECKLIST_CLEANUP_INTERVAL_HOURS": str(
-                CONTROL_PANEL_SETTINGS.get("checklistCleanupHours", 0)
-            ),
-            "CHECKLIST_CLEANUP_BATCH_SIZE": str(
-                CONTROL_PANEL_SETTINGS.get("checklistCleanupBatchSize", 1)
-            ),
-            "CHECKLIST_OLLAMA_TIMEOUT_MS": str(
-                CONTROL_PANEL_SETTINGS.get("checklistOllamaTimeoutMs", 120000)
-            ),
-            "CHECKLIST_TASK_MIN_ICE_SCORE": str(
-                CONTROL_PANEL_SETTINGS.get("checklistTaskMinIce", 100)
-            ),
-            "CHECKLIST_FLASHCARD_MIN_CONFIDENCE": str(
-                CONTROL_PANEL_SETTINGS.get("checklistFlashcardMinConfidence", 60)
-            ),
-            "CHECKLIST_FLASHCARD_MIN_IMPACT": str(
-                CONTROL_PANEL_SETTINGS.get("checklistFlashcardMinImpact", 40)
-            ),
-            "CHECKLIST_FLASHCARD_MIN_WEIGHT": str(
-                CONTROL_PANEL_SETTINGS.get("checklistFlashcardMinWeight", 40)
-            ),
-            "CHECKLIST_FACTCHECK_MIN_CITATIONS": "2",
-            "CHECKLIST_FACTCHECK_MIN_DOMAINS": "2",
-            "NEON_DB": os.environ.get("NEON_DB", os.environ.get("DATABASE_URL", "")),
-        },
+        "env": {},
         "auto_restart": True,
     },
 }
@@ -470,6 +416,7 @@ class ControlApp(rumps.App):
         ]
         self.processes = {}
         self.starting_services = {}
+        self._checklist_stall_restart_times = []
 
         self.menu_items = {}
         for name in SERVICES:
@@ -513,6 +460,23 @@ class ControlApp(rumps.App):
         ):
             if is_solution_enabled(_name):
                 self.start_service(_name)
+
+    def _checklist_stall_restart_allowed(self):
+        now = time.time()
+        window_s = 3600
+        min_gap_s = 180
+        max_per_window = 4
+        self._checklist_stall_restart_times = [
+            t for t in self._checklist_stall_restart_times if now - t < window_s
+        ]
+        if len(self._checklist_stall_restart_times) >= max_per_window:
+            return False
+        if self._checklist_stall_restart_times and now - self._checklist_stall_restart_times[-1] < min_gap_s:
+            return False
+        return True
+
+    def _record_checklist_stall_restart(self):
+        self._checklist_stall_restart_times.append(time.time())
 
     def is_port_open(self, port):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -585,16 +549,10 @@ class ControlApp(rumps.App):
         if not health:
             return "health-unreachable"
 
-        expected = expected_checklist_worker_contract()
-        if bool(health.get("researchEnabled")) != expected["researchEnabled"]:
-            return "research-enabled-mismatch"
-
-        settings = health.get("settings") or {}
-        for key, expected_value in expected["settings"].items():
-            if settings.get(key) != expected_value:
-                return f"settings-mismatch:{key}"
-
-        return None
+        settings_reason = checklist_settings_drift_reason(health, CONTROL_PANEL_SETTINGS)
+        if settings_reason:
+            return settings_reason
+        return checklist_behavioral_stall_reason(health)
 
     def build_service_env(self, name, config):
         env = os.environ.copy()
@@ -612,7 +570,11 @@ class ControlApp(rumps.App):
             env.pop("DATABASE_URL", None)
             env.pop("NEON_DB", None)
 
-        env.update(config.get("env", {}))
+        if name == "ChecklistSync":
+            env.update(build_checklist_sync_env_overlay(CONTROL_PANEL_SETTINGS))
+            env["NEON_DB"] = os.environ.get("NEON_DB", os.environ.get("DATABASE_URL", ""))
+        else:
+            env.update(config.get("env", {}))
         return env
 
     def check_status(self, _=None):
@@ -650,11 +612,19 @@ class ControlApp(rumps.App):
                 if running and name == "ChecklistSync" and start_age >= SERVICE_START_GRACE_SECONDS:
                     drift_reason = self.checklist_worker_drift_reason()
                     if drift_reason:
-                        print(f"ChecklistSync runtime drift detected: {drift_reason}. Replacing worker...")
-                        self.stop_service(name)
-                        running = False
-                        start_age = time.time() - self.starting_services.get(name, 0)
-                        is_starting = not running and 0 < start_age < SERVICE_START_GRACE_SECONDS
+                        if drift_reason.startswith("behavioral-stall") and not self._checklist_stall_restart_allowed():
+                            print(
+                                f"ChecklistSync behavioral stall ({drift_reason}) "
+                                "but stall restart throttled; not replacing worker yet."
+                            )
+                        else:
+                            print(f"ChecklistSync runtime drift detected: {drift_reason}. Replacing worker...")
+                            if drift_reason.startswith("behavioral-stall"):
+                                self._record_checklist_stall_restart()
+                            self.stop_service(name)
+                            running = False
+                            start_age = time.time() - self.starting_services.get(name, 0)
+                            is_starting = not running and 0 < start_age < SERVICE_START_GRACE_SECONDS
 
                 if not enabled and not running:
                     status_emoji = "⏸"

@@ -286,6 +286,73 @@
       transition: opacity 0.18s ease;
     }
     .toast.show { opacity: 1; }
+    .chart-wrap {
+      display: grid;
+      gap: 16px;
+    }
+    .chart-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin: 12px 0 4px;
+    }
+    .chart-panel {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(2, 6, 23, 0.45);
+      padding: 14px;
+    }
+    .chart-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin: 0 0 4px;
+    }
+    .chart-subtitle {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    svg.chart {
+      width: 100%;
+      height: 240px;
+      display: block;
+      overflow: visible;
+    }
+    .chart-legend {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .legend-swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+    }
+    .event-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .event-row {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: rgba(15, 23, 42, 0.55);
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .event-row strong {
+      color: var(--text);
+    }
     @media (max-width: 920px) {
       .two { grid-template-columns: 1fr; }
       header { flex-direction: column; }
@@ -340,7 +407,26 @@
             ChecklistSync now runs as a serial company cycle. The poll interval is the company-cycle cooldown. The other timing values are per-step pauses inside that cycle, and <code>0</code> means continue immediately to keep delivery smooth.
           </p>
 
+          <label class="switch-row" style="margin-bottom: 12px;">
+            <div class="meta">
+              <strong>Research (web discovery)</strong>
+              <span>When off, the worker runs without the public research phase. Matches <code>CHECKLIST_RESEARCH_ENABLED</code>.</span>
+            </div>
+            <div class="switch">
+              <input type="checkbox" id="checklistResearchEnabled" name="checklistResearchEnabled" />
+              <span class="slider"></span>
+            </div>
+          </label>
+
           <div class="two-col">
+            <label>
+              Fact-check min citations
+              <input id="checklistFactcheckMinCitations" name="checklistFactcheckMinCitations" type="number" min="1" max="20" placeholder="2" />
+            </label>
+            <label>
+              Fact-check min domains
+              <input id="checklistFactcheckMinDomains" name="checklistFactcheckMinDomains" type="number" min="1" max="20" placeholder="2" />
+            </label>
             <label>
               Company cycle cooldown (seconds)
               <input id="checklistPollIntervalSeconds" name="checklistPollIntervalSeconds" type="number" min="30" max="172800" placeholder="7200" />
@@ -390,20 +476,40 @@
               <input id="checklistOllamaTimeoutMs" name="checklistOllamaTimeoutMs" type="number" min="5000" max="600000" placeholder="120000" />
             </label>
             <label>
-              Minimum task ICE score
-              <input id="checklistTaskMinIce" name="checklistTaskMinIce" type="number" min="0" max="1000" placeholder="100" />
+              Fail-safe model
+              <input id="checklistFailsafeModel" name="checklistFailsafeModel" placeholder="gemma4:e4b" />
             </label>
             <label>
-              Flashcard minimum confidence
-              <input id="checklistFlashcardMinConfidence" name="checklistFlashcardMinConfidence" type="number" min="1" max="100" placeholder="60" />
+              Fail-safe timeout (ms)
+              <input id="checklistFailsafeTimeoutMs" name="checklistFailsafeTimeoutMs" type="number" min="5000" max="600000" placeholder="90000" />
             </label>
             <label>
-              Flashcard minimum impact
-              <input id="checklistFlashcardMinImpact" name="checklistFlashcardMinImpact" type="number" min="1" max="100" placeholder="40" />
+              Fail-safe max attempts
+              <input id="checklistFailsafeMaxAttempts" name="checklistFailsafeMaxAttempts" type="number" min="1" max="10" placeholder="2" />
             </label>
             <label>
-              Flashcard minimum weight
-              <input id="checklistFlashcardMinWeight" name="checklistFlashcardMinWeight" type="number" min="1" max="100" placeholder="40" />
+              Preferred task ICE floor
+              <input id="checklistTaskMinIce" name="checklistTaskMinIce" type="number" min="0" max="1000" placeholder="0" />
+            </label>
+            <label>
+              Preferred flashcard confidence floor
+              <input id="checklistFlashcardMinConfidence" name="checklistFlashcardMinConfidence" type="number" min="1" max="100" placeholder="1" />
+            </label>
+            <label>
+              Preferred flashcard impact floor
+              <input id="checklistFlashcardMinImpact" name="checklistFlashcardMinImpact" type="number" min="1" max="100" placeholder="1" />
+            </label>
+            <label>
+              Preferred flashcard weight floor
+              <input id="checklistFlashcardMinWeight" name="checklistFlashcardMinWeight" type="number" min="1" max="100" placeholder="1" />
+            </label>
+            <label>
+              Stuck-running restart threshold (minutes)
+              <input id="checklistStuckRunningMinutes" name="checklistStuckRunningMinutes" type="number" min="1" max="1440" placeholder="15" />
+            </label>
+            <label>
+              No-progress restart threshold (minutes)
+              <input id="checklistNoProgressMinutes" name="checklistNoProgressMinutes" type="number" min="1" max="4320" placeholder="180" />
             </label>
           </div>
 
@@ -433,6 +539,37 @@
       <h2>Support Services</h2>
       <p>Open the tools already running on this machine, including the environment variables editor.</p>
       <div class="tool-list" id="toolList"></div>
+    </section>
+
+    <section class="card" style="margin-top: 18px;">
+      <h2>Checklist Activity</h2>
+      <p>Simple hourly delivery view for the local Checklist worker. This helps us see whether companies are being processed and whether cards are actually being created.</p>
+      <div class="chart-controls">
+        <label style="max-width: 180px;">
+          Hours to show
+          <input id="metricsHours" type="number" min="6" max="168" value="24" />
+        </label>
+        <button type="button" id="refreshMetrics">Refresh charts</button>
+      </div>
+      <div class="chart-wrap">
+        <div class="chart-panel">
+          <p class="chart-title">Hourly delivery trend</p>
+          <p class="chart-subtitle">Companies fully processed and new cards created per hour.</p>
+          <svg class="chart" id="lineChart" viewBox="0 0 960 240" preserveAspectRatio="none"></svg>
+          <div class="chart-legend" id="lineLegend"></div>
+        </div>
+        <div class="chart-panel">
+          <p class="chart-title">Cards created per company</p>
+          <p class="chart-subtitle">Stacked totals over the selected window.</p>
+          <svg class="chart" id="stackedBarChart" viewBox="0 0 960 240" preserveAspectRatio="none"></svg>
+          <div class="chart-legend" id="stackedLegend"></div>
+        </div>
+        <div class="chart-panel">
+          <p class="chart-title">Recent worker events</p>
+          <p class="chart-subtitle">Latest company-cycle, fail-safe, and progress events.</p>
+          <div class="event-list" id="eventList"></div>
+        </div>
+      </div>
     </section>
   </div>
 
@@ -473,7 +610,145 @@
 
     function setValue(id, value) {
       const el = document.getElementById(id);
-      el.value = value || "";
+      if (!el) return;
+      el.value = value ?? "";
+    }
+
+    function setChecked(id, on) {
+      const el = document.getElementById(id);
+      if (el && el.type === "checkbox") el.checked = !!on;
+    }
+
+    function formatHourLabel(value) {
+      const date = new Date(value);
+      return date.toLocaleString([], { month: "short", day: "numeric", hour: "2-digit" });
+    }
+
+    function chartColor(key) {
+      return {
+        companiesProcessedFully: "#7dd3fc",
+        cardsCreated: "#f8fafc",
+        taskcardsCreated: "#c084fc",
+        flashcardsCreated: "#4ade80",
+        datacardsCreated: "#f97316"
+      }[key] || "#94a3b8";
+    }
+
+    function setLegend(hostId, items) {
+      const host = document.getElementById(hostId);
+      host.innerHTML = "";
+      for (const item of items) {
+        const row = document.createElement("div");
+        row.className = "legend-item";
+        row.innerHTML = `<span class="legend-swatch" style="background:${item.color}"></span><span>${item.label}</span>`;
+        host.appendChild(row);
+      }
+    }
+
+    function renderLineChart(hourly) {
+      const svg = document.getElementById("lineChart");
+      svg.innerHTML = "";
+      const width = 960;
+      const height = 240;
+      const pad = { left: 46, right: 18, top: 16, bottom: 32 };
+      const series = [
+        { key: "companiesProcessedFully", label: "Companies processed", color: chartColor("companiesProcessedFully") },
+        { key: "cardsCreated", label: "New cards", color: chartColor("cardsCreated") },
+        { key: "taskcardsCreated", label: "New taskcards", color: chartColor("taskcardsCreated") },
+        { key: "flashcardsCreated", label: "New flashcards", color: chartColor("flashcardsCreated") },
+        { key: "datacardsCreated", label: "New datacards", color: chartColor("datacardsCreated") }
+      ];
+      setLegend("lineLegend", series);
+      if (!hourly.length) return;
+      const maxValue = Math.max(1, ...hourly.flatMap((row) => series.map((s) => Number(row[s.key] || 0))));
+      const xFor = (index) => pad.left + (index * ((width - pad.left - pad.right) / Math.max(hourly.length - 1, 1)));
+      const yFor = (value) => height - pad.bottom - ((Number(value || 0) / maxValue) * (height - pad.top - pad.bottom));
+
+      for (let i = 0; i < 4; i += 1) {
+        const y = pad.top + ((height - pad.top - pad.bottom) / 4) * i;
+        svg.insertAdjacentHTML("beforeend", `<line x1="${pad.left}" y1="${y}" x2="${width - pad.right}" y2="${y}" stroke="rgba(143,163,191,0.18)" />`);
+      }
+
+      series.forEach((seriesDef) => {
+        const points = hourly.map((row, index) => `${xFor(index)},${yFor(row[seriesDef.key])}`).join(" ");
+        svg.insertAdjacentHTML("beforeend", `<polyline fill="none" stroke="${seriesDef.color}" stroke-width="3" points="${points}" />`);
+      });
+
+      hourly.forEach((row, index) => {
+        const x = xFor(index);
+        if (index % Math.max(1, Math.ceil(hourly.length / 8)) === 0 || index === hourly.length - 1) {
+          svg.insertAdjacentHTML("beforeend", `<text x="${x}" y="${height - 10}" fill="#8fa3bf" font-size="10" text-anchor="middle">${formatHourLabel(row.hour)}</text>`);
+        }
+      });
+    }
+
+    function renderStackedBars(hourly, companies) {
+      const svg = document.getElementById("stackedBarChart");
+      svg.innerHTML = "";
+      const width = 960;
+      const height = 240;
+      const pad = { left: 46, right: 18, top: 16, bottom: 42 };
+      const perCompany = {};
+      for (const company of companies) {
+        perCompany[company] = { cardsCreated: 0, taskcardsCreated: 0, flashcardsCreated: 0, datacardsCreated: 0 };
+      }
+      for (const row of hourly) {
+        const map = row.perCompany || {};
+        for (const [companyId, values] of Object.entries(map)) {
+          if (!perCompany[companyId]) perCompany[companyId] = { cardsCreated: 0, taskcardsCreated: 0, flashcardsCreated: 0, datacardsCreated: 0 };
+          perCompany[companyId].cardsCreated += Number(values.cardsCreated || 0);
+          perCompany[companyId].taskcardsCreated += Number(values.taskcardsCreated || 0);
+          perCompany[companyId].flashcardsCreated += Number(values.flashcardsCreated || 0);
+          perCompany[companyId].datacardsCreated += Number(values.datacardsCreated || 0);
+        }
+      }
+      const ordered = Object.entries(perCompany).filter(([, values]) => Object.values(values).some((value) => value > 0));
+      const stacks = [
+        { key: "datacardsCreated", label: "Data", color: chartColor("datacardsCreated") },
+        { key: "flashcardsCreated", label: "Knowmore", color: chartColor("flashcardsCreated") },
+        { key: "taskcardsCreated", label: "Checklist", color: chartColor("taskcardsCreated") }
+      ];
+      setLegend("stackedLegend", stacks);
+      if (!ordered.length) return;
+      const maxValue = Math.max(1, ...ordered.map(([, values]) => Number(values.datacardsCreated || 0) + Number(values.flashcardsCreated || 0) + Number(values.taskcardsCreated || 0)));
+      const barWidth = (width - pad.left - pad.right) / ordered.length - 12;
+      ordered.forEach(([companyId, values], index) => {
+        const x = pad.left + index * ((width - pad.left - pad.right) / ordered.length) + 6;
+        let yCursor = height - pad.bottom;
+        for (const stack of stacks) {
+          const raw = Number(values[stack.key] || 0);
+          const barHeight = (raw / maxValue) * (height - pad.top - pad.bottom);
+          yCursor -= barHeight;
+          svg.insertAdjacentHTML("beforeend", `<rect x="${x}" y="${yCursor}" width="${barWidth}" height="${barHeight}" fill="${stack.color}" rx="6" />`);
+        }
+        svg.insertAdjacentHTML("beforeend", `<text x="${x + barWidth / 2}" y="${height - 12}" fill="#8fa3bf" font-size="10" text-anchor="middle">${companyId.slice(0, 8)}</text>`);
+      });
+    }
+
+    function renderRecentEvents(events) {
+      const host = document.getElementById("eventList");
+      host.innerHTML = "";
+      if (!events.length) {
+        host.innerHTML = `<div class="event-row">No recent runtime metrics yet.</div>`;
+        return;
+      }
+      events.slice().reverse().forEach((event) => {
+        const row = document.createElement("div");
+        row.className = "event-row";
+        row.innerHTML = `
+          <strong>${event.type || "event"}</strong> · ${new Date(event.recordedAt).toLocaleString()}
+          <div>${event.companyId ? `company ${event.companyId}` : "global"}${event.queueKind ? ` · ${event.queueKind}` : ""}</div>
+        `;
+        host.appendChild(row);
+      });
+    }
+
+    async function loadMetrics() {
+      const hours = Number(document.getElementById("metricsHours").value || 24);
+      const data = await api(`/api/checklist-metrics?hours=${hours}`);
+      renderLineChart(data.hourly || []);
+      renderStackedBars(data.hourly || [], data.companies || []);
+      renderRecentEvents(data.recentEvents || []);
     }
 
     function renderRepos(repos) {
@@ -592,10 +867,18 @@
       setValue("checklistCleanupHours", data.control.checklistCleanupHours);
       setValue("checklistCleanupBatchSize", data.control.checklistCleanupBatchSize);
       setValue("checklistOllamaTimeoutMs", data.control.checklistOllamaTimeoutMs);
+      setValue("checklistFailsafeModel", data.control.checklistFailsafeModel);
+      setValue("checklistFailsafeTimeoutMs", data.control.checklistFailsafeTimeoutMs);
+      setValue("checklistFailsafeMaxAttempts", data.control.checklistFailsafeMaxAttempts);
       setValue("checklistTaskMinIce", data.control.checklistTaskMinIce);
       setValue("checklistFlashcardMinConfidence", data.control.checklistFlashcardMinConfidence);
       setValue("checklistFlashcardMinImpact", data.control.checklistFlashcardMinImpact);
       setValue("checklistFlashcardMinWeight", data.control.checklistFlashcardMinWeight);
+      setValue("checklistStuckRunningMinutes", data.control.checklistStuckRunningMinutes);
+      setValue("checklistNoProgressMinutes", data.control.checklistNoProgressMinutes);
+      setChecked("checklistResearchEnabled", data.control.checklistResearchEnabled !== false);
+      setValue("checklistFactcheckMinCitations", data.control.checklistFactcheckMinCitations ?? 2);
+      setValue("checklistFactcheckMinDomains", data.control.checklistFactcheckMinDomains ?? 2);
       renderSolutionToggles(data.control.solutions);
       document.getElementById("updatedAt").textContent =
         data.general.updatedAt ? `Updated ${new Date(data.general.updatedAt).toLocaleString()}` : "Local settings";
@@ -623,10 +906,18 @@
         checklistCleanupHours: Number(document.getElementById("checklistCleanupHours").value || 0),
         checklistCleanupBatchSize: Number(document.getElementById("checklistCleanupBatchSize").value || 1),
         checklistOllamaTimeoutMs: Number(document.getElementById("checklistOllamaTimeoutMs").value || 120000),
-        checklistTaskMinIce: Number(document.getElementById("checklistTaskMinIce").value || 100),
-        checklistFlashcardMinConfidence: Number(document.getElementById("checklistFlashcardMinConfidence").value || 60),
-        checklistFlashcardMinImpact: Number(document.getElementById("checklistFlashcardMinImpact").value || 40),
-        checklistFlashcardMinWeight: Number(document.getElementById("checklistFlashcardMinWeight").value || 40),
+        checklistFailsafeModel: document.getElementById("checklistFailsafeModel").value.trim() || "gemma4:e4b",
+        checklistFailsafeTimeoutMs: Number(document.getElementById("checklistFailsafeTimeoutMs").value || 90000),
+        checklistFailsafeMaxAttempts: Number(document.getElementById("checklistFailsafeMaxAttempts").value || 2),
+        checklistTaskMinIce: Number(document.getElementById("checklistTaskMinIce").value || 0),
+        checklistFlashcardMinConfidence: Number(document.getElementById("checklistFlashcardMinConfidence").value || 1),
+        checklistFlashcardMinImpact: Number(document.getElementById("checklistFlashcardMinImpact").value || 1),
+        checklistFlashcardMinWeight: Number(document.getElementById("checklistFlashcardMinWeight").value || 1),
+        checklistStuckRunningMinutes: Number(document.getElementById("checklistStuckRunningMinutes").value || 15),
+        checklistNoProgressMinutes: Number(document.getElementById("checklistNoProgressMinutes").value || 180),
+        checklistResearchEnabled: document.getElementById("checklistResearchEnabled").checked,
+        checklistFactcheckMinCitations: Number(document.getElementById("checklistFactcheckMinCitations").value || 2),
+        checklistFactcheckMinDomains: Number(document.getElementById("checklistFactcheckMinDomains").value || 2),
         solutions: collectSolutionsPayload()
       };
       try {
@@ -647,7 +938,14 @@
       }
     });
 
-    load().catch((error) => showToast(error.message || "Failed to load settings"));
+    document.getElementById("refreshMetrics").addEventListener("click", () => {
+      loadMetrics().catch((error) => showToast(error.message || "Failed to load metrics"));
+    });
+
+    Promise.all([
+      load(),
+      loadMetrics()
+    ]).catch((error) => showToast(error.message || "Failed to load settings"));
   </script>
 </body>
 </html>

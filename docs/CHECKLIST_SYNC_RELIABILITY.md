@@ -111,6 +111,10 @@ The worker must therefore support scheduled evidence refreshes so it can:
 - discover newer public information,
 - refresh flashcards and recommendations on a controlled cadence.
 
+## Checklist `.env` precedence (local supervisor)
+
+`mvp-factory-control` loads this repository’s `.env` first using non-destructive defaults (`setdefault` semantics). Each resolved Checklist env file is then loaded in order; for **Checklist-owned keys** (`DATABASE_URL`, `NEON_DB`, `LOCAL_SYNC_URL`, `LOCAL_SYNC_SECRET`, `CHECKLIST_ENV_PATH`, and every `CHECKLIST_*` variable), **later Checklist files overwrite** earlier values so the sibling Checklist tree can override values that were only primed from the factory repo. Keys in the factory `.env` that are not Checklist-owned are never overwritten by Checklist files.
+
 ## Health Criteria
 
 Checklist local AI is healthy when:
@@ -120,8 +124,20 @@ Checklist local AI is healthy when:
 - the worker reports database readiness,
 - the worker reports model readiness,
 - if research is enabled, the worker reports research configuration,
-- the worker health payload matches the active control-panel Checklist settings,
+- the worker health payload matches the active control-panel Checklist settings (see contract rules below),
 - recent poll cycles complete without repeated generation errors.
+
+### Health `settings.supervisorContractVersion`
+
+The tray compares `/health` to the supervisor contract in `scripts/checklist_control_defaults.py` (`CHECKLIST_CONTRACT_VERSION`). The **full** contract (cadence intervals, fact-check floors, batch sizes, version field) is enforced only when the worker includes **every** extended `settings` key defined there (`CHECKLIST_HEALTH_EXTENDED_SETTING_KEYS`). If `supervisorContractVersion` is present but some extended keys are missing, the supervisor falls back to the **legacy** subset so a partially upgraded worker is not stuck in a restart loop.
+
+Workers that omit `supervisorContractVersion` entirely are also checked with the legacy subset. When the parallel Checklist worker is ready for strict parity, it should emit the full extended mirror in `/health`.
+
+Research on/off is controlled from Factory Settings (`checklistResearchEnabled`) and passed as `CHECKLIST_RESEARCH_ENABLED`; drift logic compares `researchEnabled` in `/health` to that setting.
+
+### Behavioral stall restarts
+
+When `/health` reports `progress.state` of `stuck-running` or `stalled-no-progress`, the supervisor may replace the worker. Stall-driven kills are **throttled** (at most four per rolling hour, at least 180 seconds apart) to reduce flapping if stall detection is noisy. Settings or research mismatches still replace the worker immediately.
 
 ## Failure Modes To Watch
 
@@ -202,7 +218,7 @@ Mitigation:
 - restart stale workers automatically,
 - sanitize env propagation so non-Checklist services do not inherit Checklist database/runtime vars.
 
-### 6. Silent citation drift
+### 7. Silent citation drift
 
 Effect:
 

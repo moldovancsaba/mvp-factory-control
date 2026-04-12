@@ -93,6 +93,7 @@ The following changes were completed as part of this refactor:
 - `mvp-factory-control` now treats Ollama and the Checklist worker as the Checklist local AI runtime.
 - Checklist worker configuration uses direct local Ollama access instead of a local HTTPS proxy hop.
 - The connector status page no longer presents OpenClaw as part of the Checklist runtime.
+- Supervisor `/health` drift checks use a versioned contract (`supervisorContractVersion` / `CHECKLIST_CONTRACT_VERSION` in `scripts/checklist_control_defaults.py`); research on/off and fact-check floors are part of the saved settings surface. Full extended parity applies only when the worker’s `/health` includes every extended `settings` key; otherwise the tray compares the legacy subset only.
 
 ### Worker
 

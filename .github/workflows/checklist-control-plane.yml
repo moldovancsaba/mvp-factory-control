@@ -1,0 +1,36 @@
+name: Checklist control plane helpers
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "scripts/checklist_control_defaults.py"
+      - "scripts/tests/**"
+      - "scripts/smoke_checklist_control.sh"
+      - "scripts/control_mvp.py"
+      - "scripts/settings-panel/**"
+      - "docs/CHECKLIST_SYNC_RELIABILITY.md"
+      - "docs/CHECKLIST_SYSTEM_REFACTORING.md"
+      - ".github/workflows/checklist-control-plane.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "scripts/checklist_control_defaults.py"
+      - "scripts/tests/**"
+      - "scripts/smoke_checklist_control.sh"
+      - "scripts/control_mvp.py"
+      - "scripts/settings-panel/**"
+      - "docs/CHECKLIST_SYNC_RELIABILITY.md"
+      - "docs/CHECKLIST_SYSTEM_REFACTORING.md"
+      - ".github/workflows/checklist-control-plane.yml"
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run smoke (unit tests)
+        run: ./scripts/smoke_checklist_control.sh

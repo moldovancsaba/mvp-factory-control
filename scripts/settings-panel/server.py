@@ -16,6 +16,12 @@ from typing import Any
 _SCRIPTS_ROOT = Path(__file__).resolve().parents[1]
 if str(_SCRIPTS_ROOT) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_ROOT))
+from checklist_control_defaults import (
+    CHECKLIST_CONTROL_DEFAULTS,
+    aggregate_checklist_metrics,
+    load_runtime_metrics_rows,
+    merge_checklist_panel_fields_from_raw,
+)
 from local_gateway_client import gateway_https_ok
 
 from fastapi import FastAPI, HTTPException
@@ -67,22 +73,78 @@ class SettingsSaveRequest(BaseModel):
     paperclipRoot: str = Field(..., min_length=1)
     checklistRoot: str = Field(..., min_length=1)
     checklistEnvPath: str = Field(..., min_length=1)
-    checklistPollIntervalSeconds: int = Field(7200, ge=30, le=172800)
-    checklistFlashcardRevisitMinutes: int = Field(0, ge=0, le=1440)
-    checklistFlashcardRevisitBatchSize: int = Field(1, ge=1, le=100)
-    checklistTaskRevisitMinutes: int = Field(0, ge=0, le=1440)
-    checklistTaskRevisitBatchSize: int = Field(1, ge=1, le=100)
-    checklistFeedbackReplayMinutes: int = Field(0, ge=0, le=1440)
-    checklistFeedbackReplayBatchSize: int = Field(1, ge=1, le=100)
-    checklistHashtagMaintenanceHours: int = Field(0, ge=0, le=720)
-    checklistHashtagMaintenanceBatchSize: int = Field(1, ge=1, le=100)
-    checklistCleanupHours: int = Field(0, ge=0, le=720)
-    checklistCleanupBatchSize: int = Field(1, ge=1, le=250)
-    checklistOllamaTimeoutMs: int = Field(120000, ge=5000, le=600000)
-    checklistTaskMinIce: int = Field(100, ge=0, le=1000)
-    checklistFlashcardMinConfidence: int = Field(60, ge=1, le=100)
-    checklistFlashcardMinImpact: int = Field(40, ge=1, le=100)
-    checklistFlashcardMinWeight: int = Field(40, ge=1, le=100)
+    checklistPollIntervalSeconds: int = Field(
+        default=CHECKLIST_CONTROL_DEFAULTS["checklistPollIntervalSeconds"], ge=30, le=172800
+    )
+    checklistFlashcardRevisitMinutes: int = Field(
+        default=CHECKLIST_CONTROL_DEFAULTS["checklistFlashcardRevisitMinutes"], ge=0, le=1440
+    )
+    checklistFlashcardRevisitBatchSize: int = Field(
+        default=CHECKLIST_CONTROL_DEFAULTS["checklistFlashcardRevisitBatchSize"], ge=1, le=100
+    )
+    checklistTaskRevisitMinutes: int = Field(
+        default=CHECKLIST_CONTROL_DEFAULTS["checklistTaskRevisitMinutes"], ge=0, le=1440
+    )
+    checklistTaskRevisitBatchSize: int = Field(
+        default=CHECKLIST_CONTROL_DEFAULTS["checklistTaskRevisitBatchSize"], ge=1, le=100
+    )
+    checklistFeedbackReplayMinutes: int = Field(
+        default=CHECKLIST_CONTROL_DEFAULTS["checklistFeedbackReplayMinutes"], ge=0, le=1440
+    )
+    checklistFeedbackReplayBatchSize: int = Field(
+        default=CHECKLIST_CONTROL_DEFAULTS["checklistFeedbackReplayBatchSize"], ge=1, le=100
+    )
+    checklistHashtagMaintenanceHours: int = Field(
+        default=CHECKLIST_CONTROL_DEFAULTS["checklistHashtagMaintenanceHours"], ge=0, le=720
+    )
+    checklistHashtagMaintenanceBatchSize: int = Field(
+        default=CHECKLIST_CONTROL_DEFAULTS["checklistHashtagMaintenanceBatchSize"], ge=1, le=100
+    )
+    checklistCleanupHours: int = Field(
+        default=CHECKLIST_CONTROL_DEFAULTS["checklistCleanupHours"], ge=0, le=720
+    )
+    checklistCleanupBatchSize: int = Field(
+        default=CHECKLIST_CONTROL_DEFAULTS["checklistCleanupBatchSize"], ge=1, le=250
+    )
+    checklistOllamaTimeoutMs: int = Field(
+        default=CHECKLIST_CONTROL_DEFAULTS["checklistOllamaTimeoutMs"], ge=5000, le=600000
+    )
+    checklistFailsafeModel: str = Field(
+        default=CHECKLIST_CONTROL_DEFAULTS["checklistFailsafeModel"], min_length=1
+    )
+    checklistFailsafeTimeoutMs: int = Field(
+        default=CHECKLIST_CONTROL_DEFAULTS["checklistFailsafeTimeoutMs"], ge=5000, le=600000
+    )
+    checklistFailsafeMaxAttempts: int = Field(
+        default=CHECKLIST_CONTROL_DEFAULTS["checklistFailsafeMaxAttempts"], ge=1, le=10
+    )
+    checklistTaskMinIce: int = Field(
+        default=CHECKLIST_CONTROL_DEFAULTS["checklistTaskMinIce"], ge=0, le=1000
+    )
+    checklistFlashcardMinConfidence: int = Field(
+        default=CHECKLIST_CONTROL_DEFAULTS["checklistFlashcardMinConfidence"], ge=1, le=100
+    )
+    checklistFlashcardMinImpact: int = Field(
+        default=CHECKLIST_CONTROL_DEFAULTS["checklistFlashcardMinImpact"], ge=1, le=100
+    )
+    checklistFlashcardMinWeight: int = Field(
+        default=CHECKLIST_CONTROL_DEFAULTS["checklistFlashcardMinWeight"], ge=1, le=100
+    )
+    checklistStuckRunningMinutes: int = Field(
+        default=CHECKLIST_CONTROL_DEFAULTS["checklistStuckRunningMinutes"], ge=1, le=1440
+    )
+    checklistNoProgressMinutes: int = Field(
+        default=CHECKLIST_CONTROL_DEFAULTS["checklistNoProgressMinutes"], ge=1, le=4320
+    )
+    checklistResearchEnabled: bool = Field(
+        default=CHECKLIST_CONTROL_DEFAULTS["checklistResearchEnabled"]
+    )
+    checklistFactcheckMinCitations: int = Field(
+        default=CHECKLIST_CONTROL_DEFAULTS["checklistFactcheckMinCitations"], ge=1, le=20
+    )
+    checklistFactcheckMinDomains: int = Field(
+        default=CHECKLIST_CONTROL_DEFAULTS["checklistFactcheckMinDomains"], ge=1, le=20
+    )
     solutions: dict[str, bool] = Field(default_factory=dict)
 
 
@@ -120,29 +182,15 @@ def default_app_settings() -> dict[str, Any]:
 
 def default_control_settings() -> dict[str, Any]:
     shared_root = normalize_path(DEFAULT_SHARED_ROOT)
-    return {
+    out: dict[str, Any] = {
         "sharedRoot": shared_root,
         "paperclipRoot": normalize_path(os.path.join(shared_root, "paperclip")),
         "checklistRoot": normalize_path(os.path.join(shared_root, "checklist")),
         "checklistEnvPath": normalize_path(os.path.join(shared_root, "checklist", ".env")),
-        "checklistPollIntervalSeconds": 7200,
-        "checklistFlashcardRevisitMinutes": 0,
-        "checklistFlashcardRevisitBatchSize": 1,
-        "checklistTaskRevisitMinutes": 0,
-        "checklistTaskRevisitBatchSize": 1,
-        "checklistFeedbackReplayMinutes": 0,
-        "checklistFeedbackReplayBatchSize": 1,
-        "checklistHashtagMaintenanceHours": 0,
-        "checklistHashtagMaintenanceBatchSize": 1,
-        "checklistCleanupHours": 0,
-        "checklistCleanupBatchSize": 1,
-        "checklistOllamaTimeoutMs": 120000,
-        "checklistTaskMinIce": 100,
-        "checklistFlashcardMinConfidence": 60,
-        "checklistFlashcardMinImpact": 40,
-        "checklistFlashcardMinWeight": 40,
         "solutions": default_solutions_flags(),
     }
+    out.update(CHECKLIST_CONTROL_DEFAULTS)
+    return out
 
 
 def load_app_settings() -> dict[str, Any]:
@@ -169,28 +217,10 @@ def load_control_settings() -> dict[str, Any]:
         value = str(raw.get(key, "")).strip()
         if value:
             settings[key] = normalize_path(value)
-    numeric_settings = {
-        "checklistPollIntervalSeconds": (30, 172800),
-        "checklistFlashcardRevisitMinutes": (0, 1440),
-        "checklistFlashcardRevisitBatchSize": (1, 100),
-        "checklistTaskRevisitMinutes": (0, 1440),
-        "checklistTaskRevisitBatchSize": (1, 100),
-        "checklistFeedbackReplayMinutes": (0, 1440),
-        "checklistFeedbackReplayBatchSize": (1, 100),
-        "checklistHashtagMaintenanceHours": (0, 720),
-        "checklistHashtagMaintenanceBatchSize": (1, 100),
-        "checklistCleanupHours": (0, 720),
-        "checklistCleanupBatchSize": (1, 250),
-        "checklistOllamaTimeoutMs": (5000, 600000),
-        "checklistTaskMinIce": (0, 1000),
-        "checklistFlashcardMinConfidence": (1, 100),
-        "checklistFlashcardMinImpact": (1, 100),
-        "checklistFlashcardMinWeight": (1, 100),
-    }
-    for key, (min_value, max_value) in numeric_settings.items():
-        value = raw.get(key)
-        if isinstance(value, int) and min_value <= value <= max_value:
-            settings[key] = value
+    merge_checklist_panel_fields_from_raw(raw, settings)
+    failsafe_model = str(raw.get("checklistFailsafeModel", "")).strip()
+    if failsafe_model:
+        settings["checklistFailsafeModel"] = failsafe_model
     solutions = default_solutions_flags()
     sol_raw = raw.get("solutions")
     if isinstance(sol_raw, dict):
@@ -308,6 +338,14 @@ def get_settings() -> dict[str, Any]:
     }
 
 
+@app.get("/api/checklist-metrics")
+def get_checklist_metrics(hours: int = 24) -> dict[str, Any]:
+    control_settings = load_control_settings()
+    bounded_hours = max(6, min(hours, 168))
+    rows = load_runtime_metrics_rows(control_settings["checklistRoot"])
+    return aggregate_checklist_metrics(rows, bounded_hours)
+
+
 @app.put("/api/settings")
 def save_settings(body: SettingsSaveRequest) -> dict[str, Any]:
     ensure_state_dir()
@@ -333,10 +371,18 @@ def save_settings(body: SettingsSaveRequest) -> dict[str, Any]:
             "checklistCleanupHours",
             "checklistCleanupBatchSize",
             "checklistOllamaTimeoutMs",
+            "checklistFailsafeModel",
+            "checklistFailsafeTimeoutMs",
+            "checklistFailsafeMaxAttempts",
             "checklistTaskMinIce",
             "checklistFlashcardMinConfidence",
             "checklistFlashcardMinImpact",
             "checklistFlashcardMinWeight",
+            "checklistStuckRunningMinutes",
+            "checklistNoProgressMinutes",
+            "checklistResearchEnabled",
+            "checklistFactcheckMinCitations",
+            "checklistFactcheckMinDomains",
         )
     )
     folder_changed = normalize_path(body.localProjectFolder) != normalize_path(
@@ -367,10 +413,18 @@ def save_settings(body: SettingsSaveRequest) -> dict[str, Any]:
         "checklistCleanupHours": body.checklistCleanupHours,
         "checklistCleanupBatchSize": body.checklistCleanupBatchSize,
         "checklistOllamaTimeoutMs": body.checklistOllamaTimeoutMs,
+        "checklistFailsafeModel": body.checklistFailsafeModel.strip(),
+        "checklistFailsafeTimeoutMs": body.checklistFailsafeTimeoutMs,
+        "checklistFailsafeMaxAttempts": body.checklistFailsafeMaxAttempts,
         "checklistTaskMinIce": body.checklistTaskMinIce,
         "checklistFlashcardMinConfidence": body.checklistFlashcardMinConfidence,
         "checklistFlashcardMinImpact": body.checklistFlashcardMinImpact,
         "checklistFlashcardMinWeight": body.checklistFlashcardMinWeight,
+        "checklistStuckRunningMinutes": body.checklistStuckRunningMinutes,
+        "checklistNoProgressMinutes": body.checklistNoProgressMinutes,
+        "checklistResearchEnabled": body.checklistResearchEnabled,
+        "checklistFactcheckMinCitations": body.checklistFactcheckMinCitations,
+        "checklistFactcheckMinDomains": body.checklistFactcheckMinDomains,
         "solutions": solutions,
         "updatedAt": datetime.now(timezone.utc).isoformat(),
     }
