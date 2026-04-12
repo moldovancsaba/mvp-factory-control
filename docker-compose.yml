@@ -111,9 +111,8 @@ services:
       OPENCLAW_CONTROL_UI_DANGEROUSLY_ALLOW_HOST_HEADER_ORIGIN_FALLBACK: "true"
       # OpenRouter Integration (300+ models)
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
-      # Local LLM Integration (Ollama)
-      # Host Ollama is plain HTTP on the Mac; containers cannot use the Mac's HTTPS gateway without extra routing.
-      OPENAI_API_BASE: http://host.docker.internal:11434/v1
+      # Local LLM: optional. Commented — gateway can stall probing Ollama on host before binding :18789.
+      # OPENAI_API_BASE: http://host.docker.internal:11434/v1
     volumes:
       # Docker Desktop often does not share /Users/Shared with the Linux VM, so this bind can
       # appear empty inside the container and the gateway will crash. Set OPENCLAW_HOST_CONFIG_DIR
