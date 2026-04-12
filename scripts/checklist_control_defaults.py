@@ -100,7 +100,7 @@ CHECKLIST_CONTROL_DEFAULTS: dict[str, Any] = {
     "checklistCleanupHours": 0,
     "checklistCleanupBatchSize": 1,
     "checklistOllamaTimeoutMs": 120000,
-    "checklistFailsafeModel": "gemma4:e4b",
+    "checklistFailsafeModel": "gemma4:e4b,granite3.3:2b",
     "checklistFailsafeTimeoutMs": 90000,
     "checklistFailsafeMaxAttempts": 2,
     "checklistTaskMinIce": 0,
@@ -400,9 +400,24 @@ def aggregate_checklist_metrics(rows: list[dict[str, Any]], hours: int) -> dict[
         and row.get("type") in {"company-cycle-summary", "company-lane-run", "failsafe-queue", "meaningful-progress"}
     ][-40:]
 
+    totals = {
+        "companiesProcessedFully": 0,
+        "cardsCreated": 0,
+        "taskcardsCreated": 0,
+        "flashcardsCreated": 0,
+        "datacardsCreated": 0,
+    }
+    for bucket in hourly:
+        totals["companiesProcessedFully"] += int(bucket.get("companiesProcessedFully") or 0)
+        totals["cardsCreated"] += int(bucket.get("cardsCreated") or 0)
+        totals["taskcardsCreated"] += int(bucket.get("taskcardsCreated") or 0)
+        totals["flashcardsCreated"] += int(bucket.get("flashcardsCreated") or 0)
+        totals["datacardsCreated"] += int(bucket.get("datacardsCreated") or 0)
+
     return {
         "hours": hours,
         "hourly": hourly,
+        "totals": totals,
         "companies": sorted(per_company_keys),
         "recentEvents": recent_events,
     }
