@@ -16,6 +16,8 @@ import datetime
 import webbrowser
 import sys
 import json
+import urllib.request
+import urllib.error
 
 # Fix PATH for LaunchAgent execution
 local_bin = os.path.expanduser("~/.local/bin")
@@ -65,6 +67,15 @@ TLS_DIR = os.path.join(RUNTIME_STATE_DIR, "tls")
 TLS_CERT_PATH = os.path.join(TLS_DIR, "localhost-cert.pem")
 PYTHON_CMD = sys.executable
 SERVICE_START_GRACE_SECONDS = 20
+
+CHECKLIST_WORKER_HEALTH_URL = "http://127.0.0.1:10005/health"
+CHECKLIST_ENV_KEYS = (
+    "DATABASE_URL",
+    "NEON_DB",
+    "LOCAL_SYNC_URL",
+    "LOCAL_SYNC_SECRET",
+    "CHECKLIST_ENV_PATH",
+)
 
 
 def ensure_loopback_tls_material():
@@ -237,9 +248,57 @@ def load_dotenv(path):
 for env_path in [os.path.join(REPO_ROOT, ".env"), *build_checklist_env_candidates()]:
     load_dotenv(env_path)
 
+
+def expected_checklist_worker_contract():
+    return {
+        "researchEnabled": True,
+        "settings": {
+            "schedulingMode": "company-serial-cycle",
+            "companyCycleCooldownMs": int(
+                CONTROL_PANEL_SETTINGS.get("checklistPollIntervalSeconds", 7200)
+            )
+            * 1000,
+            "researchHarvestBatchSize": 1,
+            "ollamaTimeoutMs": int(
+                CONTROL_PANEL_SETTINGS.get("checklistOllamaTimeoutMs", 120000)
+            ),
+            "taskMinIceScore": int(
+                CONTROL_PANEL_SETTINGS.get("checklistTaskMinIce", 100)
+            ),
+            "flashcardMinConfidence": int(
+                CONTROL_PANEL_SETTINGS.get("checklistFlashcardMinConfidence", 60)
+            ),
+            "flashcardMinImpact": int(
+                CONTROL_PANEL_SETTINGS.get("checklistFlashcardMinImpact", 40)
+            ),
+            "flashcardMinWeight": int(
+                CONTROL_PANEL_SETTINGS.get("checklistFlashcardMinWeight", 40)
+            ),
+            "flashcardRevisitBatchSize": int(
+                CONTROL_PANEL_SETTINGS.get("checklistFlashcardRevisitBatchSize", 1)
+            ),
+            "taskRevisitBatchSize": int(
+                CONTROL_PANEL_SETTINGS.get("checklistTaskRevisitBatchSize", 1)
+            ),
+            "feedbackReplayBatchSize": int(
+                CONTROL_PANEL_SETTINGS.get("checklistFeedbackReplayBatchSize", 1)
+            ),
+            "hashtagMaintenanceBatchSize": int(
+                CONTROL_PANEL_SETTINGS.get("checklistHashtagMaintenanceBatchSize", 1)
+            ),
+            "cleanupBatchSize": int(
+                CONTROL_PANEL_SETTINGS.get("checklistCleanupBatchSize", 1)
+            ),
+        },
+    }
+
 SERVICES = {
     "Paperclip": {
-        "port": 3100,
+        # The local trusted Paperclip instance currently serves on 10006 with
+        # /dashboard as its public base path. The gateway must track the real
+        # upstream port or Checklist operator views appear down even when the
+        # app is healthy.
+        "port": 10006,
         "cwd": PAPERCLIP_ROOT,
         "cmd": ["/opt/homebrew/bin/pnpm", "dev"],
         "env": {
@@ -513,6 +572,49 @@ class ControlApp(rumps.App):
         except Exception:
             return []
 
+    def read_checklist_worker_health(self):
+        try:
+            with urllib.request.urlopen(CHECKLIST_WORKER_HEALTH_URL, timeout=2) as response:
+                payload = response.read().decode("utf-8")
+            return json.loads(payload)
+        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, json.JSONDecodeError, OSError):
+            return None
+
+    def checklist_worker_drift_reason(self):
+        health = self.read_checklist_worker_health()
+        if not health:
+            return "health-unreachable"
+
+        expected = expected_checklist_worker_contract()
+        if bool(health.get("researchEnabled")) != expected["researchEnabled"]:
+            return "research-enabled-mismatch"
+
+        settings = health.get("settings") or {}
+        for key, expected_value in expected["settings"].items():
+            if settings.get(key) != expected_value:
+                return f"settings-mismatch:{key}"
+
+        return None
+
+    def build_service_env(self, name, config):
+        env = os.environ.copy()
+
+        # The control plane loads Checklist env to supervise the worker, but we must
+        # not leak those vars into other services or they inherit the wrong database.
+        if name != "ChecklistSync":
+            for key in CHECKLIST_ENV_KEYS:
+                env.pop(key, None)
+            for key in list(env.keys()):
+                if key.startswith("CHECKLIST_"):
+                    env.pop(key, None)
+
+        if name == "Paperclip":
+            env.pop("DATABASE_URL", None)
+            env.pop("NEON_DB", None)
+
+        env.update(config.get("env", {}))
+        return env
+
     def check_status(self, _=None):
         reload_control_panel_settings()
         statuses = []
@@ -544,6 +646,15 @@ class ControlApp(rumps.App):
                     self.starting_services.pop(name, None)
                 start_age = time.time() - self.starting_services.get(name, 0)
                 is_starting = not running and 0 < start_age < SERVICE_START_GRACE_SECONDS
+
+                if running and name == "ChecklistSync" and start_age >= SERVICE_START_GRACE_SECONDS:
+                    drift_reason = self.checklist_worker_drift_reason()
+                    if drift_reason:
+                        print(f"ChecklistSync runtime drift detected: {drift_reason}. Replacing worker...")
+                        self.stop_service(name)
+                        running = False
+                        start_age = time.time() - self.starting_services.get(name, 0)
+                        is_starting = not running and 0 < start_age < SERVICE_START_GRACE_SECONDS
 
                 if not enabled and not running:
                     status_emoji = "⏸"
@@ -1036,8 +1147,7 @@ class ControlApp(rumps.App):
             log_file.write(f"\n--- Starting {name} at {datetime.datetime.now()} ---\n")
             log_file.flush()
 
-            env = os.environ.copy()
-            env.update(config.get("env", {}))
+            env = self.build_service_env(name, config)
 
             proc = subprocess.Popen(
                 config["cmd"],

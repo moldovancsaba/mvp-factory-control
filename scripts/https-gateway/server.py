@@ -8,7 +8,7 @@ the loopback certificate. **Hop to upstreams** on ``127.0.0.1`` remains plain HT
 servers (Paperclip, Ollama, etc.) do not expose TLS; only this gateway terminates TLS on localhost.
 
 HTTP(S) non-upgrade requests use urllib. WebSocket upgrades on ``/dashboard/`` use a raw TCP tunnel to
-Paperclip (``127.0.0.1:3100``) so live events work at ``wss://127.0.0.1:<port>/dashboard/...``.
+Paperclip (``127.0.0.1:10006``) so live events work at ``wss://127.0.0.1:<port>/dashboard/...``.
 """
 from __future__ import annotations
 
@@ -37,7 +37,7 @@ REPO_ROOT = str(Path(__file__).resolve().parents[2])
 DASHBOARD_GATEWAY_PREFIX = "/dashboard/"
 
 ROUTES = {
-    DASHBOARD_GATEWAY_PREFIX: "http://127.0.0.1:3100",
+    DASHBOARD_GATEWAY_PREFIX: "http://127.0.0.1:10006",
     "/variables/": "http://127.0.0.1:3199/",
     "/settings/": "http://127.0.0.1:3200/",
     "/connectors/": "http://127.0.0.1:3198/",
@@ -82,7 +82,7 @@ def _is_upstream_connection_refused(exc: BaseException) -> bool:
 def _upstream_unavailable_body(target_url: str, exc: BaseException) -> bytes:
     hint = (
         "Nothing is listening on the upstream port. Start the matching service from the Control menu "
-        "(e.g. Paperclip for /dashboard/* on port 3100)."
+        "(e.g. Paperclip for /dashboard/* on port 10006)."
     )
     text = (
         "502 Bad Gateway — upstream connection refused\n\n"
@@ -296,7 +296,7 @@ class GatewayHandler(BaseHTTPRequestHandler):
             if exc.errno == errno.ECONNREFUSED:
                 self.send_error(
                     502,
-                    "WebSocket upstream refused (start Paperclip on port 3100 for /dashboard)",
+                    "WebSocket upstream refused (start Paperclip on port 10006 for /dashboard)",
                 )
             else:
                 msg = str(exc).encode("utf-8", errors="replace")[:500]

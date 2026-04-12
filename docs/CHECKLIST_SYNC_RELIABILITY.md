@@ -64,6 +64,12 @@ Checklist reliability depends on the control plane automatically managing:
 - the Checklist worker,
 - local health visibility.
 
+Operationally the supervisor must also:
+
+- prevent Checklist env variables from leaking into unrelated local services,
+- detect stale Checklist worker launches whose live health/settings no longer match control-panel settings,
+- replace those stale launches automatically instead of accepting “process exists” as healthy.
+
 ### 5. The worker must use a stable local model
 
 Checklist standard local model:
@@ -114,6 +120,7 @@ Checklist local AI is healthy when:
 - the worker reports database readiness,
 - the worker reports model readiness,
 - if research is enabled, the worker reports research configuration,
+- the worker health payload matches the active control-panel Checklist settings,
 - recent poll cycles complete without repeated generation errors.
 
 ## Failure Modes To Watch
@@ -180,6 +187,20 @@ Mitigation:
 - bound fetch timeouts,
 - store explicit evidence status,
 - keep the worker healthy even when research fails.
+
+### 6. Supervisor drift
+
+Effect:
+
+- the worker process is running, but with old env/settings,
+- the dashboard or worker can look alive while using stale timeout, cadence, or research settings,
+- other local services can inherit Checklist-only env and fail for unrelated reasons.
+
+Mitigation:
+
+- validate Checklist worker health against the expected control contract,
+- restart stale workers automatically,
+- sanitize env propagation so non-Checklist services do not inherit Checklist database/runtime vars.
 
 ### 6. Silent citation drift
 
