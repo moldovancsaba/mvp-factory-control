@@ -353,6 +353,25 @@
     .event-row strong {
       color: var(--text);
     }
+    .proof-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      margin-top: 10px;
+    }
+    .proof-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: rgba(15, 23, 42, 0.55);
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .proof-item strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
     @media (max-width: 920px) {
       .two { grid-template-columns: 1fr; }
       header { flex-direction: column; }
@@ -565,6 +584,11 @@
           <div class="chart-legend" id="stackedLegend"></div>
         </div>
         <div class="chart-panel">
+          <p class="chart-title">Operations Proof</p>
+          <p class="chart-subtitle">Live queue depth, model success/failure, and last successful full company cycle.</p>
+          <div class="proof-grid" id="opsProof"></div>
+        </div>
+        <div class="chart-panel">
           <p class="chart-title">Recent worker events</p>
           <p class="chart-subtitle">Latest company-cycle, fail-safe, and progress events.</p>
           <div class="event-list" id="eventList"></div>
@@ -743,11 +767,34 @@
       });
     }
 
+    function renderOpsProof(opsProof) {
+      const host = document.getElementById("opsProof");
+      host.innerHTML = "";
+      const queueDepth = opsProof?.queueDepthByStatus || {};
+      const modelStats = opsProof?.modelStats || {};
+      const lastCycle = opsProof?.lastSuccessfulCompanyCycleAt
+        ? new Date(opsProof.lastSuccessfulCompanyCycleAt).toLocaleString()
+        : "n/a";
+      const queueText = Object.keys(queueDepth).length
+        ? Object.entries(queueDepth).map(([k, v]) => `${k}: ${v}`).join(", ")
+        : "empty";
+      const modelText = Object.keys(modelStats).length
+        ? Object.entries(modelStats).map(([model, v]) => `${model} (ok ${v.completed || 0}, fail ${v.failed || 0})`).join(" | ")
+        : "no model events yet";
+
+      host.innerHTML = `
+        <div class="proof-item"><strong>Queue Depth By Status</strong>${queueText}</div>
+        <div class="proof-item"><strong>Model Success/Failure</strong>${modelText}</div>
+        <div class="proof-item"><strong>Last Successful Full Cycle</strong>${lastCycle}</div>
+      `;
+    }
+
     async function loadMetrics() {
       const hours = Number(document.getElementById("metricsHours").value || 24);
       const data = await api(`/api/checklist-metrics?hours=${hours}`);
       renderLineChart(data.hourly || []);
       renderStackedBars(data.hourly || [], data.companies || []);
+      renderOpsProof(data.opsProof || {});
       renderRecentEvents(data.recentEvents || []);
     }
 

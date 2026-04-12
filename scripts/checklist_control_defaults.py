@@ -249,6 +249,44 @@ def checklist_behavioral_stall_reason(health: dict[str, Any]) -> str | None:
     return None
 
 
+def checklist_health_shape_errors(
+    payload: Any,
+    *,
+    strict_extended: bool = False,
+) -> list[str]:
+    """
+    Static validation of a Checklist worker ``/health`` JSON body (shape only).
+
+    Ensures ``researchEnabled`` exists and ``settings`` contains every key the
+    supervisor compares in legacy mode, or every key in full extended mode when
+    ``strict_extended`` is True. Empty list means the payload passes.
+
+    Used by CI fixtures and ``scripts/validate_checklist_worker_health.py``.
+    """
+    errors: list[str] = []
+    if not isinstance(payload, dict):
+        return ["payload must be a JSON object"]
+    if "researchEnabled" not in payload:
+        errors.append("missing top-level researchEnabled")
+    else:
+        re = payload.get("researchEnabled")
+        if not isinstance(re, (bool, str, int, float)):
+            errors.append("researchEnabled must be a boolean or scalar")
+    st = payload.get("settings")
+    if not isinstance(st, dict):
+        errors.append("settings must be an object")
+        return errors
+    required = (
+        CHECKLIST_HEALTH_FULL_SETTING_KEYS
+        if strict_extended
+        else CHECKLIST_HEALTH_LEGACY_SETTING_KEYS
+    )
+    for key in sorted(required):
+        if key not in st:
+            errors.append(f"settings missing required key: {key}")
+    return errors
+
+
 def build_checklist_sync_env_overlay(control_settings: dict[str, Any]) -> dict[str, str]:
     """Environment variables passed to the Checklist worker process (string values)."""
     s = control_settings
@@ -312,7 +350,28 @@ def load_runtime_metrics_rows(checklist_root: str) -> list[dict[str, Any]]:
     return rows
 
 
-def aggregate_checklist_metrics(rows: list[dict[str, Any]], hours: int) -> dict[str, Any]:
+def load_failsafe_queue_rows(checklist_root: str) -> list[dict[str, Any]]:
+    queue_path = Path(checklist_root) / "scripts" / "knowledge" / "failsafe-queue.ndjson"
+    if not queue_path.is_file():
+        return []
+    latest: dict[str, dict[str, Any]] = {}
+    for line in queue_path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        row_id = row.get("id")
+        if not row_id:
+            continue
+        latest[str(row_id)] = row
+    return list(latest.values())
+
+
+def aggregate_checklist_metrics(
+    rows: list[dict[str, Any]], hours: int, failsafe_queue_rows: list[dict[str, Any]] | None = None
+) -> dict[str, Any]:
     now = datetime.now(timezone.utc)
     hourly = []
     buckets: dict[str, dict[str, Any]] = {}
@@ -397,7 +456,14 @@ def aggregate_checklist_metrics(rows: list[dict[str, Any]], hours: int) -> dict[
         row
         for row in rows
         if row.get("recordedAt")
-        and row.get("type") in {"company-cycle-summary", "company-lane-run", "failsafe-queue", "meaningful-progress"}
+        and row.get("type")
+        in {
+            "company-cycle-summary",
+            "company-lane-run",
+            "failsafe-queue",
+            "meaningful-progress",
+            "reliability-alert",
+        }
     ][-40:]
 
     totals = {
@@ -414,10 +480,45 @@ def aggregate_checklist_metrics(rows: list[dict[str, Any]], hours: int) -> dict[
         totals["flashcardsCreated"] += int(bucket.get("flashcardsCreated") or 0)
         totals["datacardsCreated"] += int(bucket.get("datacardsCreated") or 0)
 
+    queue_by_status: dict[str, int] = defaultdict(int)
+    for row in failsafe_queue_rows or []:
+        status = str(row.get("status") or "UNKNOWN")
+        queue_by_status[status] += 1
+
+    model_stats: dict[str, dict[str, int]] = {}
+    for row in rows:
+        if row.get("type") != "failsafe-queue":
+            continue
+        action = str(row.get("action") or "").lower()
+        model_field = str(row.get("model") or "")
+        models = [m.strip() for m in model_field.split(",") if m.strip()] or ["unspecified"]
+        for model in models:
+            entry = model_stats.setdefault(model, {"completed": 0, "failed": 0})
+            if action == "completed":
+                entry["completed"] += 1
+            elif action.startswith("failed"):
+                entry["failed"] += 1
+
+    last_successful_company_cycle_at = None
+    for row in reversed(rows):
+        if row.get("type") == "company-cycle-summary" and int(row.get("companiesProcessedFully") or 0) > 0:
+            last_successful_company_cycle_at = row.get("recordedAt")
+            break
+        if row.get("type") == "company-lane-run" and row.get("lane") == "companyCycle":
+            result = row.get("result") or {}
+            if result.get("processed"):
+                last_successful_company_cycle_at = row.get("recordedAt")
+                break
+
     return {
         "hours": hours,
         "hourly": hourly,
         "totals": totals,
         "companies": sorted(per_company_keys),
+        "opsProof": {
+            "queueDepthByStatus": dict(sorted(queue_by_status.items())),
+            "modelStats": model_stats,
+            "lastSuccessfulCompanyCycleAt": last_successful_company_cycle_at,
+        },
         "recentEvents": recent_events,
     }

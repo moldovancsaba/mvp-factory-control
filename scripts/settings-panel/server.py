@@ -19,6 +19,7 @@ if str(_SCRIPTS_ROOT) not in sys.path:
 from checklist_control_defaults import (
     CHECKLIST_CONTROL_DEFAULTS,
     aggregate_checklist_metrics,
+    load_failsafe_queue_rows,
     load_runtime_metrics_rows,
     merge_checklist_panel_fields_from_raw,
 )
@@ -343,7 +344,8 @@ def get_checklist_metrics(hours: int = 24) -> dict[str, Any]:
     control_settings = load_control_settings()
     bounded_hours = max(6, min(hours, 168))
     rows = load_runtime_metrics_rows(control_settings["checklistRoot"])
-    return aggregate_checklist_metrics(rows, bounded_hours)
+    queue_rows = load_failsafe_queue_rows(control_settings["checklistRoot"])
+    return aggregate_checklist_metrics(rows, bounded_hours, queue_rows)
 
 
 @app.put("/api/settings")
