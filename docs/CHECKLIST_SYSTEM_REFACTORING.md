@@ -87,6 +87,7 @@ The following changes were completed as part of this refactor:
 - Added this refactoring document as the source of truth for the migration.
 - Updated the Checklist reliability document to reflect the new architecture.
 - Updated the build/run guidance so the local AI path is centered on Ollama plus the Checklist worker.
+- Added [`docs/CHECKLIST_WORKER_HEALTH_CONTRACT.md`](CHECKLIST_WORKER_HEALTH_CONTRACT.md) as the worker `/health` contract for the parallel Checklist codebase.
 
 ### Control plane
 

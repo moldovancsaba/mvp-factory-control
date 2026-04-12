@@ -299,6 +299,31 @@ def resolve_ollama_command():
     return "ollama"
 
 
+def resolve_pnpm_command():
+    for candidate in (
+        os.path.expanduser("~/.local/bin/pnpm"),
+        "/opt/homebrew/bin/pnpm",
+        "/usr/local/bin/pnpm",
+        shutil.which("pnpm"),
+    ):
+        if candidate and os.path.isfile(candidate):
+            return candidate
+    return "pnpm"
+
+
+def resolve_docker_command():
+    for candidate in (
+        os.path.expanduser("~/.local/bin/docker"),
+        "/opt/homebrew/bin/docker",
+        "/usr/local/bin/docker",
+        "/usr/bin/docker",
+        shutil.which("docker"),
+    ):
+        if candidate and os.path.isfile(candidate):
+            return candidate
+    return "docker"
+
+
 SERVICES = {
     "Paperclip": {
         # The local trusted Paperclip instance currently serves on 10006 with
@@ -307,7 +332,7 @@ SERVICES = {
         # app is healthy.
         "port": 10006,
         "cwd": PAPERCLIP_ROOT,
-        "cmd": ["/opt/homebrew/bin/pnpm", "dev"],
+        "cmd": [resolve_pnpm_command(), "dev"],
         "env": {
             "PAPERCLIP_PUBLIC_BASE_PATH": "/dashboard",
             "PAPERCLIP_PUBLIC_URL": f"https://127.0.0.1:{HTTPS_GATEWAY_PORT}/dashboard",
@@ -496,7 +521,7 @@ class ControlApp(rumps.App):
                 f"unix://{os.path.expanduser('~')}/.colima/default/docker.sock"
             )
             cmd = [
-                "/opt/homebrew/bin/docker",
+                resolve_docker_command(),
                 "-H",
                 docker_host,
                 "inspect",
@@ -1097,7 +1122,7 @@ class ControlApp(rumps.App):
             # Use 'docker compose up -d' for the specific service
             # This ensures that 'unless-stopped' and CMD from .yml are applied
             cmd = [
-                "/opt/homebrew/bin/docker",
+                resolve_docker_command(),
                 "compose",
                 "up",
                 "-d",
@@ -1146,7 +1171,7 @@ class ControlApp(rumps.App):
             )
             subprocess.run(
                 [
-                    "/opt/homebrew/bin/docker",
+                    resolve_docker_command(),
                     "-H",
                     docker_host,
                     "stop",

@@ -5,6 +5,7 @@ from checklist_control_defaults import (
     CHECKLIST_CONTROL_DEFAULTS,
     CHECKLIST_HEALTH_LEGACY_SETTING_KEYS,
     aggregate_checklist_metrics,
+    checklist_health_shape_errors,
     checklist_settings_drift_reason,
     expected_checklist_worker_contract,
     merge_checklist_panel_fields_from_raw,
@@ -86,6 +87,28 @@ class TestDriftReason(unittest.TestCase):
         settings["flashcardRevisitIntervalMinutes"] = 999
         health = {"researchEnabled": True, "settings": settings}
         self.assertIsNone(checklist_settings_drift_reason(health, control))
+
+
+class TestHealthShape(unittest.TestCase):
+    def test_legacy_fixture_shape(self):
+        import json
+        from pathlib import Path
+
+        root = Path(__file__).resolve().parents[1]
+        data = json.loads((root / "fixtures" / "checklist_health_legacy_ok.json").read_text())
+        self.assertEqual(checklist_health_shape_errors(data), [])
+
+    def test_full_fixture_strict(self):
+        import json
+        from pathlib import Path
+
+        root = Path(__file__).resolve().parents[1]
+        data = json.loads((root / "fixtures" / "checklist_health_full_ok.json").read_text())
+        self.assertEqual(checklist_health_shape_errors(data, strict_extended=True), [])
+
+    def test_legacy_missing_key(self):
+        err = checklist_health_shape_errors({"researchEnabled": True, "settings": {}})
+        self.assertTrue(any("missing required key" in e for e in err))
 
 
 class TestAggregateMetrics(unittest.TestCase):

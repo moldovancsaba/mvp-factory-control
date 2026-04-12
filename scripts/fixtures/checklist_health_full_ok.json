@@ -1,0 +1,31 @@
+{
+  "researchEnabled": true,
+  "settings": {
+    "schedulingMode": "company-serial-cycle",
+    "companyCycleCooldownMs": 7200000,
+    "researchHarvestBatchSize": 1,
+    "ollamaTimeoutMs": 120000,
+    "failsafeModel": "gemma4:e4b",
+    "failsafeTimeoutMs": 90000,
+    "failsafeMaxAttempts": 2,
+    "taskMinIceScore": 0,
+    "flashcardMinConfidence": 1,
+    "flashcardMinImpact": 1,
+    "flashcardMinWeight": 1,
+    "stuckRunningMs": 900000,
+    "noProgressMs": 10800000,
+    "flashcardRevisitBatchSize": 1,
+    "taskRevisitBatchSize": 1,
+    "feedbackReplayBatchSize": 1,
+    "hashtagMaintenanceBatchSize": 1,
+    "cleanupBatchSize": 1,
+    "supervisorContractVersion": 1,
+    "flashcardRevisitIntervalMinutes": 0,
+    "taskRevisitIntervalMinutes": 0,
+    "feedbackReplayIntervalMinutes": 0,
+    "hashtagMaintenanceIntervalHours": 0,
+    "cleanupIntervalHours": 0,
+    "factcheckMinCitations": 2,
+    "factcheckMinDomains": 2
+  }
+}

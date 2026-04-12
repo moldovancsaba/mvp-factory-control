@@ -233,9 +233,12 @@ Mitigation:
 
 ## Operational Verification
 
+Implementers should follow [`docs/CHECKLIST_WORKER_HEALTH_CONTRACT.md`](CHECKLIST_WORKER_HEALTH_CONTRACT.md) for the exact `/health` key set the supervisor understands.
+
 The following checks should be considered the minimum operational audit:
 
 - `curl --cacert .mvp-factory-control/tls/localhost-cert.pem -fsS https://127.0.0.1:3443/checklistsync/health`
+- `python3 scripts/validate_checklist_worker_health.py --fixture scripts/fixtures/checklist_health_legacy_ok.json`
 - `curl --cacert .mvp-factory-control/tls/localhost-cert.pem -fsS https://127.0.0.1:3443/ollama/api/tags`
 - confirm `gemma4:latest` is installed
 - confirm the worker can authenticate `/sync`
