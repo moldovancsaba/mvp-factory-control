@@ -115,7 +115,10 @@ services:
       # Host Ollama is plain HTTP on the Mac; containers cannot use the Mac's HTTPS gateway without extra routing.
       OPENAI_API_BASE: http://host.docker.internal:11434/v1
     volumes:
-      - ./openclaw_config:/home/node/.openclaw
+      # Docker Desktop often does not share /Users/Shared with the Linux VM, so this bind can
+      # appear empty inside the container and the gateway will crash. Set OPENCLAW_HOST_CONFIG_DIR
+      # in .env to a copy under your home directory (see docs in reply: docs/openclaw_playbook.md).
+      - ${OPENCLAW_HOST_CONFIG_DIR:-./openclaw_config}:/home/node/.openclaw
       - openclaw_workspace:/home/node/clawd
     ports:
       - "${CLAWDBOT_GATEWAY_PORT:-18789}:18789"
