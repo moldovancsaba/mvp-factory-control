@@ -20,3 +20,9 @@ Each repository repair needs its own evidence and acceptance. No elapsed-time or
 
 ## Recovery
 Revert the documentation/validator commit to restore the previous navigation. No application runtime, database or deployment changes are part of this foundation.
+
+## Acceptance review evidence
+
+Foundation PR: [#919](https://github.com/moldovancsaba/mvp-factory-control/pull/919). Initial commit: c8a283fd4d5fbf8f85e8ec39893d5cdbcbfd79e4. Structural checks passed for 49 records; valid investigation/local-only fixtures and six negative cases passed. All relative file links in changed Markdown resolve. Exact restricted repository references were checked and none were introduced.
+
+GitHub reports mergeable_state=blocked and zero checks/statuses on the initial head. The prerequisite repair is tracked in [#920](https://github.com/moldovancsaba/mvp-factory-control/issues/920). #918 is in Review (ALMOST). The live status picker offers no Blocked option; this prerequisite is recorded explicitly in the issue instead of inventing or changing board states. Product-specific routing remains unverified beyond the control policy.
