@@ -1,0 +1,1348 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-19",
+  "scope": "Public repositories accessible through the active GitHub connection; restricted repositories excluded.",
+  "repositories": [
+    {
+      "repository": "moldovancsaba/work.direct",
+      "visibility": "public",
+      "displayName": "work.direct",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/work.direct",
+      "description": null,
+      "topics": [
+        "personal"
+      ],
+      "homepage": {
+        "url": "https://playmass.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/work.direct/blob/8e675cb138c1a71d061651679de3e8442918c658/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "8e675cb138c1a71d061651679de3e8442918c658",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/partnerfonts",
+      "visibility": "public",
+      "displayName": "AS Roma Font Host",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/partnerfonts",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": "https://haikoto.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/partnerfonts/blob/0a0a058b80343d93d8bdf780c932323df3c754ae/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "0a0a058b80343d93d8bdf780c932323df3c754ae",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/matimato",
+      "visibility": "public",
+      "displayName": "Matimato",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/matimato",
+      "description": "play matimato",
+      "topics": [],
+      "homepage": {
+        "url": "https://matimato.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/matimato/blob/198af5e968d763dca5e4dc6f4a188fbba9ca2b8c/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "198af5e968d763dca5e4dc6f4a188fbba9ca2b8c",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/narimato",
+      "visibility": "public",
+      "displayName": "NARIMATO",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/narimato",
+      "description": "support hr",
+      "topics": [],
+      "homepage": {
+        "url": "https://narimato.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/narimato/blob/af14f57d78fe054247390972b45143e0737c81c8/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "af14f57d78fe054247390972b45143e0737c81c8",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/hatori",
+      "visibility": "public",
+      "displayName": "hatori",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/hatori",
+      "description": "everything started here",
+      "topics": [],
+      "homepage": {
+        "url": "https://customato.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/hatori/blob/b7b18991f468c9c6953fd5069c81dc310fb62f67/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "b7b18991f468c9c6953fd5069c81dc310fb62f67",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/amanoba_courses",
+      "visibility": "public",
+      "displayName": "Amanoba Course Quality Control Center",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/amanoba_courses",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": "https://prototype-narimato.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/amanoba_courses/blob/dd58e7589c1f8ca99b727515aefe52b6d01dc5c9/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "dd58e7589c1f8ca99b727515aefe52b6d01dc5c9",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/misisimi",
+      "visibility": "public",
+      "displayName": "or",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/misisimi",
+      "description": "cms for the rest",
+      "topics": [],
+      "homepage": {
+        "url": "https://cms-two-chi.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/misisimi/blob/8f2e3a7b1ea54bfeab3a54cb895264f76e33abe9/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "8f2e3a7b1ea54bfeab3a54cb895264f76e33abe9",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/doneisbetter",
+      "visibility": "public",
+      "displayName": "or",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/doneisbetter",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": "https://doneisbetter.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/doneisbetter/blob/fcddb35082f368434596659c6d6f76b199fbfdac/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "fcddb35082f368434596659c6d6f76b199fbfdac",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/reply",
+      "visibility": "public",
+      "displayName": "reply",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/reply",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": "https://haho-ai.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/reply/blob/7d17acbb5994a307f8d69c99b078f7b9069db43b/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "7d17acbb5994a307f8d69c99b078f7b9069db43b",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/minigames",
+      "visibility": "public",
+      "displayName": "Kids Swipe Game",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/minigames",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": "https://fanfie.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/minigames/blob/9e96ffbc93fc718eca97249157dc027e35219e98/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "9e96ffbc93fc718eca97249157dc027e35219e98",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/replace",
+      "visibility": "public",
+      "displayName": "replace",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/replace",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": null,
+        "state": "not-set"
+      },
+      "readme": {
+        "url": null,
+        "state": "not-retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "fb1a18039e6354bf18055ef28dd032f5548fd22b",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/cars.direct",
+      "visibility": "public",
+      "displayName": "cardmass",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/cars.direct",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": "https://workfromcloud.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/cars.direct/blob/a715b57deb95cbceb2133d4e26e99cebc48649a5/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "a715b57deb95cbceb2133d4e26e99cebc48649a5",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/messmass",
+      "visibility": "public",
+      "displayName": "{messmass}",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/messmass",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": "https://messmass.com",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/messmass/blob/181e49d56189b9415737076b98e4d308d8a997d7/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "181e49d56189b9415737076b98e4d308d8a997d7",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/step",
+      "visibility": "public",
+      "displayName": "STEP",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/step",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": "https://step-phi-two.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/step/blob/b836eb14d0709d118c578b19bb67231fb257457a/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "b836eb14d0709d118c578b19bb67231fb257457a",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/sso",
+      "visibility": "public",
+      "displayName": "Universal SSO Service",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/sso",
+      "description": "OAuth 2.0 / OpenID Connect authorization server and hosted single sign-on for the DoneIsBetter application family. Authorization code with PKCE, refresh tokens, client credentials for machine callers, and centralized per-app permissions. Next.js and MongoDB.",
+      "topics": [
+        "authentication",
+        "authorization",
+        "identity-provider",
+        "mongodb",
+        "nextjs",
+        "oauth2",
+        "oidc",
+        "openid-connect",
+        "pkce",
+        "session-management",
+        "single-sign-on",
+        "sso"
+      ],
+      "homepage": {
+        "url": "https://sso.doneisbetter.com",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/sso/blob/a0ee8f859bab065929d8f278a40817321bd0d9e5/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "a0ee8f859bab065929d8f278a40817321bd0d9e5",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/kormanyvalto",
+      "visibility": "public",
+      "displayName": "Kormanyvalto",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/kormanyvalto",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": "https://kormanyvalto.com",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/kormanyvalto/blob/8511930940f483c6cf76747f4ac142415dc48c4d/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "8511930940f483c6cf76747f4ac142415dc48c4d",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/camera",
+      "visibility": "public",
+      "displayName": "Camera",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/camera",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": "https://moldovancsaba.github.io/camera/",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/camera/blob/2e6c1eb8df829792e30b06c2d3c62347a888b4ea/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "2e6c1eb8df829792e30b06c2d3c62347a888b4ea",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/launchmass",
+      "visibility": "public",
+      "displayName": "launchmass",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/launchmass",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": "https://oversized-links.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/launchmass/blob/04d55f38f5a74ebe14d9c48c1881e7c41f702ba8/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "04d55f38f5a74ebe14d9c48c1881e7c41f702ba8",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/blockmass",
+      "visibility": "public",
+      "displayName": "blockmass",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/blockmass",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": "https://blockmass.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": null,
+        "state": "not-retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "8e0e9ad77052a5ef3945b4eca7987e1773e3e9d7",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/amanoba",
+      "visibility": "public",
+      "displayName": "Amanoba",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/amanoba",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": "https://amanoba-narimato.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/amanoba/blob/67fb1e28855c2d5417b59a7753631b04d87a7c3d/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "67fb1e28855c2d5417b59a7753631b04d87a7c3d",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/mvp-factory-control",
+      "visibility": "public",
+      "displayName": "MVP Factory Control (v1.4.1-sovereign)",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/mvp-factory-control",
+      "description": "agent control",
+      "topics": [],
+      "homepage": {
+        "url": null,
+        "state": "not-set"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/mvp-factory-control/blob/4c4f5924eb1f88f1b5b90617f4a34ce48b3fcd1d/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "documented",
+        "source": "https://github.com/moldovancsaba/mvp-factory-control/blob/main/docs/PROJECT_MANAGEMENT.md"
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "4c4f5924eb1f88f1b5b90617f4a34ce48b3fcd1d",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/spot",
+      "visibility": "public",
+      "displayName": "{spot}",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/spot",
+      "description": "{spot} - Smart Platform for Observing Threats",
+      "topics": [],
+      "homepage": {
+        "url": null,
+        "state": "not-set"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/spot/blob/2fbea8a1a643d0c7c47918bfe46c461b7a84d2aa/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "2fbea8a1a643d0c7c47918bfe46c461b7a84d2aa",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/sovereign",
+      "visibility": "public",
+      "displayName": "{sovereign}",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/sovereign",
+      "description": "agent control",
+      "topics": [],
+      "homepage": {
+        "url": null,
+        "state": "not-set"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/sovereign/blob/6cdcffe6553ee2e5d229df8f9a6484fe8d897f54/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "6cdcffe6553ee2e5d229df8f9a6484fe8d897f54",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/kidex",
+      "visibility": "public",
+      "displayName": "KIDEX",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/kidex",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": "https://kidex-narimato.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/kidex/blob/8dba8e4bc129aa0e27b096fecd569a27f4e1d44c/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "8dba8e4bc129aa0e27b096fecd569a27f4e1d44c",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/agent.chappie",
+      "visibility": "public",
+      "displayName": "Agent.Chappie Local-First OpenClaw Stack",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/agent.chappie",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": "https://agent-chappie.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/agent.chappie/blob/d8e35275b978de71b5990235bcfc98552b2fbaa4/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "d8e35275b978de71b5990235bcfc98552b2fbaa4",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/compare",
+      "visibility": "public",
+      "displayName": "RangeScout EU",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/compare",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": "https://compare-narimato.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/compare/blob/727db1d761e227594a41b6d72dc0e4e8a38e1317/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "727db1d761e227594a41b6d72dc0e4e8a38e1317",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/try-on",
+      "visibility": "public",
+      "displayName": "Try-On Studio",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/try-on",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": null,
+        "state": "not-set"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/try-on/blob/e13cf446e71ece7d2beccb3af57283c7a4a6e550/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "e13cf446e71ece7d2beccb3af57283c7a4a6e550",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/seyusolutions",
+      "visibility": "public",
+      "displayName": "seyusolutions",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/seyusolutions",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": null,
+        "state": "not-set"
+      },
+      "readme": {
+        "url": null,
+        "state": "not-retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "4847210218ac4da18551388effa7a3a14227f42b",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/habigoal.com",
+      "visibility": "public",
+      "displayName": "Habigoal",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/habigoal.com",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": "https://habigoal.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/habigoal.com/blob/9580296877955ae1b16bac8d3afe31727ef918bf/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "9580296877955ae1b16bac8d3afe31727ef918bf",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/lauraorganic.com",
+      "visibility": "public",
+      "displayName": "Laura Organic",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/lauraorganic.com",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": "https://lauraorganic-com.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/lauraorganic.com/blob/ba321ed30dddec067976b3806b1a97119eea33b3/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "ba321ed30dddec067976b3806b1a97119eea33b3",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/calendar-agent",
+      "visibility": "public",
+      "displayName": "Calendar Agent",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/calendar-agent",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": null,
+        "state": "not-set"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/calendar-agent/blob/master/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "19748110a004526147dbc5a43420419155ae5980",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/budapest-night",
+      "visibility": "public",
+      "displayName": "Budapest Night",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/budapest-night",
+      "description": "Budapest Night — events, parties, restaurants, cafés & culture guide",
+      "topics": [],
+      "homepage": {
+        "url": "https://budapest-night.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/budapest-night/blob/1ab35af1db505c20510db2a93201d19fdb1d99a5/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "1ab35af1db505c20510db2a93201d19fdb1d99a5",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/visual",
+      "visibility": "public",
+      "displayName": "visual",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/visual",
+      "description": "Local visual pipeline: head swap, motion, and offline Apple Silicon workflows",
+      "topics": [],
+      "homepage": {
+        "url": null,
+        "state": "not-set"
+      },
+      "readme": {
+        "url": null,
+        "state": "not-retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": null,
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/moldovancsaba.com",
+      "visibility": "public",
+      "displayName": "moldovancsaba.com",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/moldovancsaba.com",
+      "description": "Moldován Csaba Kft",
+      "topics": [],
+      "homepage": {
+        "url": null,
+        "state": "not-set"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/moldovancsaba.com/blob/5dbf4a9589ce001241a9aaacbf6776830c45bc02/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "5dbf4a9589ce001241a9aaacbf6776830c45bc02",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/nyc-kid-scout",
+      "visibility": "public",
+      "displayName": "Welcome to your Lovable project",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/nyc-kid-scout",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": null,
+        "state": "not-set"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/nyc-kid-scout/blob/b6122ac4225976eca84a58710231cb9b77bb7878/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "b6122ac4225976eca84a58710231cb9b77bb7878",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/classscoutdesign",
+      "visibility": "public",
+      "displayName": "ClassScout NYC — Design System website",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/classscoutdesign",
+      "description": "ClassScout NYC Design System — public docs site, generated from source and published via GitHub Pages.",
+      "topics": [],
+      "homepage": {
+        "url": null,
+        "state": "not-set"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/classscoutdesign/blob/78f841d42b62aa5838318ac00d5377baa8b0366b/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "78f841d42b62aa5838318ac00d5377baa8b0366b",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/salesleadgenerator",
+      "visibility": "public",
+      "displayName": "Sales Lead Generator",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/salesleadgenerator",
+      "description": "sales lead generator",
+      "topics": [],
+      "homepage": {
+        "url": "https://cog-map-ten.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/salesleadgenerator/blob/080117a0e0497015a1714da3d26c34966ac062a3/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "080117a0e0497015a1714da3d26c34966ac062a3",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/sovereign.content",
+      "visibility": "public",
+      "displayName": "Sovereign Content",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/sovereign.content",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": "https://classscout-cards.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/sovereign.content/blob/72afde1e070a04eda899adf7ce6ee2afe563b99f/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "72afde1e070a04eda899adf7ce6ee2afe563b99f",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/discoverandenrich",
+      "visibility": "public",
+      "displayName": "ContentCreator Agent Runtime",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/discoverandenrich",
+      "description": "ContentCreator: unified research and enrichment system for multiple clients",
+      "topics": [],
+      "homepage": {
+        "url": "https://researchandenrich.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/discoverandenrich/blob/f8218b97ce13677c31d7c78a950521fe45ba97d3/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "f8218b97ce13677c31d7c78a950521fe45ba97d3",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/deliafrica",
+      "visibility": "public",
+      "displayName": "deli.africa",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/deliafrica",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": "https://deliafrica.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/deliafrica/blob/9a7fcfba8ec040c20f378468d30bdeada441b3ba/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "9a7fcfba8ec040c20f378468d30bdeada441b3ba",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "moldovancsaba/discountdirect",
+      "visibility": "public",
+      "displayName": "DiscountDirect",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/moldovancsaba/discountdirect",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": "https://discountdirect.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/moldovancsaba/discountdirect/blob/05504bf0303e06cbd001a77554e1d5fb0e746cf0/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "05504bf0303e06cbd001a77554e1d5fb0e746cf0",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "sovereignsquad/general-design-system",
+      "visibility": "public",
+      "displayName": "General Design System",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/sovereignsquad/general-design-system",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": "https://sovereignsquad.github.io/general-design-system/",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/sovereignsquad/general-design-system/blob/4828c0841f4168571ed6e121a3280ce39f753f03/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "4828c0841f4168571ed6e121a3280ce39f753f03",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "sovereignsquad/meimei",
+      "visibility": "public",
+      "displayName": "agent.meimei",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/sovereignsquad/meimei",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": "https://frame-it-now.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/sovereignsquad/meimei/blob/99485d5a333d6c98e9114f3aa58ad7fe56b81838/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "99485d5a333d6c98e9114f3aa58ad7fe56b81838",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "sovereignsquad/train",
+      "visibility": "public",
+      "displayName": "{train}",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/sovereignsquad/train",
+      "description": "{train} is a provider-neutral autonomous optimization platform.",
+      "topics": [],
+      "homepage": {
+        "url": null,
+        "state": "not-set"
+      },
+      "readme": {
+        "url": "https://github.com/sovereignsquad/train/blob/44951f93aef482c458b7f9b8e9104e3114aca394/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "44951f93aef482c458b7f9b8e9104e3114aca394",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "sovereignsquad/checklist",
+      "visibility": "public",
+      "displayName": "check",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/sovereignsquad/checklist",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": "https://checklist-git-main-narimato.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/sovereignsquad/checklist/blob/ac842dc68f66362b6159d9007460f3f2eba01f21/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "ac842dc68f66362b6159d9007460f3f2eba01f21",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "sovereignsquad/impact",
+      "visibility": "public",
+      "displayName": "IMPACT",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/sovereignsquad/impact",
+      "description": "Impact — open source project (roadmap & work tracking on GitHub Projects)",
+      "topics": [
+        "open-source",
+        "roadmap"
+      ],
+      "homepage": {
+        "url": "https://step-phi-two.vercel.app",
+        "state": "unverified"
+      },
+      "readme": {
+        "url": "https://github.com/sovereignsquad/impact/blob/989fdd8b1759faae87baec196665b8902259190f/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "989fdd8b1759faae87baec196665b8902259190f",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "sovereignsquad/survey",
+      "visibility": "public",
+      "displayName": "Habigoal",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/sovereignsquad/survey",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": null,
+        "state": "not-set"
+      },
+      "readme": {
+        "url": "https://github.com/sovereignsquad/survey/blob/0a54b6678731736f11e4a83251161349c0b266b1/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "0a54b6678731736f11e4a83251161349c0b266b1",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "sovereignsquad/trinity",
+      "visibility": "public",
+      "displayName": "{trinity}",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/sovereignsquad/trinity",
+      "description": null,
+      "topics": [],
+      "homepage": {
+        "url": null,
+        "state": "not-set"
+      },
+      "readme": {
+        "url": "https://github.com/sovereignsquad/trinity/blob/793d4c3a3266e77908bc428ad9a87729554beacd/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "793d4c3a3266e77908bc428ad9a87729554beacd",
+      "investigationOwner": "moldovancsaba"
+    },
+    {
+      "repository": "sovereignsquad/sovereignsquad.github.io",
+      "visibility": "public",
+      "displayName": "sovereignsquad.github.io",
+      "observedAt": "2026-10-19",
+      "source": "https://api.github.com/repos/sovereignsquad/sovereignsquad.github.io",
+      "description": "Root GitHub Pages site for Sovereign Squad",
+      "topics": [],
+      "homepage": {
+        "url": null,
+        "state": "not-set"
+      },
+      "readme": {
+        "url": "https://github.com/sovereignsquad/sovereignsquad.github.io/blob/25313e5858ce119b7fa0feaf555e9824b027a9cc/README.md",
+        "state": "retrieved"
+      },
+      "lifecycle": "unknown",
+      "role": "unknown",
+      "deliveryRouting": {
+        "state": "unverified",
+        "source": null
+      },
+      "reviewState": "investigating",
+      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "sourceRevision": "25313e5858ce119b7fa0feaf555e9824b027a9cc",
+      "investigationOwner": "moldovancsaba"
+    }
+  ]
+}

@@ -11,6 +11,15 @@ Read this with:
 - [docs/INTERNAL_CONTROL_APP.md](docs/INTERNAL_CONTROL_APP.md)
 - [docs/AGENT_PROMPTS.md](docs/AGENT_PROMPTS.md)
 
+
+## Portfolio discovery and quality
+
+- [Public repository index](docs/portfolio/README.md) — current public inventory, observed identities and verification state.
+- [Repository welcome quality standard](docs/portfolio/STANDARD.md) — evidence, role-specific content and acceptance gates.
+- [Programme execution status](docs/portfolio/STATUS.md) — completed preparation, blockers and next gates.
+
+The historical managed-project list below is not the complete inventory. Public discovery does not enrol a product into central issue management. Resolve delivery routing per repository before moving work. Restricted portfolio records must not be published here.
+
 ## Repository Identity
 
 `mvp-factory-control` is the central control repository for the MVP Factory portfolio.
