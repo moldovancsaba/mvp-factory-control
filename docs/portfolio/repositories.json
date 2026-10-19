@@ -286,15 +286,15 @@
       "displayName": "replace",
       "observedAt": "2026-10-19",
       "source": "https://api.github.com/repos/moldovancsaba/replace",
-      "description": null,
+      "description": "Local batch-workflow API scaffold with filesystem-backed configuration, job queue and worker. Image processor not yet configured.",
       "topics": [],
       "homepage": {
         "url": null,
         "state": "not-set"
       },
       "readme": {
-        "url": null,
-        "state": "not-retrieved"
+        "url": "https://github.com/moldovancsaba/replace/blob/b8b4c413d06d56536afd22f5b49a482d270ae63c/README.md",
+        "state": "retrieved"
       },
       "lifecycle": "unknown",
       "role": "unknown",
@@ -304,8 +304,13 @@
       },
       "reviewState": "investigating",
       "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
-      "sourceRevision": "fb1a18039e6354bf18055ef28dd032f5548fd22b",
-      "investigationOwner": "moldovancsaba"
+      "sourceRevision": "b8b4c413d06d56536afd22f5b49a482d270ae63c",
+      "investigationOwner": "moldovancsaba",
+      "welcomeReview": {
+        "state": "verified",
+        "scope": "Source-grounded README and implementation note; Python 3.12.3 synthetic startup/API/queue checks passed; image processor remains unconfigured",
+        "evidence": "https://github.com/moldovancsaba/mvp-factory-control/issues/925"
+      }
     },
     {
       "repository": "moldovancsaba/cars.direct",

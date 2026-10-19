@@ -10,6 +10,8 @@ Updated: 19 October 2026. Delivery state and current checks are tracked in the l
 
 - Eight public About descriptions: saved and independently verified in [#922](https://github.com/moldovancsaba/mvp-factory-control/issues/922); issue closed and project status Done. Existing websites, visibility and topics were preserved.
 
+- Replace welcome, implementation note and About description: [replace PR #1](https://github.com/moldovancsaba/replace/pull/1), verified on main at b8b4c413d06d56536afd22f5b49a482d270ae63c. [Issue #925](https://github.com/moldovancsaba/mvp-factory-control/issues/925) records synthetic API/queue verification and the explicitly unconfigured image processor.
+
 ## Verification path
 The required portability-gate workflow runs the public register/self-tests and real Docker build, migrations, app startup and health probes in a disposable runner. It uses synthetic configuration, preserves branch protection and does not access production data.
 
