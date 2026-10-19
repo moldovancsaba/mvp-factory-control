@@ -43,6 +43,26 @@ export function validate(data) {
   return errors;
 }
 
+
+export function validateIndex(data, markdown) {
+  const errors = [];
+  const escape = value => String(value ?? 'Not set').replaceAll('|', '\\|').replaceAll('\n', ' ');
+  const expected = new Map(data.repositories.map(r => [r.repository,
+    '| [' + r.repository + '](https://github.com/' + r.repository + ') | ' +
+    escape(r.displayName) + ' | ' + escape(r.description) + ' | ' +
+    r.lifecycle + ' | ' + r.homepage.state + ' |']));
+  const seen = new Set();
+  for (const line of markdown.split('\n').filter(line => line.startsWith('| ['))) {
+    const id = line.match(/^\| \[([^\]]+)\]/)?.[1];
+    if (!expected.has(id)) errors.push('Index contains unregistered repository: ' + id);
+    else if (line !== expected.get(id)) errors.push('Index disagrees with register: ' + id);
+    if (seen.has(id)) errors.push('Duplicate index row: ' + id);
+    seen.add(id);
+  }
+  for (const id of expected.keys()) if (!seen.has(id)) errors.push('Missing index row: ' + id);
+  return errors;
+}
+
 function selfTest() {
   const valid = { schemaVersion: 1, repositories: [{
     investigationOwner:'maintainer', repository:'example/tool', visibility:'public', displayName:'Tool', observedAt:'2026-10-19',
@@ -71,7 +91,12 @@ function selfTest() {
     reviewState:'accepted', acceptance:{reviewer:'maintainer',evidence:['https://github.com/example/tool/commit/example']}
   });
   assert.deepEqual(validate(local), [], 'local-only tool may have no homepage');
-  console.log('PASS: valid investigation, local-only exception and six negative cases');
+  const index = '| [example/tool](https://github.com/example/tool) | Tool | Not set | unknown | not-set |';
+  assert.deepEqual(validateIndex(valid, index), []);
+  assert.ok(validateIndex(valid, index.replace('Not set', 'Stale description')).length > 0, 'stale index must fail');
+  assert.ok(validateIndex(valid, '').length > 0, 'missing index row must fail');
+  assert.ok(validateIndex(valid, index + '\n' + index).length > 0, 'duplicate index row must fail');
+  console.log('PASS: register fixtures and index consistency failure cases');
 }
 
 if (resolve(process.argv[1] || '') === fileURLToPath(import.meta.url)) {
@@ -80,6 +105,7 @@ if (resolve(process.argv[1] || '') === fileURLToPath(import.meta.url)) {
     const path = process.argv[2] || 'docs/portfolio/repositories.json';
     const data = JSON.parse(readFileSync(path,'utf8'));
     const errors = validate(data);
+    if (!process.argv[2]) errors.push(...validateIndex(data, readFileSync('docs/portfolio/README.md', 'utf8')));
     if (errors.length) { console.error(errors.join('\n')); process.exitCode = 1; }
     else console.log('PASS: ' + data.repositories.length + ' public records; structural checks only, acceptance not implied');
   }
