@@ -17,7 +17,7 @@ jobs:
       ADMIN_API_TOKEN: disposable-local-smoke
       CHAIN_ID: '1'
       CHAIN_RPC_URLS: http://127.0.0.1:8545
-      NEXT_PUBLIC_APP_VERSION: v0.21.58
+      NEXT_PUBLIC_APP_VERSION: v0.22.0
       NEXT_TELEMETRY_DISABLED: '1'
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
@@ -28,6 +28,22 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
         with:
           node-version: '22'
+      - name: Run existing minor version and documentation sync
+        run: |
+          npm -C frontend run version:minor
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import assert from 'node:assert/strict';
+          const pkg=JSON.parse(fs.readFileSync('frontend/package.json','utf8'));
+          assert.equal(pkg.version,'0.22.0');
+          const lock=JSON.parse(fs.readFileSync('frontend/package-lock.json','utf8'));
+          lock.version=pkg.version;
+          if(lock.packages?.['']) lock.packages[''].version=pkg.version;
+          fs.writeFileSync('frontend/package-lock.json',JSON.stringify(lock,null,2)+'\n');
+          for(const p of ['frontend/package.json','frontend/package-lock.json','frontend/README.md','frontend/ROADMAP.md','frontend/TASKLIST.md','frontend/ARCHITECTURE.md','frontend/LEARNINGS.md']){
+            console.log('VERSION_FILE='+JSON.stringify({path:p,base64:fs.readFileSync(p).toString('base64')}));
+          }
+          JS
       - name: Install existing root and delegated frontend
         run: npm ci
       - name: Build existing frontend and inspect local endpoints
@@ -53,7 +69,7 @@ jobs:
           const base='http://127.0.0.1:5555';
           for(let i=0;i<100;i++){try{if((await fetch(base)).ok)break;}catch{} await new Promise(r=>setTimeout(r,200));}
           for(const path of ['/','/admin/health']){const r=await fetch(base+path);assert.equal(r.status,200,path);assert.ok((await r.text()).includes('<html'),path);console.log('PASS HTML '+path);}
-          const r=await fetch(base+'/api/health/public');assert.equal(r.status,200);const h=await r.json();assert.equal(h.db.ok,true);assert.equal(h.chain.ok,true);assert.equal(h.version,'v0.21.58');console.log('PASS synthetic database/chain health '+JSON.stringify({status:h.status,version:h.version,activeUsers:h.activeUsers}));
+          const r=await fetch(base+'/api/health/public');assert.equal(r.status,200);const h=await r.json();assert.equal(h.db.ok,true);assert.equal(h.chain.ok,true);assert.equal(h.version,'v0.22.0');console.log('PASS synthetic database/chain health '+JSON.stringify({status:h.status,version:h.version,activeUsers:h.activeUsers}));
           const denied=await fetch(base+'/api/health/metrics');assert.equal(denied.status,401);console.log('PASS metrics denied without admin header');
           JS
       - name: Read dependency advisory counts
