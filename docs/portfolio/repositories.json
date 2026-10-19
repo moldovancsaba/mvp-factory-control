@@ -959,7 +959,7 @@
       "displayName": "Class Scout NY",
       "observedAt": "2026-10-19",
       "source": "https://api.github.com/repos/moldovancsaba/nyc-kid-scout",
-      "description": null,
+      "description": "Class Scout NY demo for browsing NYC kids activities, saving providers and estimating costs, with an optional AI assistant.",
       "topics": [],
       "homepage": {
         "url": null,
@@ -976,7 +976,7 @@
         "source": null
       },
       "reviewState": "blocked",
-      "investigation": "Default-branch npm ci fails because the lockfile is stale. Candidate lock draft restores install/build/preview but has lint/dependency findings in product issue #2. About write awaits browser recovery/manual Mac unlock. Product lifecycle, destination and delivery authority remain unverified.",
+      "investigation": "Default-branch npm ci fails because the lockfile is stale. Candidate lock draft restores install/build/preview but has lint/dependency findings in product issue #2. Product lifecycle, destination and delivery authority remain unverified.",
       "sourceRevision": "44a033fbd5488e25c9652ef846c6d3c93b2b11c9",
       "investigationOwner": "moldovancsaba",
       "welcomeReview": {
