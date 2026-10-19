@@ -1,67 +1,53 @@
-name: Blockmass welcome preflight
+name: Trinity documentation preflight
 on:
   push:
     branches: [docs/blockmass-welcome-evidence]
 permissions:
   contents: read
 jobs:
-  frontend:
+  runtime:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    services:
-      mongo:
-        image: mongo:7
-        ports: ['27017:27017']
-    env:
-      MONGODB_URI: mongodb://127.0.0.1:27017/blockmass
-      ADMIN_API_TOKEN: disposable-local-smoke
-      CHAIN_ID: '1'
-      CHAIN_RPC_URLS: http://127.0.0.1:8545
-      NEXT_PUBLIC_APP_VERSION: v0.22.0
-      NEXT_TELEMETRY_DISABLED: '1'
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
-          repository: moldovancsaba/blockmass
-          ref: 6cff3f092f95f164f5d0172c731919cf9e24a1e0
+          repository: sovereignsquad/trinity
+          ref: 6175c399564e9c54b733cd6ea24e1955a4145e63
           persist-credentials: false
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+      - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78
         with:
-          node-version: '22'
-      - name: Install existing root and delegated frontend
-        run: npm ci
-      - name: Build existing frontend and inspect local endpoints
+          python-version: '3.12'
+          enable-cache: false
+      - run: uv sync --dev --frozen
+      - run: uv run --frozen ruff check .
+      - run: uv run --frozen pytest
+      - name: Check entry-point link destinations
         run: |
-          node --input-type=module > /tmp/rpc.log 2>&1 <<'JS' &
-          import http from 'node:http';
-          http.createServer(async (req,res)=>{
-            let text=''; for await (const chunk of req) text+=chunk;
-            const q=JSON.parse(text);
-            const result=q.method==='eth_chainId'?'0x1':q.method==='eth_blockNumber'?'0x123':'0x0';
-            res.setHeader('Content-Type','application/json');
-            res.end(JSON.stringify({jsonrpc:'2.0',id:q.id,result}));
-          }).listen(8545,'127.0.0.1');
-          JS
-          RPC_PID=$!
-          trap 'kill "$RPC_PID" "${APP_PID:-}" 2>/dev/null || true' EXIT
-          set -o pipefail
-          npm run build 2>&1 | tee /tmp/build.log
-          npm run start > /tmp/app.log 2>&1 &
-          APP_PID=$!
-          node --input-type=module <<'JS'
-          import assert from 'node:assert/strict';
-          const base='http://127.0.0.1:5555';
-          for(let i=0;i<100;i++){try{if((await fetch(base)).ok)break;}catch{} await new Promise(r=>setTimeout(r,200));}
-          for(const path of ['/','/admin/health']){const r=await fetch(base+path);assert.equal(r.status,200,path);assert.ok((await r.text()).includes('<html'),path);console.log('PASS HTML '+path);}
-          const r=await fetch(base+'/api/health/public');assert.equal(r.status,200);const h=await r.json();assert.equal(h.db.ok,true);assert.equal(h.chain.ok,true);assert.equal(h.version,'v0.22.0');console.log('PASS synthetic database/chain health '+JSON.stringify({status:h.status,version:h.version,activeUsers:h.activeUsers}));
-          const denied=await fetch(base+'/api/health/metrics');assert.equal(denied.status,401);console.log('PASS metrics denied without admin header');
-          JS
-      - name: Read dependency advisory counts
-        if: always()
-        working-directory: frontend
-        run: |
-          node --input-type=module <<'JS'
-          import { execFileSync } from 'node:child_process';
-          let out;try{out=execFileSync('npm',['audit','--json'],{encoding:'utf8'});}catch(e){out=e.stdout;}
-          const r=JSON.parse(out);console.log(JSON.stringify({counts:r.metadata?.vulnerabilities, error:r.error??null}));
-          JS
+          python - <<'PY'
+          import pathlib, re
+          root=pathlib.Path.cwd()
+          count=0
+          for name in ['README.md','docs/STATUS.md','docs/HANDOVER.md']:
+              source=root/name
+              text=source.read_text()
+              for target in re.findall(r'\]\(([^)]+)\)',text):
+                  if target.startswith(('https://','http://','#','mailto:')):
+                      continue
+                  assert not target.startswith('/Users/Shared/Projects/trinity/'), target
+                  destination=(source.parent/target.split('#')[0]).resolve()
+                  assert destination.is_relative_to(root), target
+                  assert destination.exists(), f'{name}: {target}'
+                  count+=1
+          print(f'PASS: {count} local entry-point links resolve')
+          PY
+  native-build:
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: sovereignsquad/trinity
+          ref: 6175c399564e9c54b733cd6ea24e1955a4145e63
+          persist-credentials: false
+      - run: swift build
+        working-directory: apps/macos
