@@ -10,20 +10,20 @@ Repository inclusion does not change product-local delivery authority. Restricte
 | [moldovancsaba/partnerfonts](https://github.com/moldovancsaba/partnerfonts) | AS Roma Font Host | Not set | unknown | unverified |
 | [moldovancsaba/matimato](https://github.com/moldovancsaba/matimato) | Matimato | play matimato | unknown | unverified |
 | [moldovancsaba/narimato](https://github.com/moldovancsaba/narimato) | NARIMATO | support hr | unknown | unverified |
-| [moldovancsaba/hatori](https://github.com/moldovancsaba/hatori) | hatori | everything started here | unknown | unverified |
-| [moldovancsaba/amanoba_courses](https://github.com/moldovancsaba/amanoba_courses) | Amanoba Course Quality Control Center | Not set | unknown | unverified |
+| [moldovancsaba/hatori](https://github.com/moldovancsaba/hatori) | hatori | Local-first personal agent with a UI, API, auditable learning and retrieval over personal knowledge. | unknown | unverified |
+| [moldovancsaba/amanoba_courses](https://github.com/moldovancsaba/amanoba_courses) | Amanoba Course Quality Control Center | Local course-quality control centre for reviewing and improving Amanoba lessons and quiz questions. | unknown | unverified |
 | [moldovancsaba/misisimi](https://github.com/moldovancsaba/misisimi) | or | cms for the rest | unknown | unverified |
-| [moldovancsaba/doneisbetter](https://github.com/moldovancsaba/doneisbetter) | or | Not set | unknown | unverified |
-| [moldovancsaba/reply](https://github.com/moldovancsaba/reply) | reply | Not set | unknown | unverified |
-| [moldovancsaba/minigames](https://github.com/moldovancsaba/minigames) | Kids Swipe Game | Not set | unknown | unverified |
-| [moldovancsaba/replace](https://github.com/moldovancsaba/replace) | replace | Not set | unknown | not-set |
+| [moldovancsaba/doneisbetter](https://github.com/moldovancsaba/doneisbetter) | DoneIsBetter application scaffold | Next.js application foundation with MongoDB-backed URL-card entry and a database health endpoint. Separate from the DoneIsBetter SSO service. | unknown | unverified |
+| [moldovancsaba/reply](https://github.com/moldovancsaba/reply) | reply | Local-first macOS communication workspace with a native shell and a governed drafting runtime. | unknown | unverified |
+| [moldovancsaba/minigames](https://github.com/moldovancsaba/minigames) | Kids Swipe Game | Mobile-first kids swipe and vote game built with Next.js. | unknown | unverified |
+| [moldovancsaba/replace](https://github.com/moldovancsaba/replace) | replace | Local batch-workflow API scaffold with filesystem-backed configuration, job queue and worker. Image processor not yet configured. | unknown | not-set |
 | [moldovancsaba/cars.direct](https://github.com/moldovancsaba/cars.direct) | cardmass | Not set | unknown | unverified |
-| [moldovancsaba/messmass](https://github.com/moldovancsaba/messmass) | {messmass} | Not set | unknown | unverified |
+| [moldovancsaba/messmass](https://github.com/moldovancsaba/messmass) | {messmass} | Sports-event analytics and reporting platform for partner, fan and sponsorship data. | unknown | unverified |
 | [moldovancsaba/step](https://github.com/moldovancsaba/step) | STEP | Not set | unknown | unverified |
 | [moldovancsaba/sso](https://github.com/moldovancsaba/sso) | Universal SSO Service | OAuth 2.0 / OpenID Connect authorization server and hosted single sign-on for the DoneIsBetter application family. Authorization code with PKCE, refresh tokens, client credentials for machine callers, and centralized per-app permissions. Next.js and MongoDB. | unknown | unverified |
 | [moldovancsaba/kormanyvalto](https://github.com/moldovancsaba/kormanyvalto) | Kormanyvalto | Not set | unknown | unverified |
-| [moldovancsaba/camera](https://github.com/moldovancsaba/camera) | Camera | Not set | unknown | unverified |
-| [moldovancsaba/launchmass](https://github.com/moldovancsaba/launchmass) | launchmass | Not set | unknown | unverified |
+| [moldovancsaba/camera](https://github.com/moldovancsaba/camera) | Camera | Branded photo capture, event galleries, slideshows and partner administration for sports and live events. | unknown | unverified |
+| [moldovancsaba/launchmass](https://github.com/moldovancsaba/launchmass) | launchmass | Multi-tenant card-grid platform providing public launcher pages and organization administration. | unknown | unverified |
 | [moldovancsaba/blockmass](https://github.com/moldovancsaba/blockmass) | blockmass | Not set | unknown | unverified |
 | [moldovancsaba/amanoba](https://github.com/moldovancsaba/amanoba) | Amanoba | Not set | unknown | unverified |
 | [moldovancsaba/mvp-factory-control](https://github.com/moldovancsaba/mvp-factory-control) | MVP Factory Control (v1.4.1-sovereign) | Portfolio governance, shared standards and delivery coordination for MVP Factory projects. Product implementation remains in each product repository. | unknown | not-set |
