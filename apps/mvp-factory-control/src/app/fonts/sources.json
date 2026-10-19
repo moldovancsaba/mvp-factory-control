@@ -1,0 +1,33 @@
+{
+  "license": "SIL Open Font License 1.1",
+  "files": [
+    {
+      "file": "IBMPlexSans-Variable.ttf",
+      "upstreamRepository": "google/fonts",
+      "upstreamPath": "ofl/ibmplexsans/IBMPlexSans[wdth,wght].ttf",
+      "gitBlobSha": "30f837e8b02e8ecddce6cbebc425b1f422392515",
+      "source": "https://github.com/google/fonts/blob/main/ofl/ibmplexsans/IBMPlexSans%5Bwdth%2Cwght%5D.ttf"
+    },
+    {
+      "file": "IBMPlexMono-Regular.ttf",
+      "upstreamRepository": "google/fonts",
+      "upstreamPath": "ofl/ibmplexmono/IBMPlexMono-Regular.ttf",
+      "gitBlobSha": "0c9770d5183ba60dc4350d3e011b782a320761ae",
+      "source": "https://github.com/google/fonts/blob/main/ofl/ibmplexmono/IBMPlexMono-Regular.ttf"
+    },
+    {
+      "file": "IBMPlexMono-Medium.ttf",
+      "upstreamRepository": "google/fonts",
+      "upstreamPath": "ofl/ibmplexmono/IBMPlexMono-Medium.ttf",
+      "gitBlobSha": "33c546f68b6007a45a3f10e845523abb2db25399",
+      "source": "https://github.com/google/fonts/blob/main/ofl/ibmplexmono/IBMPlexMono-Medium.ttf"
+    },
+    {
+      "file": "IBMPlexMono-SemiBold.ttf",
+      "upstreamRepository": "google/fonts",
+      "upstreamPath": "ofl/ibmplexmono/IBMPlexMono-SemiBold.ttf",
+      "gitBlobSha": "8f8998a139d8f61d3b96bdd3b512fca501a1f6b9",
+      "source": "https://github.com/google/fonts/blob/main/ofl/ibmplexmono/IBMPlexMono-SemiBold.ttf"
+    }
+  ]
+}

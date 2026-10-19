@@ -1,32 +1,27 @@
-# Execution status
+# Portfolio delivery status
 
-Updated: 19 October 2026. Foundation: [issue #918](https://github.com/moldovancsaba/mvp-factory-control/issues/918), [PR #919](https://github.com/moldovancsaba/mvp-factory-control/pull/919). Verification repair: [#920](https://github.com/moldovancsaba/mvp-factory-control/issues/920).
+Updated: 19 October 2026. Delivery state and current checks are tracked in the linked GitHub issues and pull requests.
 
-## Delivered changes prepared for merge
-- Public-only register and index, with source revisions, investigation owners and explicit unknowns.
-- Role-specific welcome standard, evidence rules, acceptance/review gates and maintenance triggers. Quality is the delivery measure; speed and volume are not KPIs.
-- Root README, READMEDEV, WIKI and repository map link to the broader public discovery index.
-- Dependency-free register validator, valid local-only fixtures and six meaningful rejection cases.
-- Control repository About description and project-management topic saved and verified by GitHub metadata readback.
-- GDS About description and design-system topic saved and verified; completed [GDS issue #943](https://github.com/sovereignsquad/general-design-system/issues/943).
+## Delivered
+- [Foundation PR #919](https://github.com/moldovancsaba/mvp-factory-control/pull/919), merged at ff409111557ff309370f4d305a309a80de8c43b3: public evidence register, navigation, role-specific quality standard and native validator.
+- Control repository About description and project-management topic: saved and verified through repository metadata readback.
+- GDS description and design-system topic: saved and verified in [GDS issue #943](https://github.com/sovereignsquad/general-design-system/issues/943).
+- DoneIsBetter welcome and release notes: [commit 1467e603](https://github.com/moldovancsaba/doneisbetter/commit/1467e6036aa3b1a52feb115d6b4461638c54b824), accepted for documentation scope in [#921](https://github.com/moldovancsaba/mvp-factory-control/issues/921). Source limitations, including the missing per-card DELETE route, are explicit.
 
-## Verification
-[The restored required-check run](https://github.com/moldovancsaba/mvp-factory-control/actions/runs/39180488609) passed on commit 0229755f6a10adf20f10fbb3964cc16a13bad513: register validation/self-tests, Docker application build, migrations, startup and health probes. The final PR head must pass again before merge.
+## Verification path
+The required portability-gate workflow runs the public register/self-tests and real Docker build, migrations, app startup and health probes in a disposable runner. It uses synthetic configuration, preserves branch protection and does not access production data.
 
-The preceding run failed on the existing Turbopack IBM Plex font import map. The build now uses Next.js's supported Webpack mode, preserving font configuration and type/runtime checks. The required portability-gate job runs on every PR in an isolated disposable runner with synthetic credentials. Branch protection stays enabled. This is a build configuration correction, not a deployment of the local control application.
+PR #919 passed its final pre-merge run 39180701825. Post-merge run 39180893481 then exposed an intermittent Google font-loader failure. [Repair PR #923](https://github.com/moldovancsaba/mvp-factory-control/pull/923) bundles the existing IBM Plex families through next/font/local with official source hashes and SIL Open Font License. [Issue #920](https://github.com/moldovancsaba/mvp-factory-control/issues/920) carries current acceptance evidence; both PR and main results must be verified before closure.
 
-Relative file links in changed Markdown were checked against the base tree plus new files. Restricted repository identities were excluded from public records. These structural checks do not imply that every product's operational claims have been accepted.
+## Open work and access
+[Issue #922](https://github.com/moldovancsaba/mvp-factory-control/issues/922) enumerates eight reviewed About-description corrections. Its computer-control transport disconnected before those settings were saved; no change in that batch is claimed. GitHub's connected interface supports source/issue/PR operations but does not expose About-setting writes; the local CLI access check fails.
 
-## Board and routing
-#918 is tracked on control Project 1. The live review label is Review (ALMOST); the status picker has no Blocked option. Product-local routing must be verified before moving or duplicating work. GDS uses its label board as delivery authority. The central control policy remains authoritative for this shared foundation.
+The control repository is public. Restricted inventory stays outside it. Product-specific routing, operational lifecycle, external destination identity and setup reproducibility remain investigations unless recorded otherwise. GitHub's live status picker has Review (ALMOST) and no Blocked option; access blockers are explicit in issue evidence.
 
-## Remaining scope
-D01 identity evidence and D11 per-product routing remain investigations; D02 standard and initial D10 validation are implemented here. D03 destinations, D04 contradictions, D05 full pilots, D09 effective defaults, D06 missing welcomes, D07 connected systems, D08 remaining coverage and D12 final acceptance are not complete.
+## Remaining programme
+D01 identity/evidence and D11 per-product routing remain investigations. D02 standard and initial D10 structural validation are implemented. D03 destinations, D04 remaining contradictions, D05 complete pilots, D09 effective defaults, D06 remaining welcomes, D07 connected systems, D08 remaining coverage and D12 final acceptance remain open.
 
-The next repository repair is selected by operational risk and evidence readiness, not a batch quota. No product is accepted merely because its record exists. Operational lifecycle, live homepage identity, setup reproducibility and full issue routing remain explicit unknowns where unverified.
-
-## Access and privacy
-The local gh credential is invalid. Connected GitHub tools support commits/PRs; signed-in browser access supports metadata edits and project status. Restricted portfolio details remain outside this public repository.
+Select each repair by operational risk and evidence readiness. Quality and reviewed task outcomes govern acceptance; speed, volume and fixed batch quotas are not performance measures. A record's existence does not imply product acceptance.
 
 ## Recovery
-Revert the scoped documentation/build/workflow commits to restore previous behaviour. Do not disable branch protection or fabricate successful checks. Restoring the historical missing-workflow state would make portability-gate pending again.
+Revert the relevant scoped commit for documentation or configuration rollback. Keep failed verification visible and branch protection enabled. Returning to build-time Google font downloads reintroduces the observed external dependency.

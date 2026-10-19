@@ -109,3 +109,7 @@ Run from `apps/mvp-factory-control` (e.g. `npm run dev`). Prisma expects **Postg
 The required `portability-gate` job runs on disposable GitHub-hosted runners for every pull request via `.github/workflows/portfolio-portability.yml`. It validates the public portfolio register, exercises negative validator fixtures, and runs the existing Docker portability gate with synthetic configuration and isolated Compose state. No production credentials are provided.
 
 The production build command is `next build --webpack`, the supported Next.js build mode. The restored runner exposed a Turbopack font import-map failure for IBM Plex Sans; Webpack retains the existing font configuration and provides a verified alternative build path. See the [Next.js CLI reference](https://nextjs.org/docs/app/api-reference/cli/next). No type-check or runtime-health gate is skipped. A failed run must remain merge-blocking.
+
+## Bundled font assets
+
+IBM Plex Sans and Mono are loaded from committed assets through `next/font/local`. Source hashes and SIL Open Font License are stored under `apps/mvp-factory-control/src/app/fonts/`. Run `node scripts/verify-local-font-assets.mjs` to verify provenance. The portability workflow checks those hashes before building. External Google font CSS parsing is no longer part of the build.

@@ -1,19 +1,26 @@
 /**
- * Root layout for the Next.js App Router: global fonts (IBM Plex Sans / Mono), `globals.css`, and
- * default HTML shell. All routes render inside `{children}`. Metadata titles the app for the browser tab.
+ * Root application layout with bundled IBM Plex fonts and global styles.
+ * Local assets remove build-time font-provider requests; CSS variable names
+ * are shared with globals.css.
  */
 import type { Metadata } from "next";
-import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const sans = IBM_Plex_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+const sans = localFont({
+  src: "./fonts/IBMPlexSans-Variable.ttf",
+  weight: "400 700",
+  style: "normal",
+  display: "swap",
   variable: "--font-sans"
 });
-const mono = IBM_Plex_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
+const mono = localFont({
+  src: [
+    { path: "./fonts/IBMPlexMono-Regular.ttf", weight: "400", style: "normal" },
+    { path: "./fonts/IBMPlexMono-Medium.ttf", weight: "500", style: "normal" },
+    { path: "./fonts/IBMPlexMono-SemiBold.ttf", weight: "600", style: "normal" }
+  ],
+  display: "swap",
   variable: "--font-mono"
 });
 

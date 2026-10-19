@@ -197,7 +197,7 @@
     {
       "repository": "moldovancsaba/doneisbetter",
       "visibility": "public",
-      "displayName": "or",
+      "displayName": "DoneIsBetter application scaffold",
       "observedAt": "2026-10-19",
       "source": "https://api.github.com/repos/moldovancsaba/doneisbetter",
       "description": null,
@@ -207,7 +207,7 @@
         "state": "unverified"
       },
       "readme": {
-        "url": "https://github.com/moldovancsaba/doneisbetter/blob/fcddb35082f368434596659c6d6f76b199fbfdac/README.md",
+        "url": "https://github.com/moldovancsaba/doneisbetter/blob/1467e6036aa3b1a52feb115d6b4461638c54b824/README.md",
         "state": "retrieved"
       },
       "lifecycle": "unknown",
@@ -218,8 +218,13 @@
       },
       "reviewState": "investigating",
       "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
-      "sourceRevision": "fcddb35082f368434596659c6d6f76b199fbfdac",
-      "investigationOwner": "moldovancsaba"
+      "sourceRevision": "1467e6036aa3b1a52feb115d6b4461638c54b824",
+      "investigationOwner": "moldovancsaba",
+      "welcomeReview": {
+        "state": "verified",
+        "scope": "Source-grounded README and release notes; runtime/production not verified",
+        "evidence": "https://github.com/moldovancsaba/mvp-factory-control/issues/921"
+      }
     },
     {
       "repository": "moldovancsaba/reply",

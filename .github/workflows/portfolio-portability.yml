@@ -27,6 +27,7 @@ jobs:
         run: |
           node scripts/validate-portfolio.mjs
           node scripts/validate-portfolio.mjs --self-test
+          node scripts/verify-local-font-assets.mjs
       - name: Prepare disposable CI configuration
         run: |
           chmod +x scripts/mvp-factory-control-docker-preflight.sh
