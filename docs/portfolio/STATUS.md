@@ -12,6 +12,8 @@ Updated: 19 October 2026. Delivery state and current checks are tracked in the l
 
 - Replace welcome, implementation note and About description: [replace PR #1](https://github.com/moldovancsaba/replace/pull/1), verified on main at b8b4c413d06d56536afd22f5b49a482d270ae63c. [Issue #925](https://github.com/moldovancsaba/mvp-factory-control/issues/925) records synthetic API/queue verification and the explicitly unconfigured image processor.
 
+- Class Scout NY welcome: [PR #3](https://github.com/moldovancsaba/nyc-kid-scout/pull/3), merged and read back at 44a033fbd5488e25c9652ef846c6d3c93b2b11c9. The README distinguishes generated data, browser-local state, simulated checkout and the separately hosted assistant. Default-branch installation remains blocked; [draft lockfile PR #1](https://github.com/moldovancsaba/nyc-kid-scout/pull/1) and [product issue #2](https://github.com/moldovancsaba/nyc-kid-scout/issues/2) retain failed lint/dependency baseline evidence. [Control issue #927](https://github.com/moldovancsaba/mvp-factory-control/issues/927) tracks pending About/board writes after browser access recovers; those settings are not claimed delivered.
+
 ## Verification path
 The required portability-gate workflow runs public register/index consistency checks and self-tests and real Docker build, migrations, app startup and health probes in a disposable runner. It uses synthetic configuration, preserves branch protection and does not access production data.
 

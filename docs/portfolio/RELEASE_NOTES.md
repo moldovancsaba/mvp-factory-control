@@ -6,7 +6,11 @@ Public discovery register and index with an enforced register/index consistency 
 ## Fixed Bugs
 Corrected control/GDS About metadata and eight reviewed public product descriptions (issue #922), with independent API readback. Replaced the DoneIsBetter framework README with source-grounded orientation and known limitations. Added the missing Replace README, corrected its stale implementation plan and aligned its About description with the verified scaffold scope. Synchronized public index descriptions with the evidence register. Restored the required verification job on every PR and bundled official IBM Plex font assets to remove intermittent Google stylesheet parsing from builds.
 
+Class Scout NY now has a source-grounded welcome and release notes, including a prominent install blocker and demo/account/checkout/assistant boundaries.
+
 ## Known Issues
+Class Scout main cannot clean-install due to a stale lockfile. Its unmerged candidate passes install/build/preview but exposes lint/dependency findings; product issue #2 owns that follow-up. Class Scout About and final board updates await manual Mac unlock/browser recovery.
+
 Product lifecycle, destination identity, setup reproducibility and full delivery routing remain unverified where recorded. Product-specific runtime gaps are recorded in their repository documentation; this programme does not claim they are fixed.
 
 ## Future Roadmap
