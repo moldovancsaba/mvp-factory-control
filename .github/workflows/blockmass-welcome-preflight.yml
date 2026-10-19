@@ -23,27 +23,11 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           repository: moldovancsaba/blockmass
-          ref: 8e0e9ad77052a5ef3945b4eca7987e1773e3e9d7
+          ref: 6cff3f092f95f164f5d0172c731919cf9e24a1e0
           persist-credentials: false
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
         with:
           node-version: '22'
-      - name: Run existing minor version and documentation sync
-        run: |
-          npm -C frontend run version:minor
-          node --input-type=module <<'JS'
-          import fs from 'node:fs';
-          import assert from 'node:assert/strict';
-          const pkg=JSON.parse(fs.readFileSync('frontend/package.json','utf8'));
-          assert.equal(pkg.version,'0.22.0');
-          const lock=JSON.parse(fs.readFileSync('frontend/package-lock.json','utf8'));
-          lock.version=pkg.version;
-          if(lock.packages?.['']) lock.packages[''].version=pkg.version;
-          fs.writeFileSync('frontend/package-lock.json',JSON.stringify(lock,null,2)+'\n');
-          for(const p of ['frontend/package.json','frontend/package-lock.json','frontend/README.md','frontend/ROADMAP.md','frontend/TASKLIST.md','frontend/ARCHITECTURE.md','frontend/LEARNINGS.md']){
-            console.log('VERSION_FILE='+JSON.stringify({path:p,base64:fs.readFileSync(p).toString('base64')}));
-          }
-          JS
       - name: Install existing root and delegated frontend
         run: npm ci
       - name: Build existing frontend and inspect local endpoints
