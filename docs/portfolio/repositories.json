@@ -564,8 +564,10 @@
       "displayName": "MVP Factory Control (v1.4.1-sovereign)",
       "observedAt": "2026-10-19",
       "source": "https://api.github.com/repos/moldovancsaba/mvp-factory-control",
-      "description": "agent control",
-      "topics": [],
+      "description": "Portfolio governance, shared standards and delivery coordination for MVP Factory projects. Product implementation remains in each product repository.",
+      "topics": [
+        "project-management"
+      ],
       "homepage": {
         "url": null,
         "state": "not-set"
@@ -583,7 +585,12 @@
       "reviewState": "investigating",
       "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
       "sourceRevision": "4c4f5924eb1f88f1b5b90617f4a34ce48b3fcd1d",
-      "investigationOwner": "moldovancsaba"
+      "investigationOwner": "moldovancsaba",
+      "metadataReview": {
+        "state": "verified",
+        "evidence": "https://github.com/moldovancsaba/mvp-factory-control/issues/918",
+        "observedAt": "2026-10-19"
+      }
     },
     {
       "repository": "moldovancsaba/spot",
@@ -1131,8 +1138,10 @@
       "displayName": "General Design System",
       "observedAt": "2026-10-19",
       "source": "https://api.github.com/repos/sovereignsquad/general-design-system",
-      "description": null,
-      "topics": [],
+      "description": "Shared design system and source of truth for UI, UX, components and design tokens across the MVP Factory application portfolio.",
+      "topics": [
+        "design-system"
+      ],
       "homepage": {
         "url": "https://sovereignsquad.github.io/general-design-system/",
         "state": "unverified"
@@ -1150,7 +1159,12 @@
       "reviewState": "investigating",
       "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
       "sourceRevision": "4828c0841f4168571ed6e121a3280ce39f753f03",
-      "investigationOwner": "moldovancsaba"
+      "investigationOwner": "moldovancsaba",
+      "metadataReview": {
+        "state": "verified",
+        "evidence": "https://github.com/sovereignsquad/general-design-system/issues/943",
+        "observedAt": "2026-10-19"
+      }
     },
     {
       "repository": "sovereignsquad/meimei",

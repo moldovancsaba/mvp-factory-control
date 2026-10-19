@@ -1,10 +1,10 @@
 # Public repository index
 
-This index helps locate public repositories by their existing product name or description. Metadata is observed, not a claim of operational readiness. See [quality standard](STANDARD.md), [machine-readable register](repositories.json), [execution status](STATUS.md) and [release notes](RELEASE_NOTES.md).
+Current public discovery inventory. Metadata is observed; operating lifecycle, destinations and product delivery routing remain under investigation unless independently verified. [Quality standard](STANDARD.md) · [register](repositories.json) · [execution status](STATUS.md) · [release notes](RELEASE_NOTES.md).
 
-Repository routing stays product-specific until its authority is verified. This programme is tracked in [control issue #918](https://github.com/moldovancsaba/mvp-factory-control/issues/918). Restricted portfolio records are intentionally excluded.
+Repository inclusion does not change product-local delivery authority. Restricted portfolio records are excluded. Programme tracking: [#918](https://github.com/moldovancsaba/mvp-factory-control/issues/918).
 
-| Repository | README identity | Observed description | Lifecycle | Destination verification |
+| Repository | README identity | Description | Lifecycle | Destination verification |
 | --- | --- | --- | --- | --- |
 | [moldovancsaba/work.direct](https://github.com/moldovancsaba/work.direct) | work.direct | Not set | unknown | unverified |
 | [moldovancsaba/partnerfonts](https://github.com/moldovancsaba/partnerfonts) | AS Roma Font Host | Not set | unknown | unverified |
@@ -26,7 +26,7 @@ Repository routing stays product-specific until its authority is verified. This 
 | [moldovancsaba/launchmass](https://github.com/moldovancsaba/launchmass) | launchmass | Not set | unknown | unverified |
 | [moldovancsaba/blockmass](https://github.com/moldovancsaba/blockmass) | blockmass | Not set | unknown | unverified |
 | [moldovancsaba/amanoba](https://github.com/moldovancsaba/amanoba) | Amanoba | Not set | unknown | unverified |
-| [moldovancsaba/mvp-factory-control](https://github.com/moldovancsaba/mvp-factory-control) | MVP Factory Control (v1.4.1-sovereign) | agent control | unknown | not-set |
+| [moldovancsaba/mvp-factory-control](https://github.com/moldovancsaba/mvp-factory-control) | MVP Factory Control (v1.4.1-sovereign) | Portfolio governance, shared standards and delivery coordination for MVP Factory projects. Product implementation remains in each product repository. | unknown | not-set |
 | [moldovancsaba/spot](https://github.com/moldovancsaba/spot) | {spot} | {spot} - Smart Platform for Observing Threats | unknown | not-set |
 | [moldovancsaba/sovereign](https://github.com/moldovancsaba/sovereign) | {sovereign} | agent control | unknown | not-set |
 | [moldovancsaba/kidex](https://github.com/moldovancsaba/kidex) | KIDEX | Not set | unknown | unverified |
@@ -47,7 +47,7 @@ Repository routing stays product-specific until its authority is verified. This 
 | [moldovancsaba/discoverandenrich](https://github.com/moldovancsaba/discoverandenrich) | ContentCreator Agent Runtime | ContentCreator: unified research and enrichment system for multiple clients | unknown | unverified |
 | [moldovancsaba/deliafrica](https://github.com/moldovancsaba/deliafrica) | deli.africa | Not set | unknown | unverified |
 | [moldovancsaba/discountdirect](https://github.com/moldovancsaba/discountdirect) | DiscountDirect | Not set | unknown | unverified |
-| [sovereignsquad/general-design-system](https://github.com/sovereignsquad/general-design-system) | General Design System | Not set | unknown | unverified |
+| [sovereignsquad/general-design-system](https://github.com/sovereignsquad/general-design-system) | General Design System | Shared design system and source of truth for UI, UX, components and design tokens across the MVP Factory application portfolio. | unknown | unverified |
 | [sovereignsquad/meimei](https://github.com/sovereignsquad/meimei) | agent.meimei | Not set | unknown | unverified |
 | [sovereignsquad/train](https://github.com/sovereignsquad/train) | {train} | {train} is a provider-neutral autonomous optimization platform. | unknown | not-set |
 | [sovereignsquad/checklist](https://github.com/sovereignsquad/checklist) | check | Not set | unknown | unverified |
