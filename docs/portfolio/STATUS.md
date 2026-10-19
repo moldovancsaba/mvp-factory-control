@@ -8,13 +8,15 @@ Updated: 19 October 2026. Delivery state and current checks are tracked in the l
 - GDS description and design-system topic: saved and verified in [GDS issue #943](https://github.com/sovereignsquad/general-design-system/issues/943).
 - DoneIsBetter welcome and release notes: [commit 1467e603](https://github.com/moldovancsaba/doneisbetter/commit/1467e6036aa3b1a52feb115d6b4461638c54b824), accepted for documentation scope in [#921](https://github.com/moldovancsaba/mvp-factory-control/issues/921). Source limitations, including the missing per-card DELETE route, are explicit.
 
+- Eight public About descriptions: saved and independently verified in [#922](https://github.com/moldovancsaba/mvp-factory-control/issues/922); issue closed and project status Done. Existing websites, visibility and topics were preserved.
+
 ## Verification path
 The required portability-gate workflow runs the public register/self-tests and real Docker build, migrations, app startup and health probes in a disposable runner. It uses synthetic configuration, preserves branch protection and does not access production data.
 
-PR #919 passed its final pre-merge run 39180701825. Post-merge run 39180893481 then exposed an intermittent Google font-loader failure. [Repair PR #923](https://github.com/moldovancsaba/mvp-factory-control/pull/923) bundles the existing IBM Plex families through next/font/local with official source hashes and SIL Open Font License. [Issue #920](https://github.com/moldovancsaba/mvp-factory-control/issues/920) carries current acceptance evidence; both PR and main results must be verified before closure.
+PR #919 passed its final pre-merge run 39180701825. Post-merge run 39180893481 then exposed an intermittent Google font-loader failure. [Repair PR #923](https://github.com/moldovancsaba/mvp-factory-control/pull/923) bundles the existing IBM Plex families through next/font/local with official source hashes and SIL Open Font License. [Issue #920](https://github.com/moldovancsaba/mvp-factory-control/issues/920) is closed with acceptance evidence: PR run [39181501476](https://github.com/moldovancsaba/mvp-factory-control/actions/runs/39181501476) and post-merge main run [39181754231](https://github.com/moldovancsaba/mvp-factory-control/actions/runs/39181754231) both passed.
 
 ## Open work and access
-[Issue #922](https://github.com/moldovancsaba/mvp-factory-control/issues/922) enumerates eight reviewed About-description corrections. Its computer-control transport disconnected before those settings were saved; no change in that batch is claimed. GitHub's connected interface supports source/issue/PR operations but does not expose About-setting writes; the local CLI access check fails.
+The computer-control connection recovered and the eight reviewed About-description corrections in [#922](https://github.com/moldovancsaba/mvp-factory-control/issues/922) are delivered. Settings writes were performed in the authenticated GitHub browser and independently read back through the repository API. The connected source/issue/PR interface still does not expose About-setting writes; browser access is the verified path for future metadata repairs.
 
 The control repository is public. Restricted inventory stays outside it. Product-specific routing, operational lifecycle, external destination identity and setup reproducibility remain investigations unless recorded otherwise. GitHub's live status picker has Review (ALMOST) and no Blocked option; access blockers are explicit in issue evidence.
 

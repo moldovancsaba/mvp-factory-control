@@ -119,7 +119,7 @@
       "displayName": "hatori",
       "observedAt": "2026-10-19",
       "source": "https://api.github.com/repos/moldovancsaba/hatori",
-      "description": "everything started here",
+      "description": "Local-first personal agent with a UI, API, auditable learning and retrieval over personal knowledge.",
       "topics": [],
       "homepage": {
         "url": "https://customato.vercel.app",
@@ -146,7 +146,7 @@
       "displayName": "Amanoba Course Quality Control Center",
       "observedAt": "2026-10-19",
       "source": "https://api.github.com/repos/moldovancsaba/amanoba_courses",
-      "description": null,
+      "description": "Local course-quality control centre for reviewing and improving Amanoba lessons and quiz questions.",
       "topics": [],
       "homepage": {
         "url": "https://prototype-narimato.vercel.app",
@@ -200,7 +200,7 @@
       "displayName": "DoneIsBetter application scaffold",
       "observedAt": "2026-10-19",
       "source": "https://api.github.com/repos/moldovancsaba/doneisbetter",
-      "description": null,
+      "description": "Next.js application foundation with MongoDB-backed URL-card entry and a database health endpoint. Separate from the DoneIsBetter SSO service.",
       "topics": [],
       "homepage": {
         "url": "https://doneisbetter.vercel.app",
@@ -232,7 +232,7 @@
       "displayName": "reply",
       "observedAt": "2026-10-19",
       "source": "https://api.github.com/repos/moldovancsaba/reply",
-      "description": null,
+      "description": "Local-first macOS communication workspace with a native shell and a governed drafting runtime.",
       "topics": [],
       "homepage": {
         "url": "https://haho-ai.vercel.app",
@@ -259,7 +259,7 @@
       "displayName": "Kids Swipe Game",
       "observedAt": "2026-10-19",
       "source": "https://api.github.com/repos/moldovancsaba/minigames",
-      "description": null,
+      "description": "Mobile-first kids swipe and vote game built with Next.js.",
       "topics": [],
       "homepage": {
         "url": "https://fanfie.vercel.app",
@@ -340,7 +340,7 @@
       "displayName": "{messmass}",
       "observedAt": "2026-10-19",
       "source": "https://api.github.com/repos/moldovancsaba/messmass",
-      "description": null,
+      "description": "Sports-event analytics and reporting platform for partner, fan and sponsorship data.",
       "topics": [],
       "homepage": {
         "url": "https://messmass.com",
@@ -461,7 +461,7 @@
       "displayName": "Camera",
       "observedAt": "2026-10-19",
       "source": "https://api.github.com/repos/moldovancsaba/camera",
-      "description": null,
+      "description": "Branded photo capture, event galleries, slideshows and partner administration for sports and live events.",
       "topics": [],
       "homepage": {
         "url": "https://moldovancsaba.github.io/camera/",
@@ -488,7 +488,7 @@
       "displayName": "launchmass",
       "observedAt": "2026-10-19",
       "source": "https://api.github.com/repos/moldovancsaba/launchmass",
-      "description": null,
+      "description": "Multi-tenant card-grid platform providing public launcher pages and organization administration.",
       "topics": [],
       "homepage": {
         "url": "https://oversized-links.vercel.app",
