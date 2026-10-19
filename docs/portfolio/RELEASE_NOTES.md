@@ -1,16 +1,13 @@
 # Portfolio programme release notes
 
 ## New Features
-Public discovery register, navigable index, role-specific welcome standard, evidence/acceptance policy and native read-only validation.
+Public discovery register and index; source revisions and investigation ownership; role-specific welcome standards; native record validation with valid local-only and negative fixture checks.
 
 ## Fixed Bugs
-New navigation exposes the broader public inventory alongside the historical managed-product list. Review-state labels reflect the live board.
+Corrected control/GDS About metadata. Replaced the DoneIsBetter framework README with source-grounded orientation and known limitations. Restored the required verification job on every PR and bundled official IBM Plex font assets to remove intermittent Google stylesheet parsing from builds.
 
 ## Known Issues
-Operational facts remain unverified per record. Control main retains a required check whose workflow was removed; no protection bypass is included. Restricted inventory is intentionally excluded.
+Product lifecycle, destination identity, setup reproducibility and full delivery routing remain unverified where recorded. The eight About corrections in issue #922 await a working authenticated settings-write path. Product-specific runtime gaps are recorded in their repository documentation; this programme does not claim they are fixed.
 
 ## Future Roadmap
-Verify routing and destinations, complete pilots, then accept repository repairs individually before final re-audit.
-
-## Verification-path repair
-Restored the required portability-gate workflow for every PR, pinned the current checkout action, and selected the supported Webpack build mode after an observed Turbopack font failure. The genuine Docker build, migrations and health probes passed in run 39180488609. Final-head verification is mandatory before merge. No production credentials or local operator data are used.
+Resolve remaining identity and routing questions, verify destinations and representative pilots, then complete repository-specific welcome/default-guidance repairs and final re-audit. Acceptance evidence and unresolved findings remain visible throughout.
