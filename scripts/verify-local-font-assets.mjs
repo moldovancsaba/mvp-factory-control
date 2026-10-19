@@ -10,7 +10,7 @@ const base = new URL('../apps/mvp-factory-control/src/app/fonts/', import.meta.u
 const manifest = JSON.parse(readFileSync(new URL('sources.json', base), 'utf8'));
 for (const item of manifest.files) {
   const bytes = readFileSync(new URL(item.file, base));
-  const sha = createHash('sha1').update(Buffer.from('blob ' + bytes.length + '\\0')).update(bytes).digest('hex');
+  const sha = createHash('sha1').update(Buffer.from('blob ' + bytes.length)).update(Buffer.from([0])).update(bytes).digest('hex');
   assert.equal(sha, item.gitBlobSha, item.file + ': upstream blob mismatch');
   assert.ok(bytes.length > 100000, item.file + ': truncated asset');
 }
