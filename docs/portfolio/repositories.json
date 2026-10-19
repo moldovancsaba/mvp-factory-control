@@ -767,18 +767,19 @@
     {
       "repository": "moldovancsaba/seyusolutions",
       "visibility": "public",
-      "displayName": "seyusolutions",
+      "displayName": "Seyu Solutions website",
       "observedAt": "2026-10-19",
       "source": "https://api.github.com/repos/moldovancsaba/seyusolutions",
-      "description": null,
+      "description": "Static marketing website for Seyu Solutions, with company, agency, founder and legal pages. Built with Vite.",
       "topics": [],
       "homepage": {
-        "url": null,
-        "state": "not-set"
+        "url": "https://moldovancsaba.github.io/seyusolutions/",
+        "state": "verified",
+        "evidence": "https://github.com/moldovancsaba/mvp-factory-control/issues/930"
       },
       "readme": {
-        "url": null,
-        "state": "not-retrieved"
+        "url": "https://github.com/moldovancsaba/seyusolutions/blob/81f366764e36799a6880cac29acc6cb2112f9eb9/README.md",
+        "state": "retrieved"
       },
       "lifecycle": "unknown",
       "role": "unknown",
@@ -787,8 +788,8 @@
         "source": null
       },
       "reviewState": "investigating",
-      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
-      "sourceRevision": "4847210218ac4da18551388effa7a3a14227f42b",
+      "investigation": "Static six-page Vite marketing site verified in issue #930, with README, product finding log and existing Pages publication. Lifecycle and full product ownership/routing remain unverified; current role taxonomy has no static-site category. Welcome-scope delivery does not imply whole-product acceptance.",
+      "sourceRevision": "81f366764e36799a6880cac29acc6cb2112f9eb9",
       "investigationOwner": "moldovancsaba"
     },
     {

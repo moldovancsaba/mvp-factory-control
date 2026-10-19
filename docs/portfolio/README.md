@@ -33,7 +33,7 @@ Repository inclusion does not change product-local delivery authority. Restricte
 | [moldovancsaba/agent.chappie](https://github.com/moldovancsaba/agent.chappie) | Agent.Chappie Local-First OpenClaw Stack | Not set | unknown | unverified |
 | [moldovancsaba/compare](https://github.com/moldovancsaba/compare) | RangeScout EU | Not set | unknown | unverified |
 | [moldovancsaba/try-on](https://github.com/moldovancsaba/try-on) | Try-On Studio | Not set | unknown | not-set |
-| [moldovancsaba/seyusolutions](https://github.com/moldovancsaba/seyusolutions) | seyusolutions | Not set | unknown | not-set |
+| [moldovancsaba/seyusolutions](https://github.com/moldovancsaba/seyusolutions) | Seyu Solutions website | Static marketing website for Seyu Solutions, with company, agency, founder and legal pages. Built with Vite. | unknown | verified |
 | [moldovancsaba/habigoal.com](https://github.com/moldovancsaba/habigoal.com) | Habigoal | Not set | unknown | unverified |
 | [moldovancsaba/lauraorganic.com](https://github.com/moldovancsaba/lauraorganic.com) | Laura Organic | Not set | unknown | unverified |
 | [moldovancsaba/calendar-agent](https://github.com/moldovancsaba/calendar-agent) | Calendar Agent | Not set | unknown | not-set |

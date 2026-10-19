@@ -8,10 +8,14 @@ Corrected control/GDS About metadata and eight reviewed public product descripti
 
 Class Scout NY now has a source-grounded welcome and release notes, including a prominent install blocker and demo/account/checkout/assistant boundaries.
 
+Seyu Solutions now has a six-page source map, reproducible setup and existing Pages publication/recovery guidance. Its bounded dependency refresh cleared four reported high advisories at verification and its ESM configuration builds without warnings. Product and downstream Pages publication passed; About and website match the verified static-site identity (issue #930).
+
 ## Known Issues
 Class Scout main cannot clean-install due to a stale lockfile. Its unmerged candidate passes install/build/preview but exposes lint/dependency findings; product issue #2 owns that follow-up. Class Scout About description is saved and verified; final task state is recorded in control issue #927.
 
 Product lifecycle, destination identity, setup reproducibility and full delivery routing remain unverified where recorded. Product-specific runtime gaps are recorded in their repository documentation; this programme does not claim they are fixed.
+
+Seyu retains historical social-image/reference follow-ups and deployment-action deprecation warnings. Its lifecycle and full product routing remain unverified; the static marketing welcome does not establish those facts.
 
 ## Future Roadmap
 Resolve remaining identity and routing questions, verify destinations and representative pilots, then complete repository-specific welcome/default-guidance repairs and final re-audit. Acceptance evidence and unresolved findings remain visible throughout.
