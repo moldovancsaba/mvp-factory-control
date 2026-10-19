@@ -1,0 +1,71 @@
+name: Static site welcome preflight
+on:
+  push:
+    branches: [docs/seyu-welcome-evidence]
+permissions:
+  contents: read
+jobs:
+  clean-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: moldovancsaba/seyusolutions
+          ref: 4847210218ac4da18551388effa7a3a14227f42b
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '20'
+      - run: npm ci
+      - name: Verify six-page clean build
+        run: |
+          set -o pipefail
+          npm run build 2>&1 | tee /tmp/seyu-build.log
+          node --input-type=module <<'JS'
+          import { readFileSync, existsSync } from 'node:fs';
+          import assert from 'node:assert/strict';
+          const log = readFileSync('/tmp/seyu-build.log', 'utf8').replace(/\x1b\[[0-9;]*m/g, '');
+          assert.ok(!/\b(?:warning|warn|error)\b|\(!\)/i.test(log), 'build must have no warnings/errors');
+          for (const p of ['index.html','marketing-agency.html','founder.html','gtc.html','privacy.html','cookie-policy.html']) assert.ok(existsSync('dist/' + p), p);
+          console.log('PASS: six configured HTML outputs; zero build warnings/errors');
+          JS
+      - name: Verify local project-path preview
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4175 > /tmp/seyu-preview.log 2>&1 &
+          SEYU_PREVIEW_PID=$!
+          trap 'kill "$SEYU_PREVIEW_PID" 2>/dev/null || true' EXIT
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          for (let i=0;i<50;i++) {
+            try { if ((await fetch('http://127.0.0.1:4175/seyusolutions/')).ok) break; } catch {}
+            await new Promise(resolve=>setTimeout(resolve,100));
+          }
+          for (const path of ['', 'marketing-agency.html','founder.html','gtc.html','privacy.html','cookie-policy.html']) {
+            const r = await fetch('http://127.0.0.1:4175/seyusolutions/' + path);
+            assert.equal(r.status,200,path);
+            assert.ok((await r.text()).includes('<title>'),path);
+          }
+          console.log('PASS: all six pages served under configured project base');
+          JS
+  live-identity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '20'
+      - name: Read configured public destination identity
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          const url = 'https://moldovancsaba.github.io/seyusolutions/';
+          const r = await fetch(url, {signal:AbortSignal.timeout(20000)});
+          assert.equal(r.status,200);
+          const html = await r.text();
+          const title = html.match(/<title>([^<]+)<\/title>/i)?.[1];
+          const canonical = html.match(/<link[^>]*rel=["']canonical["'][^>]*href=["']([^"']+)/i)?.[1];
+          assert.equal(title, 'Seyu — We Connect Fans With Their Stars');
+          assert.equal(canonical, url);
+          console.log(JSON.stringify({status:r.status,title,canonical,observedAt:new Date().toISOString()}));
+          JS
