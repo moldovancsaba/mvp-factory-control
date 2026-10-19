@@ -16,7 +16,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
         with:
-          node-version: '20'
+          node-version: '24'
       - run: npm ci
       - name: Verify six-page clean build
         run: |
@@ -48,13 +48,24 @@ jobs:
           }
           console.log('PASS: all six pages served under configured project base');
           JS
+      - name: Read dependency advisory details
+        run: |
+          node --input-type=module <<'JS'
+          import { execFileSync } from 'node:child_process';
+          let output;
+          try { output = execFileSync('npm', ['audit','--json'], {encoding:'utf8'}); }
+          catch (error) { output = error.stdout; }
+          const report = JSON.parse(output);
+          if (report.error) throw new Error(JSON.stringify(report.error));
+          console.log(JSON.stringify({counts:report.metadata?.vulnerabilities, findings:Object.values(report.vulnerabilities ?? {}).map(v=>({name:v.name,severity:v.severity,isDirect:v.isDirect,range:v.range,fixAvailable:v.fixAvailable,via:v.via.map(a=>typeof a==='string'?a:{title:a.title,url:a.url,range:a.range})}))}));
+          JS
   live-identity:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
         with:
-          node-version: '20'
+          node-version: '24'
       - name: Read configured public destination identity
         run: |
           node --input-type=module <<'JS'
