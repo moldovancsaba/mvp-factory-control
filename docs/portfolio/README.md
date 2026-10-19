@@ -40,7 +40,7 @@ Repository inclusion does not change product-local delivery authority. Restricte
 | [moldovancsaba/budapest-night](https://github.com/moldovancsaba/budapest-night) | Budapest Night | Budapest Night — events, parties, restaurants, cafés & culture guide | unknown | unverified |
 | [moldovancsaba/visual](https://github.com/moldovancsaba/visual) | visual | Local visual pipeline: head swap, motion, and offline Apple Silicon workflows | unknown | not-set |
 | [moldovancsaba/moldovancsaba.com](https://github.com/moldovancsaba/moldovancsaba.com) | moldovancsaba.com | Moldován Csaba Kft | unknown | not-set |
-| [moldovancsaba/nyc-kid-scout](https://github.com/moldovancsaba/nyc-kid-scout) | Class Scout NY | Not set | unknown | not-set |
+| [moldovancsaba/nyc-kid-scout](https://github.com/moldovancsaba/nyc-kid-scout) | Class Scout NY | Class Scout NY demo for browsing NYC kids activities, saving providers and estimating costs, with an optional AI assistant. | unknown | not-set |
 | [moldovancsaba/classscoutdesign](https://github.com/moldovancsaba/classscoutdesign) | ClassScout NYC — Design System website | ClassScout NYC Design System — public docs site, generated from source and published via GitHub Pages. | unknown | not-set |
 | [moldovancsaba/salesleadgenerator](https://github.com/moldovancsaba/salesleadgenerator) | Sales Lead Generator | sales lead generator | unknown | unverified |
 | [moldovancsaba/sovereign.content](https://github.com/moldovancsaba/sovereign.content) | Sovereign Content | Not set | unknown | unverified |

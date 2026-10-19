@@ -9,7 +9,7 @@ Corrected control/GDS About metadata and eight reviewed public product descripti
 Class Scout NY now has a source-grounded welcome and release notes, including a prominent install blocker and demo/account/checkout/assistant boundaries.
 
 ## Known Issues
-Class Scout main cannot clean-install due to a stale lockfile. Its unmerged candidate passes install/build/preview but exposes lint/dependency findings; product issue #2 owns that follow-up. Class Scout About and final board updates await manual Mac unlock/browser recovery.
+Class Scout main cannot clean-install due to a stale lockfile. Its unmerged candidate passes install/build/preview but exposes lint/dependency findings; product issue #2 owns that follow-up. Class Scout About description is saved and verified; final task state is recorded in control issue #927.
 
 Product lifecycle, destination identity, setup reproducibility and full delivery routing remain unverified where recorded. Product-specific runtime gaps are recorded in their repository documentation; this programme does not claim they are fixed.
 
