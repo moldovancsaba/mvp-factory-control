@@ -14,6 +14,15 @@ This repository is the control layer for the portfolio and the primary home for 
 
 We use a decentralized, autonomous architecture to manage full-stack delivery with maximum privacy and reliability.
 
+
+## Portfolio discovery and quality
+
+- [Public repository index](docs/portfolio/README.md) — current public inventory, observed identities and verification state.
+- [Repository welcome quality standard](docs/portfolio/STANDARD.md) — evidence, role-specific content and acceptance gates.
+- [Programme execution status](docs/portfolio/STATUS.md) — completed preparation, blockers and next gates.
+
+The historical managed-project list below is not the complete inventory. Public discovery does not enrol a product into central issue management. Resolve delivery routing per repository before moving work. Restricted portfolio records must not be published here.
+
 ## Contributors and `main` history
 
 `main` was reset from the canonical local workspace (April 2026). If you had an older clone, **do not merge** expecting continuity: fetch and `git reset --hard origin/main`, or **re-clone** the repository.

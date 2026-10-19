@@ -103,3 +103,9 @@ Run from `apps/mvp-factory-control` (e.g. `npm run dev`). Prisma expects **Postg
 **Local project root (settings file)** — `MVP_FACTORY_CONTROL_LOCAL_PROJECT_ROOT` overrides default `/Users/moldovancsaba/Projects` in `settings-store.ts`.
 
 **Docker CI** — `scripts/mvp-factory-control-docker-portability-gate.sh` uses `MVP_FACTORY_CONTROL_DB_PORT`, `MVP_FACTORY_CONTROL_APP_PORT`, `NEXTAUTH_URL`; GitHub required check name: `portability-gate`.
+
+## Required verification runner
+
+The required `portability-gate` job runs on disposable GitHub-hosted runners for every pull request via `.github/workflows/portfolio-portability.yml`. It validates the public portfolio register, exercises negative validator fixtures, and runs the existing Docker portability gate with synthetic configuration and isolated Compose state. No production credentials are provided.
+
+The production build command is `next build --webpack`, the supported Next.js build mode. The restored runner exposed a Turbopack font import-map failure for IBM Plex Sans; Webpack retains the existing font configuration and provides a verified alternative build path. See the [Next.js CLI reference](https://nextjs.org/docs/app/api-reference/cli/next). No type-check or runtime-health gate is skipped. A failed run must remain merge-blocking.

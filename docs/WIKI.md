@@ -61,3 +61,7 @@ Each product page defines:
 - **Assistant**: `localhost:18789` (OpenClaw)
 - **Inference**: `localhost:11434` (Ollama)
 - **Control**: `localhost:3577` (Web App)
+
+## Public portfolio discovery
+
+The [public repository index](portfolio/README.md) extends discovery beyond the historical managed-product list. The [quality standard](portfolio/STANDARD.md) governs this programme; [execution status](portfolio/STATUS.md) records evidence and blockers. Inclusion in discovery is not proof of central delivery ownership. Verify product-local routing before migrating or duplicating an issue. Private inventory stays outside this public repository.

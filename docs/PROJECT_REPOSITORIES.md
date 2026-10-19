@@ -96,3 +96,7 @@ It should not be treated as:
 3. read the matching product page under `docs/projects/`
 4. switch to the target product repository for implementation
 5. return here for evidence and board updates
+
+## Public portfolio discovery
+
+The [public repository index](portfolio/README.md) extends discovery beyond the historical managed-product list. The [quality standard](portfolio/STANDARD.md) governs this programme; [execution status](portfolio/STATUS.md) records evidence and blockers. Inclusion in discovery is not proof of central delivery ownership. Verify product-local routing before migrating or duplicating an issue. Private inventory stays outside this public repository.
