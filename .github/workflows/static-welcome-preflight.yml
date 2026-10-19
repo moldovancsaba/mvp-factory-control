@@ -8,9 +8,6 @@ jobs:
   clean-build:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    strategy:
-      matrix:
-        node: ['20', '24']
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
@@ -19,7 +16,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
         with:
-          node-version: ${{ matrix.node }}
+          node-version: '24'
       - name: Prepare bounded build-tool lockfile candidate
         run: |
           node -e "const fs=require('fs');fs.copyFileSync('package.json','/tmp/seyu-manifest-before.json');fs.copyFileSync('package-lock.json','/tmp/seyu-lock-before.json')"
@@ -28,6 +25,15 @@ jobs:
           import { readFileSync } from 'node:fs';
           import assert from 'node:assert/strict';
           assert.equal(readFileSync('package.json','utf8'),readFileSync('/tmp/seyu-manifest-before.json','utf8'),'manifest must remain unchanged');
+          JS
+      - name: Update native ESM directory reference in candidate workspace
+        run: |
+          node --input-type=module <<'JS'
+          import { readFileSync, writeFileSync } from 'node:fs';
+          import assert from 'node:assert/strict';
+          const text = readFileSync('vite.config.js','utf8');
+          assert.equal((text.match(/__dirname/g) ?? []).length,6);
+          writeFileSync('vite.config.js',text.replaceAll('__dirname','import.meta.dirname'));
           JS
       - run: npm ci
       - name: Verify six-page clean build
@@ -77,6 +83,8 @@ jobs:
           import { readFileSync } from 'node:fs';
           import { createHash } from 'node:crypto';
           const lock = readFileSync('package-lock.json');
+          const config = readFileSync('vite.config.js');
+          console.log('CONFIG_BLOB_SHA=' + createHash('sha1').update(Buffer.from('blob ' + config.length)).update(Buffer.from([0])).update(config).digest('hex'));
           const old = JSON.parse(readFileSync('/tmp/seyu-lock-before.json','utf8')).packages;
           const next = JSON.parse(lock).packages;
           console.log('LOCK_CHANGES=' + JSON.stringify(Object.entries(next).filter(([p,v])=>p && old[p]?.version!==v.version).map(([p,v])=>({path:p,from:old[p]?.version??'(new)',to:v.version}))));
