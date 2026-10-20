@@ -319,10 +319,12 @@
       "repository": "moldovancsaba/cars.direct",
       "visibility": "public",
       "displayName": "cardmass",
-      "observedAt": "2026-10-19",
+      "observedAt": "2026-10-20",
       "source": "https://api.github.com/repos/moldovancsaba/cars.direct",
-      "description": null,
-      "topics": [],
+      "description": "Cardmass workspace for classifying shared cards across multiple boards and decision-making dimensions.",
+      "topics": [
+        "card-sorting"
+      ],
       "homepage": {
         "url": "https://workfromcloud.vercel.app",
         "state": "unverified"
@@ -338,7 +340,7 @@
         "source": null
       },
       "reviewState": "investigating",
-      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "investigation": "Description and useful classification saved/API-verified in #939 against pinned source. Lifecycle, destination identity, setup acceptance and full routing remain investigations; metadata repair does not establish product acceptance.",
       "sourceRevision": "a715b57deb95cbceb2133d4e26e99cebc48649a5",
       "investigationOwner": "moldovancsaba"
     },
@@ -373,10 +375,12 @@
       "repository": "moldovancsaba/step",
       "visibility": "public",
       "displayName": "STEP",
-      "observedAt": "2026-10-19",
+      "observedAt": "2026-10-20",
       "source": "https://api.github.com/repos/moldovancsaba/step",
-      "description": null,
-      "topics": [],
+      "description": "STEP pre-alpha proof-of-presence protocol, with mesh geometry, miner applications and validation services.",
+      "topics": [
+        "proof-of-presence"
+      ],
       "homepage": {
         "url": "https://step-phi-two.vercel.app",
         "state": "unverified"
@@ -392,7 +396,7 @@
         "source": null
       },
       "reviewState": "investigating",
-      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "investigation": "Description and useful classification saved/API-verified in #939 against pinned source. Lifecycle, destination identity, setup acceptance and full routing remain investigations; metadata repair does not establish product acceptance.",
       "sourceRevision": "b836eb14d0709d118c578b19bb67231fb257457a",
       "investigationOwner": "moldovancsaba"
     },
@@ -552,10 +556,12 @@
       "repository": "moldovancsaba/amanoba",
       "visibility": "public",
       "displayName": "Amanoba",
-      "observedAt": "2026-10-19",
+      "observedAt": "2026-10-20",
       "source": "https://api.github.com/repos/moldovancsaba/amanoba",
-      "description": null,
-      "topics": [],
+      "description": "Course learning platform with lessons, quizzes, learner progress and gamified assessments.",
+      "topics": [
+        "learning-platform"
+      ],
       "homepage": {
         "url": "https://amanoba-narimato.vercel.app",
         "state": "unverified"
@@ -571,7 +577,7 @@
         "source": null
       },
       "reviewState": "investigating",
-      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "investigation": "Description and useful classification saved/API-verified in #939 against pinned source. Lifecycle, destination identity, setup acceptance and full routing remain investigations; metadata repair does not establish product acceptance. Metadata task authority is product issue #53 on Project 12; five README navigation targets remain absent.",
       "sourceRevision": "67fb1e28855c2d5417b59a7753631b04d87a7c3d",
       "investigationOwner": "moldovancsaba"
     },
@@ -811,10 +817,12 @@
       "repository": "moldovancsaba/habigoal.com",
       "visibility": "public",
       "displayName": "Habigoal",
-      "observedAt": "2026-10-19",
+      "observedAt": "2026-10-20",
       "source": "https://api.github.com/repos/moldovancsaba/habigoal.com",
-      "description": null,
-      "topics": [],
+      "description": "Personal habit tracking and Athlete IQ coaching workspace, with athlete check-ins and team planning.",
+      "topics": [
+        "habit-tracking"
+      ],
       "homepage": {
         "url": "https://habigoal.vercel.app",
         "state": "unverified"
@@ -830,7 +838,7 @@
         "source": null
       },
       "reviewState": "investigating",
-      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "investigation": "Description and useful classification saved/API-verified in #939 against pinned source. Lifecycle, destination identity, setup acceptance and full routing remain investigations; metadata repair does not establish product acceptance.",
       "sourceRevision": "9580296877955ae1b16bac8d3afe31727ef918bf",
       "investigationOwner": "moldovancsaba"
     },
@@ -867,10 +875,12 @@
       "repository": "moldovancsaba/calendar-agent",
       "visibility": "public",
       "displayName": "Calendar Agent",
-      "observedAt": "2026-10-19",
+      "observedAt": "2026-10-20",
       "source": "https://api.github.com/repos/moldovancsaba/calendar-agent",
-      "description": null,
-      "topics": [],
+      "description": "Native macOS task and calendar workspace with workflow automation.",
+      "topics": [
+        "macos"
+      ],
       "homepage": {
         "url": null,
         "state": "not-set"
@@ -886,7 +896,7 @@
         "source": null
       },
       "reviewState": "investigating",
-      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "investigation": "Description and useful classification saved/API-verified in #939 against pinned source. Lifecycle, destination identity, setup acceptance and full routing remain investigations; metadata repair does not establish product acceptance.",
       "sourceRevision": "19748110a004526147dbc5a43420419155ae5980",
       "investigationOwner": "moldovancsaba"
     },
@@ -1061,16 +1071,18 @@
       "repository": "moldovancsaba/sovereign.content",
       "visibility": "public",
       "displayName": "Sovereign Content",
-      "observedAt": "2026-10-19",
+      "observedAt": "2026-10-20",
       "source": "https://api.github.com/repos/moldovancsaba/sovereign.content",
-      "description": null,
-      "topics": [],
+      "description": "Documentation hub and separate client agent workspaces for catalogue-content systems.",
+      "topics": [
+        "documentation"
+      ],
       "homepage": {
         "url": "https://classscout-cards.vercel.app",
         "state": "unverified"
       },
       "readme": {
-        "url": "https://github.com/moldovancsaba/sovereign.content/blob/72afde1e070a04eda899adf7ce6ee2afe563b99f/README.md",
+        "url": "https://github.com/moldovancsaba/sovereign.content/blob/658ecec543665b67da7b31a907049ae4c4d3c053/README.md",
         "state": "retrieved"
       },
       "lifecycle": "unknown",
@@ -1080,8 +1092,8 @@
         "source": null
       },
       "reviewState": "investigating",
-      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
-      "sourceRevision": "72afde1e070a04eda899adf7ce6ee2afe563b99f",
+      "investigation": "Description and useful classification saved/API-verified in #939 against pinned source. Lifecycle, destination identity, setup acceptance and full routing remain investigations; metadata repair does not establish product acceptance.",
+      "sourceRevision": "658ecec543665b67da7b31a907049ae4c4d3c053",
       "investigationOwner": "moldovancsaba"
     },
     {
@@ -1263,10 +1275,12 @@
       "repository": "sovereignsquad/checklist",
       "visibility": "public",
       "displayName": "check",
-      "observedAt": "2026-10-19",
+      "observedAt": "2026-10-20",
       "source": "https://api.github.com/repos/sovereignsquad/checklist",
-      "description": null,
-      "topics": [],
+      "description": "Multi-tenant intelligence workspace named check, with unit-scoped blocks, modules, cards and miniapp workflows.",
+      "topics": [
+        "intelligence-workspace"
+      ],
       "homepage": {
         "url": "https://checklist-git-main-narimato.vercel.app",
         "state": "unverified"
@@ -1282,7 +1296,7 @@
         "source": null
       },
       "reviewState": "investigating",
-      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "investigation": "Description and useful classification saved/API-verified in #939 against pinned source. Lifecycle, destination identity, setup acceptance and full routing remain investigations; metadata repair does not establish product acceptance. README retains 48 machine-specific link destinations; 46 map to tracked paths and two refer to local configuration.",
       "sourceRevision": "ac842dc68f66362b6159d9007460f3f2eba01f21",
       "investigationOwner": "moldovancsaba"
     },
@@ -1320,10 +1334,12 @@
       "repository": "sovereignsquad/survey",
       "visibility": "public",
       "displayName": "Habigoal",
-      "observedAt": "2026-10-19",
+      "observedAt": "2026-10-20",
       "source": "https://api.github.com/repos/sovereignsquad/survey",
-      "description": null,
-      "topics": [],
+      "description": "Habigoal daily athlete check-in and readiness-support workspace for coaches and staff.",
+      "topics": [
+        "athlete-support"
+      ],
       "homepage": {
         "url": null,
         "state": "not-set"
@@ -1339,7 +1355,7 @@
         "source": null
       },
       "reviewState": "investigating",
-      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "investigation": "Description and useful classification saved/API-verified in #939 against pinned source. Lifecycle, destination identity, setup acceptance and full routing remain investigations; metadata repair does not establish product acceptance.",
       "sourceRevision": "0a54b6678731736f11e4a83251161349c0b266b1",
       "investigationOwner": "moldovancsaba"
     },
