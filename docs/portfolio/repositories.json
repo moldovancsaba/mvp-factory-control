@@ -36,10 +36,12 @@
       "repository": "moldovancsaba/partnerfonts",
       "visibility": "public",
       "displayName": "AS Roma Font Host",
-      "observedAt": "2026-10-19",
+      "observedAt": "2026-10-20",
       "source": "https://api.github.com/repos/moldovancsaba/partnerfonts",
-      "description": null,
-      "topics": [],
+      "description": "Next.js site for serving public WOFF font assets, including AS Roma fonts.",
+      "topics": [
+        "fonts"
+      ],
       "homepage": {
         "url": "https://haikoto.vercel.app",
         "state": "unverified"
@@ -49,13 +51,13 @@
         "state": "retrieved"
       },
       "lifecycle": "unknown",
-      "role": "unknown",
+      "role": "assets",
       "deliveryRouting": {
         "state": "unverified",
         "source": null
       },
       "reviewState": "investigating",
-      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "investigation": "Description and fonts topic saved/API-verified in #934. Source identifies public WOFF font hosting. Homepage identity and lifecycle remain unverified.",
       "sourceRevision": "0a0a058b80343d93d8bdf780c932323df3c754ae",
       "investigationOwner": "moldovancsaba"
     },
@@ -517,28 +519,30 @@
     {
       "repository": "moldovancsaba/blockmass",
       "visibility": "public",
-      "displayName": "blockmass",
-      "observedAt": "2026-10-19",
+      "displayName": "Blockmass / STEP workspace",
+      "observedAt": "2026-10-20",
       "source": "https://api.github.com/repos/moldovancsaba/blockmass",
-      "description": null,
-      "topics": [],
+      "description": "Blockmass / STEP location-proof prototype with a web dashboard, separate validator API, mobile client and anchoring contract source.",
+      "topics": [
+        "prototype"
+      ],
       "homepage": {
-        "url": "https://blockmass.vercel.app",
-        "state": "unverified"
+        "url": null,
+        "state": "not-set"
       },
       "readme": {
-        "url": null,
-        "state": "not-retrieved"
+        "url": "https://github.com/moldovancsaba/blockmass/blob/6cff3f092f95f164f5d0172c731919cf9e24a1e0/README.md",
+        "state": "retrieved"
       },
       "lifecycle": "unknown",
-      "role": "unknown",
+      "role": "monorepo",
       "deliveryRouting": {
         "state": "unverified",
         "source": null
       },
       "reviewState": "investigating",
-      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
-      "sourceRevision": "8e0e9ad77052a5ef3945b4eca7987e1773e3e9d7",
+      "investigation": "Root component welcome and source-aligned web setup published; frontend version 0.22.0 follows existing sync policy (#932). Exact-revision synthetic web verification passed; existing build warnings, 12 advisories and auth follow-up remain open. Previous homepage serves a different application titled checklist; correct deployment/destination remains unresolved. Product acceptance remains open.",
+      "sourceRevision": "6cff3f092f95f164f5d0172c731919cf9e24a1e0",
       "investigationOwner": "moldovancsaba"
     },
     {
@@ -741,10 +745,12 @@
       "repository": "moldovancsaba/try-on",
       "visibility": "public",
       "displayName": "Try-On Studio",
-      "observedAt": "2026-10-19",
+      "observedAt": "2026-10-20",
       "source": "https://api.github.com/repos/moldovancsaba/try-on",
-      "description": null,
-      "topics": [],
+      "description": "Local virtual try-on application with garment tools, a web interface and a separate processing worker.",
+      "topics": [
+        "virtual-try-on"
+      ],
       "homepage": {
         "url": null,
         "state": "not-set"
@@ -754,13 +760,13 @@
         "state": "retrieved"
       },
       "lifecycle": "unknown",
-      "role": "unknown",
+      "role": "local-tool",
       "deliveryRouting": {
         "state": "unverified",
         "source": null
       },
       "reviewState": "investigating",
-      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "investigation": "Description and virtual-try-on topic saved/API-verified in #934. Local web interface and separate worker boundary documented in source. Lifecycle, effective routing and fresh runtime acceptance remain investigations.",
       "sourceRevision": "e13cf446e71ece7d2beccb3af57283c7a4a6e550",
       "investigationOwner": "moldovancsaba"
     },
@@ -1186,27 +1192,29 @@
       "repository": "sovereignsquad/meimei",
       "visibility": "public",
       "displayName": "agent.meimei",
-      "observedAt": "2026-10-19",
+      "observedAt": "2026-10-20",
       "source": "https://api.github.com/repos/sovereignsquad/meimei",
-      "description": null,
-      "topics": [],
+      "description": "Local agent workspace with a dashboard, skills catalogue and governed miniapp contracts.",
+      "topics": [
+        "local-first"
+      ],
       "homepage": {
         "url": "https://frame-it-now.vercel.app",
         "state": "unverified"
       },
       "readme": {
-        "url": "https://github.com/sovereignsquad/meimei/blob/99485d5a333d6c98e9114f3aa58ad7fe56b81838/README.md",
+        "url": "https://github.com/sovereignsquad/meimei/blob/f8561a4e444b113616adacf7a340d47ebe97d1df/README.md",
         "state": "retrieved"
       },
       "lifecycle": "unknown",
-      "role": "unknown",
+      "role": "local-tool",
       "deliveryRouting": {
         "state": "unverified",
         "source": null
       },
       "reviewState": "investigating",
-      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
-      "sourceRevision": "99485d5a333d6c98e9114f3aa58ad7fe56b81838",
+      "investigation": "CI badge/workflow path repaired in product PR #264 with PR and main CI passing (#933). Synthetic CI-only audit records preserve production validation and reject content/hash-chain tampering. Description/local-first topic saved/API-verified in #934. Homepage identity and lifecycle remain investigations.",
+      "sourceRevision": "f8561a4e444b113616adacf7a340d47ebe97d1df",
       "investigationOwner": "moldovancsaba"
     },
     {
@@ -1324,10 +1332,12 @@
       "repository": "sovereignsquad/trinity",
       "visibility": "public",
       "displayName": "{trinity}",
-      "observedAt": "2026-10-19",
+      "observedAt": "2026-10-20",
       "source": "https://api.github.com/repos/sovereignsquad/trinity",
-      "description": null,
-      "topics": [],
+      "description": "Local-first reasoning runtime with product adapters, active memory and provider-neutral model routing.",
+      "topics": [
+        "local-first"
+      ],
       "homepage": {
         "url": null,
         "state": "not-set"
@@ -1337,13 +1347,13 @@
         "state": "retrieved"
       },
       "lifecycle": "unknown",
-      "role": "unknown",
+      "role": "local-tool",
       "deliveryRouting": {
         "state": "unverified",
         "source": null
       },
       "reviewState": "investigating",
-      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "investigation": "Description and local-first topic saved/API-verified in #934. Source identifies a local reasoning runtime. Navigation repair is unmerged draft PR #93: AST equivalence, lint and native build pass; 201 tests pass and 3 provider-related tests fail (#935). Lifecycle and full delivery routing remain investigations.",
       "sourceRevision": "793d4c3a3266e77908bc428ad9a87729554beacd",
       "investigationOwner": "moldovancsaba"
     },

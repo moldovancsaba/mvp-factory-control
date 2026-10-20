@@ -3,6 +3,8 @@
 ## New Features
 Public discovery register and index with an enforced register/index consistency check; source revisions and investigation ownership; role-specific welcome standards; native record validation with valid local-only and negative fixture checks.
 
+The Blockmass root welcome now maps the web, validator, mobile and contract components and separates implemented, simulated and unverified scope.
+
 ## Fixed Bugs
 Corrected control/GDS About metadata and eight reviewed public product descriptions (issue #922), with independent API readback. Replaced the DoneIsBetter framework README with source-grounded orientation and known limitations. Added the missing Replace README, corrected its stale implementation plan and aligned its About description with the verified scaffold scope. Synchronized public index descriptions with the evidence register. Restored the required verification job on every PR and bundled official IBM Plex font assets to remove intermittent Google stylesheet parsing from builds.
 
@@ -10,12 +12,16 @@ Class Scout NY now has a source-grounded welcome and release notes, including a 
 
 Seyu Solutions now has a six-page source map, reproducible setup and existing Pages publication/recovery guidance. Its bounded dependency refresh cleared four reported high advisories at verification and its ESM configuration builds without warnings. Product and downstream Pages publication passed; About and website match the verified static-site identity (issue #930).
 
+Repaired MeiMei's CI badge/repository destination and fresh-checkout audit fixture with content/chain tamper rejection; product PR and main checks passed. Saved source-grounded discovery descriptions/topics for Partnerfonts, Trinity, Try-On and MeiMei, plus Blockmass's prototype identity.
+
 ## Known Issues
 Class Scout main cannot clean-install due to a stale lockfile. Its unmerged candidate passes install/build/preview but exposes lint/dependency findings; product issue #2 owns that follow-up. Class Scout About description is saved and verified; final task state is recorded in control issue #927.
 
 Product lifecycle, destination identity, setup reproducibility and full delivery routing remain unverified where recorded. Product-specific runtime gaps are recorded in their repository documentation; this programme does not claim they are fixed.
 
 Seyu retains historical social-image/reference follow-ups and deployment-action deprecation warnings. Its lifecycle and full product routing remain unverified; the static marketing welcome does not establish those facts.
+
+Blockmass publication/destination remains unresolved: the former configured URL displays a different application titled checklist and has been removed from About. Its dated web baseline includes build warnings and 12 dependency findings. Trinity's navigation/formatting draft remains unmerged with 3 provider-related test failures (201 tests pass); native build, lint and AST equivalence pass.
 
 ## Future Roadmap
 Resolve remaining identity and routing questions, verify destinations and representative pilots, then complete repository-specific welcome/default-guidance repairs and final re-audit. Acceptance evidence and unresolved findings remain visible throughout.
