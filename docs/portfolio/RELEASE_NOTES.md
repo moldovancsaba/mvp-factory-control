@@ -14,6 +14,8 @@ Seyu Solutions now has a six-page source map, reproducible setup and existing Pa
 
 Repaired MeiMei's CI badge/repository destination and fresh-checkout audit fixture with content/chain tamper rejection; product PR and main checks passed. Saved source-grounded discovery descriptions/topics for Partnerfonts, Trinity, Try-On and MeiMei, plus Blockmass's prototype identity.
 
+Added reviewed descriptions and useful classification topics for the eight source-evidenced application/tool repositories in issue #937, with independent settings readback and unchanged website/visibility. No app implementation or deployment change is included.
+
 ## Known Issues
 Class Scout main cannot clean-install due to a stale lockfile. Its unmerged candidate passes install/build/preview but exposes lint/dependency findings; product issue #2 owns that follow-up. Class Scout About description is saved and verified; final task state is recorded in control issue #927.
 

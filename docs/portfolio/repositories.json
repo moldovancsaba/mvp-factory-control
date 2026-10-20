@@ -7,10 +7,11 @@
       "repository": "moldovancsaba/work.direct",
       "visibility": "public",
       "displayName": "work.direct",
-      "observedAt": "2026-10-19",
+      "observedAt": "2026-10-20",
       "source": "https://api.github.com/repos/moldovancsaba/work.direct",
-      "description": null,
+      "description": "MCP server for Google Tasks access in a personal inbox-triage workflow; Google Tasks remains the task store.",
       "topics": [
+        "google-tasks",
         "personal"
       ],
       "homepage": {
@@ -28,7 +29,7 @@
         "source": null
       },
       "reviewState": "investigating",
-      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "investigation": "Description and useful classification saved/API-verified in #937 against pinned source. Lifecycle, destination identity, setup acceptance and full routing remain investigations; metadata repair does not establish product acceptance.",
       "sourceRevision": "8e675cb138c1a71d061651679de3e8442918c658",
       "investigationOwner": "moldovancsaba"
     },
@@ -439,10 +440,12 @@
       "repository": "moldovancsaba/kormanyvalto",
       "visibility": "public",
       "displayName": "Kormanyvalto",
-      "observedAt": "2026-10-19",
+      "observedAt": "2026-10-20",
       "source": "https://api.github.com/repos/moldovancsaba/kormanyvalto",
-      "description": null,
-      "topics": [],
+      "description": "Civic voting simulation with Hungarian national, county and constituency views, analytics and seat estimates.",
+      "topics": [
+        "civic-tech"
+      ],
       "homepage": {
         "url": "https://kormanyvalto.com",
         "state": "unverified"
@@ -458,7 +461,7 @@
         "source": null
       },
       "reviewState": "investigating",
-      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "investigation": "Description and useful classification saved/API-verified in #937 against pinned source. Lifecycle, destination identity, setup acceptance and full routing remain investigations; metadata repair does not establish product acceptance.",
       "sourceRevision": "8511930940f483c6cf76747f4ac142415dc48c4d",
       "investigationOwner": "moldovancsaba"
     },
@@ -664,10 +667,12 @@
       "repository": "moldovancsaba/kidex",
       "visibility": "public",
       "displayName": "KIDEX",
-      "observedAt": "2026-10-19",
+      "observedAt": "2026-10-20",
       "source": "https://api.github.com/repos/moldovancsaba/kidex",
-      "description": null,
-      "topics": [],
+      "description": "Child assessment and development-planning workspace for conductors, with longitudinal profiles and family-facing reports.",
+      "topics": [
+        "child-development"
+      ],
       "homepage": {
         "url": "https://kidex-narimato.vercel.app",
         "state": "unverified"
@@ -683,7 +688,7 @@
         "source": null
       },
       "reviewState": "investigating",
-      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "investigation": "Description and useful classification saved/API-verified in #937 against pinned source. Lifecycle, destination identity, setup acceptance and full routing remain investigations; metadata repair does not establish product acceptance.",
       "sourceRevision": "8dba8e4bc129aa0e27b096fecd569a27f4e1d44c",
       "investigationOwner": "moldovancsaba"
     },
@@ -691,10 +696,12 @@
       "repository": "moldovancsaba/agent.chappie",
       "visibility": "public",
       "displayName": "Agent.Chappie Local-First OpenClaw Stack",
-      "observedAt": "2026-10-19",
+      "observedAt": "2026-10-20",
       "source": "https://api.github.com/repos/moldovancsaba/agent.chappie",
-      "description": null,
-      "topics": [],
+      "description": "Local-first agent workflow with a private worker bridge and a thin consultant-follow-up web application.",
+      "topics": [
+        "local-first"
+      ],
       "homepage": {
         "url": "https://agent-chappie.vercel.app",
         "state": "unverified"
@@ -710,7 +717,7 @@
         "source": null
       },
       "reviewState": "investigating",
-      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "investigation": "Description and useful classification saved/API-verified in #937 against pinned source. Lifecycle, destination identity, setup acceptance and full routing remain investigations; metadata repair does not establish product acceptance.",
       "sourceRevision": "d8e35275b978de71b5990235bcfc98552b2fbaa4",
       "investigationOwner": "moldovancsaba"
     },
@@ -718,10 +725,12 @@
       "repository": "moldovancsaba/compare",
       "visibility": "public",
       "displayName": "RangeScout EU",
-      "observedAt": "2026-10-19",
+      "observedAt": "2026-10-20",
       "source": "https://api.github.com/repos/moldovancsaba/compare",
-      "description": null,
-      "topics": [],
+      "description": "RangeScout EU directory for discovering sport shooting training, ranges, competitions, hunting grounds and clubs.",
+      "topics": [
+        "directory"
+      ],
       "homepage": {
         "url": "https://compare-narimato.vercel.app",
         "state": "unverified"
@@ -737,7 +746,7 @@
         "source": null
       },
       "reviewState": "investigating",
-      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "investigation": "Description and useful classification saved/API-verified in #937 against pinned source. Lifecycle, destination identity, setup acceptance and full routing remain investigations; metadata repair does not establish product acceptance.",
       "sourceRevision": "727db1d761e227594a41b6d72dc0e4e8a38e1317",
       "investigationOwner": "moldovancsaba"
     },
@@ -829,10 +838,12 @@
       "repository": "moldovancsaba/lauraorganic.com",
       "visibility": "public",
       "displayName": "Laura Organic",
-      "observedAt": "2026-10-19",
+      "observedAt": "2026-10-20",
       "source": "https://api.github.com/repos/moldovancsaba/lauraorganic.com",
-      "description": null,
-      "topics": [],
+      "description": "Laura Organic landing and preorder prototype with browser-local state and a stub reservation endpoint.",
+      "topics": [
+        "prototype"
+      ],
       "homepage": {
         "url": "https://lauraorganic-com.vercel.app",
         "state": "unverified"
@@ -848,7 +859,7 @@
         "source": null
       },
       "reviewState": "investigating",
-      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "investigation": "Description and useful classification saved/API-verified in #937 against pinned source. Lifecycle, destination identity, setup acceptance and full routing remain investigations; metadata repair does not establish product acceptance.",
       "sourceRevision": "ba321ed30dddec067976b3806b1a97119eea33b3",
       "investigationOwner": "moldovancsaba"
     },
@@ -1104,10 +1115,12 @@
       "repository": "moldovancsaba/deliafrica",
       "visibility": "public",
       "displayName": "deli.africa",
-      "observedAt": "2026-10-19",
+      "observedAt": "2026-10-20",
       "source": "https://api.github.com/repos/moldovancsaba/deliafrica",
-      "description": null,
-      "topics": [],
+      "description": "deli.africa storefront for South African pantry products, with a cart, order flow and optional Customer Direct managed mode.",
+      "topics": [
+        "storefront"
+      ],
       "homepage": {
         "url": "https://deliafrica.vercel.app",
         "state": "unverified"
@@ -1123,7 +1136,7 @@
         "source": null
       },
       "reviewState": "investigating",
-      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "investigation": "Description and useful classification saved/API-verified in #937 against pinned source. Lifecycle, destination identity, setup acceptance and full routing remain investigations; metadata repair does not establish product acceptance.",
       "sourceRevision": "9a7fcfba8ec040c20f378468d30bdeada441b3ba",
       "investigationOwner": "moldovancsaba"
     },
@@ -1131,10 +1144,12 @@
       "repository": "moldovancsaba/discountdirect",
       "visibility": "public",
       "displayName": "DiscountDirect",
-      "observedAt": "2026-10-19",
+      "observedAt": "2026-10-20",
       "source": "https://api.github.com/repos/moldovancsaba/discountdirect",
-      "description": null,
-      "topics": [],
+      "description": "Personalized offers and seller-buyer relationship workspace, with purchase history, conversations and campaign tools.",
+      "topics": [
+        "personalized-offers"
+      ],
       "homepage": {
         "url": "https://discountdirect.vercel.app",
         "state": "unverified"
@@ -1150,7 +1165,7 @@
         "source": null
       },
       "reviewState": "investigating",
-      "investigation": "Verify purpose, aliases, role, lifecycle, destination and issue authority against current source before acceptance.",
+      "investigation": "Description and useful classification saved/API-verified in #937 against pinned source. Lifecycle, destination identity, setup acceptance and full routing remain investigations; metadata repair does not establish product acceptance.",
       "sourceRevision": "05504bf0303e06cbd001a77554e1d5fb0e746cf0",
       "investigationOwner": "moldovancsaba"
     },
