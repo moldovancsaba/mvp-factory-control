@@ -7,7 +7,7 @@ Repository inclusion does not change product-local delivery authority. Restricte
 | Repository | README identity | Description | Lifecycle | Destination verification |
 | --- | --- | --- | --- | --- |
 | [moldovancsaba/work.direct](https://github.com/moldovancsaba/work.direct) | work.direct | Not set | unknown | unverified |
-| [moldovancsaba/partnerfonts](https://github.com/moldovancsaba/partnerfonts) | AS Roma Font Host | Not set | unknown | unverified |
+| [moldovancsaba/partnerfonts](https://github.com/moldovancsaba/partnerfonts) | AS Roma Font Host | Next.js site for serving public WOFF font assets, including AS Roma fonts. | unknown | unverified |
 | [moldovancsaba/matimato](https://github.com/moldovancsaba/matimato) | Matimato | play matimato | unknown | unverified |
 | [moldovancsaba/narimato](https://github.com/moldovancsaba/narimato) | NARIMATO | support hr | unknown | unverified |
 | [moldovancsaba/hatori](https://github.com/moldovancsaba/hatori) | hatori | Local-first personal agent with a UI, API, auditable learning and retrieval over personal knowledge. | unknown | unverified |
@@ -24,7 +24,7 @@ Repository inclusion does not change product-local delivery authority. Restricte
 | [moldovancsaba/kormanyvalto](https://github.com/moldovancsaba/kormanyvalto) | Kormanyvalto | Not set | unknown | unverified |
 | [moldovancsaba/camera](https://github.com/moldovancsaba/camera) | Camera | Branded photo capture, event galleries, slideshows and partner administration for sports and live events. | unknown | unverified |
 | [moldovancsaba/launchmass](https://github.com/moldovancsaba/launchmass) | launchmass | Multi-tenant card-grid platform providing public launcher pages and organization administration. | unknown | unverified |
-| [moldovancsaba/blockmass](https://github.com/moldovancsaba/blockmass) | blockmass | Not set | unknown | unverified |
+| [moldovancsaba/blockmass](https://github.com/moldovancsaba/blockmass) | Blockmass / STEP workspace | Blockmass / STEP location-proof prototype with a web dashboard, separate validator API, mobile client and anchoring contract source. | unknown | not-set |
 | [moldovancsaba/amanoba](https://github.com/moldovancsaba/amanoba) | Amanoba | Not set | unknown | unverified |
 | [moldovancsaba/mvp-factory-control](https://github.com/moldovancsaba/mvp-factory-control) | MVP Factory Control (v1.4.1-sovereign) | Portfolio governance, shared standards and delivery coordination for MVP Factory projects. Product implementation remains in each product repository. | unknown | not-set |
 | [moldovancsaba/spot](https://github.com/moldovancsaba/spot) | {spot} | {spot} - Smart Platform for Observing Threats | unknown | not-set |
@@ -32,7 +32,7 @@ Repository inclusion does not change product-local delivery authority. Restricte
 | [moldovancsaba/kidex](https://github.com/moldovancsaba/kidex) | KIDEX | Not set | unknown | unverified |
 | [moldovancsaba/agent.chappie](https://github.com/moldovancsaba/agent.chappie) | Agent.Chappie Local-First OpenClaw Stack | Not set | unknown | unverified |
 | [moldovancsaba/compare](https://github.com/moldovancsaba/compare) | RangeScout EU | Not set | unknown | unverified |
-| [moldovancsaba/try-on](https://github.com/moldovancsaba/try-on) | Try-On Studio | Not set | unknown | not-set |
+| [moldovancsaba/try-on](https://github.com/moldovancsaba/try-on) | Try-On Studio | Local virtual try-on application with garment tools, a web interface and a separate processing worker. | unknown | not-set |
 | [moldovancsaba/seyusolutions](https://github.com/moldovancsaba/seyusolutions) | Seyu Solutions website | Static marketing website for Seyu Solutions, with company, agency, founder and legal pages. Built with Vite. | unknown | verified |
 | [moldovancsaba/habigoal.com](https://github.com/moldovancsaba/habigoal.com) | Habigoal | Not set | unknown | unverified |
 | [moldovancsaba/lauraorganic.com](https://github.com/moldovancsaba/lauraorganic.com) | Laura Organic | Not set | unknown | unverified |
@@ -48,10 +48,10 @@ Repository inclusion does not change product-local delivery authority. Restricte
 | [moldovancsaba/deliafrica](https://github.com/moldovancsaba/deliafrica) | deli.africa | Not set | unknown | unverified |
 | [moldovancsaba/discountdirect](https://github.com/moldovancsaba/discountdirect) | DiscountDirect | Not set | unknown | unverified |
 | [sovereignsquad/general-design-system](https://github.com/sovereignsquad/general-design-system) | General Design System | Shared design system and source of truth for UI, UX, components and design tokens across the MVP Factory application portfolio. | unknown | unverified |
-| [sovereignsquad/meimei](https://github.com/sovereignsquad/meimei) | agent.meimei | Not set | unknown | unverified |
+| [sovereignsquad/meimei](https://github.com/sovereignsquad/meimei) | agent.meimei | Local agent workspace with a dashboard, skills catalogue and governed miniapp contracts. | unknown | unverified |
 | [sovereignsquad/train](https://github.com/sovereignsquad/train) | {train} | {train} is a provider-neutral autonomous optimization platform. | unknown | not-set |
 | [sovereignsquad/checklist](https://github.com/sovereignsquad/checklist) | check | Not set | unknown | unverified |
 | [sovereignsquad/impact](https://github.com/sovereignsquad/impact) | IMPACT | Impact — open source project (roadmap & work tracking on GitHub Projects) | unknown | unverified |
 | [sovereignsquad/survey](https://github.com/sovereignsquad/survey) | Habigoal | Not set | unknown | not-set |
-| [sovereignsquad/trinity](https://github.com/sovereignsquad/trinity) | {trinity} | Not set | unknown | not-set |
+| [sovereignsquad/trinity](https://github.com/sovereignsquad/trinity) | {trinity} | Local-first reasoning runtime with product adapters, active memory and provider-neutral model routing. | unknown | not-set |
 | [sovereignsquad/sovereignsquad.github.io](https://github.com/sovereignsquad/sovereignsquad.github.io) | sovereignsquad.github.io | Root GitHub Pages site for Sovereign Squad | unknown | not-set |
