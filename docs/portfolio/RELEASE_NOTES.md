@@ -16,6 +16,8 @@ Repaired MeiMei's CI badge/repository destination and fresh-checkout audit fixtu
 
 Added reviewed descriptions and useful classification topics for the eight source-evidenced application/tool repositories in issue #937, with independent settings readback and unchanged website/visibility. No app implementation or deployment change is included.
 
+Completed the remaining eight empty public descriptions with source-grounded purpose statements and topics (issue #939); all 49 public inventory records now have descriptions. Preserved existing topics, website fields and visibility. Amanoba's settings work is tracked in its product issue #53 and Project 12.
+
 ## Known Issues
 Class Scout main cannot clean-install due to a stale lockfile. Its unmerged candidate passes install/build/preview but exposes lint/dependency findings; product issue #2 owns that follow-up. Class Scout About description is saved and verified; final task state is recorded in control issue #927.
 
@@ -24,6 +26,8 @@ Product lifecycle, destination identity, setup reproducibility and full delivery
 Seyu retains historical social-image/reference follow-ups and deployment-action deprecation warnings. Its lifecycle and full product routing remain unverified; the static marketing welcome does not establish those facts.
 
 Blockmass publication/destination remains unresolved: the former configured URL displays a different application titled checklist and has been removed from About. Its dated web baseline includes build warnings and 12 dependency findings. Trinity's navigation/formatting draft remains unmerged with 3 provider-related test failures (201 tests pass); native build, lint and AST equivalence pass.
+
+Amanoba's README has five absent relative link targets with tracked counterparts under docs/core and docs/architecture. check's README has 48 machine-specific Markdown destinations; 46 map to tracked paths and two are local configuration references. These are recorded findings, not delivered navigation fixes.
 
 ## Future Roadmap
 Resolve remaining identity and routing questions, verify destinations and representative pilots, then complete repository-specific welcome/default-guidance repairs and final re-audit. Acceptance evidence and unresolved findings remain visible throughout.
