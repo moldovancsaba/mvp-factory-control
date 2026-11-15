@@ -18,6 +18,7 @@ We use a decentralized, autonomous architecture to manage full-stack delivery wi
 ## Portfolio discovery and quality
 
 - [Roadmap modernization assessment, 15 November 2026](audits/roadmap-modernization-2026-11-15/README.md) — evidence-backed clusters, replacement options and a 216-item register. Project boards are read-only; changes are recorded in issues.
+- [Project board movement and Scrum log](docs/PROJECT_BOARD_MOVEMENT_LOG.md) — owner-maintained notes on where each card is, where it could move and the evidence required; no automated board changes.
 
 - [Public repository index](docs/portfolio/README.md) — current public inventory, observed identities and verification state.
 - [Repository welcome quality standard](docs/portfolio/STANDARD.md) — evidence, role-specific content and acceptance gates.

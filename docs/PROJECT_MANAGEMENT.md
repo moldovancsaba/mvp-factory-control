@@ -20,6 +20,7 @@ Delivery truth lives in:
 Board:
 
 - [GitHub Project 1](https://github.com/users/moldovancsaba/projects/1)
+- [Manual movement and Scrum notes](PROJECT_BOARD_MOVEMENT_LOG.md) — observed card status, proposed destination, evidence, owner decision and verified manual execution. This log never authorizes board writes.
 
 ## Delivery Contract
 
