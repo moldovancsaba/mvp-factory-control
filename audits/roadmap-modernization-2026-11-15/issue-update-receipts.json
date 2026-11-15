@@ -1,0 +1,676 @@
+{
+  "date": "2026-11-15",
+  "scope": "82 issue-body updates; two duplicate issue closures; no successful board writes",
+  "updates": [
+    {
+      "number": 3,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/3",
+      "baselineBodySha256": "9b71f1f0b88054ee7912878a02e65618a5058303b710f47dad5a07835749bd2e",
+      "updatedBodySha256": "e01f105385a26efecd9f84c8d2aecea3851fb94c85d50956c6219980a3d00410",
+      "updatedAt": "2026-11-15T12:17:51Z"
+    },
+    {
+      "number": 4,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/4",
+      "baselineBodySha256": "176803d882a3e8622e5ef06ba0bad18eba2512491242b56622cc8431c28282e8",
+      "updatedBodySha256": "401f26c340d7d52e53dc2c8ee9e9b99ee3c8f490720b534dd9f4d6d104a77611",
+      "updatedAt": "2026-11-15T12:17:53Z"
+    },
+    {
+      "number": 5,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/5",
+      "baselineBodySha256": "0a4db49da15ccc8445679cefd532df1ed783124d576483a3daf96fbc4f63acf9",
+      "updatedBodySha256": "1c95bfcd2d999a6e69f5056f5ab55e94f1f6e0582d637bf13136e3d0207f1151",
+      "updatedAt": "2026-11-15T12:17:55Z"
+    },
+    {
+      "number": 6,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/6",
+      "baselineBodySha256": "a32d0429ef055435ee64bb01a2b71e51421bb5a60d8473c464d501e59447dd1d",
+      "updatedBodySha256": "c7e2cef407d25f1489650d0389b9dc388029d961d39cc4aed54bea51b263ad4e",
+      "updatedAt": "2026-11-15T12:17:57Z"
+    },
+    {
+      "number": 7,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/7",
+      "baselineBodySha256": "7a25215f75df8b3747b355e82735b1d1bbc1f83cfd55913445ed1cd499114736",
+      "updatedBodySha256": "2f42462fb685c1f65b029a168af0807b8d1cceb497a0fc2060a3d7a87da9189e",
+      "updatedAt": "2026-11-15T12:17:58Z"
+    },
+    {
+      "number": 8,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/8",
+      "baselineBodySha256": "423f28aa40d9318bb924f47109a3179a802a369180eb4df87967ce7d40294bcb",
+      "updatedBodySha256": "68ea5a5cbc8febd3363f8745d62bd276a71615ca0dee06786ccd47c7daa5d0d4",
+      "updatedAt": "2026-11-15T12:18:00Z"
+    },
+    {
+      "number": 9,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/9",
+      "baselineBodySha256": "7dafcd7e297597b5bc2500d3c58480f19cf85c9c611ba260e36233d93f5c89b9",
+      "updatedBodySha256": "f6a141067046cffdda096954e10389549a55ca62a5c87c3a805923a9571ec3b0",
+      "updatedAt": "2026-11-15T12:18:02Z"
+    },
+    {
+      "number": 10,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/10",
+      "baselineBodySha256": "048d48b1a0ec8065bb92a8b2e0142f3a6c112355bfe364d23094b75eb05ee2d9",
+      "updatedBodySha256": "2e193972ff4b43838d84f4426e9e17b188051599bcbe87c74ca4d77ade973062",
+      "updatedAt": "2026-11-15T12:18:03Z"
+    },
+    {
+      "number": 11,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/11",
+      "baselineBodySha256": "51205d27e78aed4913de593fb6028eaa880596b32bb69b79d30bb8b2467fdba6",
+      "updatedBodySha256": "78d857fac59cda7e8d50eccf33cd988dbcf462f12adbb082d0215f879e0ba447",
+      "updatedAt": "2026-11-15T12:18:04Z"
+    },
+    {
+      "number": 12,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/12",
+      "baselineBodySha256": "69ce15deea15b3bf72c3b19e927ef685a5628bc5f37396361e71c6453640afa7",
+      "updatedBodySha256": "3c94aaff648e2ea46439cb5fcca4f081b22dae006c32cc275cbad9519f1bebb4",
+      "updatedAt": "2026-11-15T12:18:06Z"
+    },
+    {
+      "number": 13,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/13",
+      "baselineBodySha256": "ae881035dc5f85227371b0ef8227ee1c56e385d7b3d983e210ea1c4b97013f07",
+      "updatedBodySha256": "ee3af3ff74201a1e6fdd07b421a23ed5198a1e1297b9f179687b5e8e1e5fde98",
+      "updatedAt": "2026-11-15T12:18:08Z"
+    },
+    {
+      "number": 14,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/14",
+      "baselineBodySha256": "f113494fcbcc282a8ab3d71b7f5eb63b951cefea18aeba95bbf7a35b7acdc124",
+      "updatedBodySha256": "44241f674d5175205ec65e3f3540f5cc58996586d3e644bca43d36bb5b44d3ed",
+      "updatedAt": "2026-11-15T12:18:09Z"
+    },
+    {
+      "number": 15,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/15",
+      "baselineBodySha256": "dd63b2fa2aac456a595e7173c9bc179521909d70bfca5140ce0afa4731babde7",
+      "updatedBodySha256": "535bf243626204785f4f7cd81f5b95e08c8692551c5759eeeac49bd18e14c071",
+      "updatedAt": "2026-11-15T12:18:11Z"
+    },
+    {
+      "number": 17,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/17",
+      "baselineBodySha256": "570a54117345a25c84d118396dfc2e54b90b6553405fed252ccd8270ac6e948a",
+      "updatedBodySha256": "68ddcfded80981fca915cdd98952448b134748b998917c3515bfb8d68374e1fb",
+      "updatedAt": "2026-11-15T12:18:12Z"
+    },
+    {
+      "number": 18,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/18",
+      "baselineBodySha256": "8d63bfc32f6fc4594bd47a7c7ed84eab1d2090903e448739814d3f69829e0fae",
+      "updatedBodySha256": "8a7d5dceff9fdf3027627f05122c2035549ec23d904eb55eaa357626e414241b",
+      "updatedAt": "2026-11-15T12:18:14Z"
+    },
+    {
+      "number": 20,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/20",
+      "baselineBodySha256": "21b3d6a90b5469210c8b621ab52fe4715b45aa1b19a40fa4083f0c525db5ab22",
+      "updatedBodySha256": "210df15bb3411f602c76d4f72c8bfaea8751046d91d1784cbe195d3e05d75517",
+      "updatedAt": "2026-11-15T12:18:15Z"
+    },
+    {
+      "number": 21,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/21",
+      "baselineBodySha256": "d539c471ca4c01c1f41fb7c0a881e74c8eaeb19b8c2dc0fe5c0fa6cecd4c767c",
+      "updatedBodySha256": "9017e21caca8fc41427052c353c698de1ad9ce014d2019da4f8f69ac27f59b7f",
+      "updatedAt": "2026-11-15T12:18:17Z"
+    },
+    {
+      "number": 22,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/22",
+      "baselineBodySha256": "161de008a76af80268f21aef5d0a9dfefff792f5ba1eee00d68e5b475925ed2b",
+      "updatedBodySha256": "e6ec0bcaa939fbaa8a3db5be8999c036b50f0c13fdc83f5c59478543e78bbce0",
+      "updatedAt": "2026-11-15T12:18:18Z"
+    },
+    {
+      "number": 23,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/23",
+      "baselineBodySha256": "867587523989086a116d661b52b95bbe13957b0a4236ece7237e9c85cba6b6e1",
+      "updatedBodySha256": "578811f55e55954ccc2553bca7e8311fc8eab1ccd843b1b665a7fb94418a6ff3",
+      "updatedAt": "2026-11-15T12:18:20Z"
+    },
+    {
+      "number": 24,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/24",
+      "baselineBodySha256": "8f7e6ab0dfce4af189aef58bf15514c130bb4f93af07e7d02b956d65d477c7a2",
+      "updatedBodySha256": "bf84e86dc30051b45bcad766847d91267c81415a1e52ab776287acec02b0890b",
+      "updatedAt": "2026-11-15T12:18:21Z"
+    },
+    {
+      "number": 25,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/25",
+      "baselineBodySha256": "a87744361fb1ee069cd0c1872edd2c786aa8552f4c4d52211bc4a18da30075dd",
+      "updatedBodySha256": "0795cef15b684d04705959192c65fb3138b0a9098edd3d2a08303cbf33dd2d1a",
+      "updatedAt": "2026-11-15T12:18:22Z"
+    },
+    {
+      "number": 26,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/26",
+      "baselineBodySha256": "0c1aa17b49c8e19271fe9625568864389a29b7694b3949fdb437b6f1a248a762",
+      "updatedBodySha256": "cee1e40e2abc09e2491defce1d315bb94efd1699688374319ac2ef39acd4691a",
+      "updatedAt": "2026-11-15T12:18:24Z"
+    },
+    {
+      "number": 27,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/27",
+      "baselineBodySha256": "d0bf088112860e678aeebeafb0024b3729cac718e8f9357e71528c93b2baf76e",
+      "updatedBodySha256": "100153fc1490038e8b6e1f5438abdc3e419173c7ea45b4a536b2e69f2ed8eabe",
+      "updatedAt": "2026-11-15T12:18:25Z"
+    },
+    {
+      "number": 28,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/28",
+      "baselineBodySha256": "7d0aa087c0a67d72f714a57542e6ada6c481e3a61dbe3ff3bffba7fe6ff275ab",
+      "updatedBodySha256": "9d5672bd7ed3f06344c1ea11dd37d0f8e249ee282c83c85cce087b4e25ac0888",
+      "updatedAt": "2026-11-15T12:18:27Z"
+    },
+    {
+      "number": 29,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/29",
+      "baselineBodySha256": "887e7a6d18d9a19ab605c884a30e577f32dbb7a8e0e0c9f24546ffb832171f8e",
+      "updatedBodySha256": "a82cc4e3ea9ed015418a05b364e5a753fdf0c883286e64208750af6363c99d6a",
+      "updatedAt": "2026-11-15T12:18:28Z"
+    },
+    {
+      "number": 30,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/30",
+      "baselineBodySha256": "0ba5c005f08d4d5633974ab88ab78bf9e7b8a6bb41eed8b349ddac3ce46c1d8e",
+      "updatedBodySha256": "e15f20675b940316e46b478454f880888d5964b8afd8ce4bb4bbf71593bdbcc6",
+      "updatedAt": "2026-11-15T12:18:30Z"
+    },
+    {
+      "number": 31,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/31",
+      "baselineBodySha256": "0ba5c005f08d4d5633974ab88ab78bf9e7b8a6bb41eed8b349ddac3ce46c1d8e",
+      "updatedBodySha256": "09a65e0052aae4522141373b0dc4649d36c87e7d5e6d07bebdca12e2f6170f4d",
+      "updatedAt": "2026-11-15T12:18:31Z"
+    },
+    {
+      "number": 32,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/32",
+      "baselineBodySha256": "bdf5cd19fa19f413d2bbbfe8e78eb2ff8d88f8d67f442921c48b33c7cb62de61",
+      "updatedBodySha256": "b8d946d70de0b424b6eced6bd30619149731cff4b593612ec0841f6e88209f42",
+      "updatedAt": "2026-11-15T12:18:32Z"
+    },
+    {
+      "number": 33,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/33",
+      "baselineBodySha256": "2ff98572bee1819f2e14ba9f14fe798125f41a30f9c9f2016f6afd10d9074126",
+      "updatedBodySha256": "59b055fa6d90a17e928f16a82863d74b6fdd92c0e418bb62e64628da2e97fc9f",
+      "updatedAt": "2026-11-15T12:18:34Z"
+    },
+    {
+      "number": 34,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/34",
+      "baselineBodySha256": "3b9f5dbc6bf183d8b919f0905c373b4e08894572bf9ede5ce80776c7bc5dd716",
+      "updatedBodySha256": "639a2b065859938f1f7151a00af55e433c31b659729a74752b7e250a3fbbe93d",
+      "updatedAt": "2026-11-15T12:18:36Z"
+    },
+    {
+      "number": 35,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/35",
+      "baselineBodySha256": "f9b4b453601d1ac18a277f82f5626e58660824fd38997baab1cf36ce93891d6d",
+      "updatedBodySha256": "09891928e2ce74bf60b171ebfc4b318f4109b95592bd188ab2250f47fbde4413",
+      "updatedAt": "2026-11-15T12:18:37Z"
+    },
+    {
+      "number": 105,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/105",
+      "baselineBodySha256": "330f6de4007d7794d6193bcc7b7596b9a23d6f5fadadc3bede53d1746b5bbc93",
+      "updatedBodySha256": "fa303aa645aa194b3447f62bc90fd3dbfa2ad3a38db25cd4a95cec59e5877f09",
+      "updatedAt": "2026-11-15T12:18:39Z"
+    },
+    {
+      "number": 109,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/109",
+      "baselineBodySha256": "4b65df2f20a9aa8d67408ed3d5979340c67b642b2883f150a365579890612392",
+      "updatedBodySha256": "373f8344e9cdfebbe9529d304288a3afb5cc2e0cc9af117ae38795def62a0b4b",
+      "updatedAt": "2026-11-15T12:18:40Z"
+    },
+    {
+      "number": 226,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/226",
+      "baselineBodySha256": "c2a25a2b16839de4b0b5df78fe0e64bd5ab4b0b15fcfaeeceb83e80c5ae5a36a",
+      "updatedBodySha256": "d3bcf48aa8c0fa2a6ac31f4e6951922002a765e56557bb6797be35a77e4cb5a7",
+      "updatedAt": "2026-11-15T12:18:42Z"
+    },
+    {
+      "number": 227,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/227",
+      "baselineBodySha256": "d4189b575858365abd1468888621d24ba472a0b6c19a9b37c43022d8e4efe05f",
+      "updatedBodySha256": "f3aaaa6994e821094ff5a5e7dd5299c8730ada47469a3a92a315d95736d8c59f",
+      "updatedAt": "2026-11-15T12:18:43Z"
+    },
+    {
+      "number": 230,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/230",
+      "baselineBodySha256": "59f134da4025b98837dc0f471e4bf635db6713766a62b89fe0650b81dd7d2dac",
+      "updatedBodySha256": "c551137f1fb06622dbdf7aff9e82e8147dd55a45d582595e6961ffa508a10512",
+      "updatedAt": "2026-11-15T12:18:44Z"
+    },
+    {
+      "number": 232,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/232",
+      "baselineBodySha256": "e7d86c72ca8c513adf83a360b06da4e63d9b6379d8359621331a23c25da0fca5",
+      "updatedBodySha256": "2b77bc7fa47eeb17d1c2a4c62cdf4291496d0bb435d09a95096e989cf091b8d9",
+      "updatedAt": "2026-11-15T12:18:45Z"
+    },
+    {
+      "number": 233,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/233",
+      "baselineBodySha256": "59f134da4025b98837dc0f471e4bf635db6713766a62b89fe0650b81dd7d2dac",
+      "updatedBodySha256": "6754412af4c146e3ea19b8d31c93ff8017d3717bdcb9ceaf157c4832b3d7de3a",
+      "updatedAt": "2026-11-15T12:18:47Z"
+    },
+    {
+      "number": 259,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/259",
+      "baselineBodySha256": "63c7ad58efd713a2623c1ab4e13e5902b725f8dd986de4221bdb3794b4f55522",
+      "updatedBodySha256": "28db4413c3566cb3d9b6864658dfa6a289dad8271879c2858b8528ae66493e75",
+      "updatedAt": "2026-11-15T12:18:48Z"
+    },
+    {
+      "number": 260,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/260",
+      "baselineBodySha256": "1acd10482859178e3ac23b5245d4149fc584c52608d582ce64dccd69293bd873",
+      "updatedBodySha256": "eadcc2cfb67d424cf91d869b0091111bc50870a06e944918c4ad0d554cae2e1b",
+      "updatedAt": "2026-11-15T12:18:49Z"
+    },
+    {
+      "number": 261,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/261",
+      "baselineBodySha256": "39a2522f4f772a2e6c653c9e3b23b797c0dddbb06682e4d8c441c618dcb6e0e4",
+      "updatedBodySha256": "9483723caf22da52dce29c6201d9fa082635354facfa1b0e4660a23cf222b8bd",
+      "updatedAt": "2026-11-15T12:18:50Z"
+    },
+    {
+      "number": 262,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/262",
+      "baselineBodySha256": "6f147959429919f6149a632731033853f0f8b704e5b249129306a8b01ae1f6df",
+      "updatedBodySha256": "c21054cd0db28aef4c4f5f2b0114a11e4abb23293879804cba48f747bf72ee3a",
+      "updatedAt": "2026-11-15T12:18:52Z"
+    },
+    {
+      "number": 263,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/263",
+      "baselineBodySha256": "a53cedb0fc0034d65a7130ea04d1fdd6c1b24107e66730f8f558dbb7ec26f0e8",
+      "updatedBodySha256": "cd1ab51e24a7d63c719630fb9aa854dfe8c083aad83de95b5d7a00a299705510",
+      "updatedAt": "2026-11-15T12:18:53Z"
+    },
+    {
+      "number": 264,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/264",
+      "baselineBodySha256": "d8345dee22d4b9731c9be6bcf0952f8ed44ec2d418c08f68384396b0a15a4540",
+      "updatedBodySha256": "a320704c5f6f71334d3589c10d72914dd6e0d0681f9cf959a13508e0e1758e88",
+      "updatedAt": "2026-11-15T12:18:54Z"
+    },
+    {
+      "number": 266,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/266",
+      "baselineBodySha256": "27f595604a912a7cc01aeed64ac6c7ebe6cc3cc41c0dca547f1de8096193b763",
+      "updatedBodySha256": "a4afdb1f0707c7aee275ced03e45900aa96e991d9c8291eeb8db57f2a6c39911",
+      "updatedAt": "2026-11-15T12:18:56Z"
+    },
+    {
+      "number": 267,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/267",
+      "baselineBodySha256": "0055e6ac1deb5084d28c0364dd3deabbb0f898a0cfc3051c69e19ae7caf9353b",
+      "updatedBodySha256": "8c4b8c8a44e22119051880dae32096b620cd1db21438a5a2534d99814f1c62de",
+      "updatedAt": "2026-11-15T12:18:58Z"
+    },
+    {
+      "number": 268,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/268",
+      "baselineBodySha256": "53ffc8293f81502fc15eed1d8b9eb14a77d9c5e400d2ab43790d3eb2de17417c",
+      "updatedBodySha256": "db691286f2ff5ddef035ddd8c393ba76eb9711ae2ec468a3685a6401ec3ac2e5",
+      "updatedAt": "2026-11-15T12:18:59Z"
+    },
+    {
+      "number": 269,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/269",
+      "baselineBodySha256": "f8f9cec0d5017e1bb1bed2d0193a7996c41683b855983bde00caec5f20024696",
+      "updatedBodySha256": "a1476c8e25e626bf3a7bf03de9ce146008834690de11f427331ed58310542f44",
+      "updatedAt": "2026-11-15T12:19:01Z"
+    },
+    {
+      "number": 270,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/270",
+      "baselineBodySha256": "b66794f569153845ab26b567b96a04e61c0b2906157bbc66f3bb68333d5b0a73",
+      "updatedBodySha256": "4b34ccab60ae24d8031ba67c07a7cca4787a7fbb967bf623758f0c3da18a3de6",
+      "updatedAt": "2026-11-15T12:19:02Z"
+    },
+    {
+      "number": 271,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/271",
+      "baselineBodySha256": "73b5e9e6c72f824a9055a0e0a1bf000490c2ac7db7f066efe1c4b7e2cf0e7be8",
+      "updatedBodySha256": "f631c2893a162f2db964c0eb15a3556675aeb4b027ead1647b45ffd8788a7601",
+      "updatedAt": "2026-11-15T12:19:03Z"
+    },
+    {
+      "number": 272,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/272",
+      "baselineBodySha256": "c008f577974748e7a5707fee7542c07ce12e632b9d73caf792015aff560eb173",
+      "updatedBodySha256": "fe0f20eb450c3212cff40a75ec17863f0d78f9465c25c28276a14e09c36f0c4f",
+      "updatedAt": "2026-11-15T12:19:05Z"
+    },
+    {
+      "number": 273,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/273",
+      "baselineBodySha256": "939f50d6c6d07870bdd345015e60b89e997f623ee0dfac30a56f700acd102f4c",
+      "updatedBodySha256": "600e27cd3c868184c1bda088f274f22ef6e5f801b8f7fdbd91cef98a8e84b2b6",
+      "updatedAt": "2026-11-15T12:19:06Z"
+    },
+    {
+      "number": 274,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/274",
+      "baselineBodySha256": "e17f15105e79b44dc2bd42d0249d10d5d679a69869124da7c074dd0b3d723641",
+      "updatedBodySha256": "aa1c0a401af882db33dc11892e4d4cd31caff5a45715e8fd0c4354b8a0cbedb9",
+      "updatedAt": "2026-11-15T12:19:07Z"
+    },
+    {
+      "number": 275,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/275",
+      "baselineBodySha256": "643de6cdc44d044e030165a2aacaac5160955db79ca28b70f980219efd8ee4d6",
+      "updatedBodySha256": "4aea0d31c0bd5f91e368c2bf0f15a6124e36a9b1f08f6f996196076e60ab5b8d",
+      "updatedAt": "2026-11-15T12:19:08Z"
+    },
+    {
+      "number": 276,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/276",
+      "baselineBodySha256": "9f1136b146cbe6a78f5ede5a5f3347cada16f53017826f7b5ecfb9f304181192",
+      "updatedBodySha256": "4d8fa0cd6c12dea24982a9d2a00d21465f80e5c9f1128e9b20c32d32271a9042",
+      "updatedAt": "2026-11-15T12:19:10Z"
+    },
+    {
+      "number": 277,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/277",
+      "baselineBodySha256": "aab40b1d0c0764b9156af2dfb2a98e95c5a95fedbc5ff58ac0d7bbada29f6d48",
+      "updatedBodySha256": "1cc2cc3a6b49940b768495c8b995adff5eed0a8175fdc86c2e6326b87e866e12",
+      "updatedAt": "2026-11-15T12:19:11Z"
+    },
+    {
+      "number": 278,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/278",
+      "baselineBodySha256": "d0626c2caefa477cf3e0f840194cdf18d3c94f5cafd8d3ead222cb2a44de1645",
+      "updatedBodySha256": "d98bb59b0db807c7cf543dd66d2db57d15074d3d7ef5e27b7005eede7fed7f16",
+      "updatedAt": "2026-11-15T12:19:12Z"
+    },
+    {
+      "number": 279,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/279",
+      "baselineBodySha256": "acb9ca0aa903f9cf53d1e377a74fd74c14951721c052f64d2c5616f9482c8015",
+      "updatedBodySha256": "1cb36e8fe77041eec2e59a96a3156509c103c10224aec4ea80ba4295339cfa00",
+      "updatedAt": "2026-11-15T12:19:13Z"
+    },
+    {
+      "number": 363,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/363",
+      "baselineBodySha256": "7131173ca07a1d7a97b6513aaa65a6be5c663ba0b2a58a227d3d95dc30fbd111",
+      "updatedBodySha256": "0042db339b6b7888cedfd87393c0f5b742d8bfb4994e2079f9049348744c3f42",
+      "updatedAt": "2026-11-15T12:19:15Z"
+    },
+    {
+      "number": 364,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/364",
+      "baselineBodySha256": "31dcd936fa9c9b8383575fc586debe7e7f4394e272f89b0bdfba498b3426100f",
+      "updatedBodySha256": "862249e8c7f524bcdde230803506ff0f69a65c97c1491d4eb193667655f5252f",
+      "updatedAt": "2026-11-15T12:19:16Z"
+    },
+    {
+      "number": 365,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/365",
+      "baselineBodySha256": "2632244ccfe639c6a048102b741de4e6e498506a7aef04306fbb09e47e05ffdf",
+      "updatedBodySha256": "75733d936390bb6c3fd833c6a1fbdba790d3a95e4a91144410dfcb6f0b4ca009",
+      "updatedAt": "2026-11-15T12:19:17Z"
+    },
+    {
+      "number": 366,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/366",
+      "baselineBodySha256": "4ef1a4565828d61708938fadef2aafe0e04eb1873d24869a480fe85cd36318e2",
+      "updatedBodySha256": "0f82072bf74f7b88bfac1229510d8dfc5597911eef2660e48308dc5a469e99df",
+      "updatedAt": "2026-11-15T12:19:19Z"
+    },
+    {
+      "number": 427,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/427",
+      "baselineBodySha256": "8d330bb594af994240f250a7f5e49f2ce2ff2bdf6dd506bdb507890cf51670a0",
+      "updatedBodySha256": "773666eea1679b5a4d6687f1130d8c82796dd848fc66da5c49352d99d5bbb551",
+      "updatedAt": "2026-11-15T12:19:20Z"
+    },
+    {
+      "number": 443,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/443",
+      "baselineBodySha256": "29a9eb51bc9cf926c167f220190819895983051c3a3b9fa89192f74915514684",
+      "updatedBodySha256": "264636e6867b92b52e0ccf312140ad24d9b22f26e185a4e8f942b60b25c369c3",
+      "updatedAt": "2026-11-15T12:19:22Z"
+    },
+    {
+      "number": 444,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/444",
+      "baselineBodySha256": "abaaa32e5a7bd6ad63305f13c05180235c2a7b833f033a72a5a8937878d6e6b4",
+      "updatedBodySha256": "d1a40c660db77b80de61893e4f6641c0c9b981b135209ad0ed3999cc38997461",
+      "updatedAt": "2026-11-15T12:19:24Z"
+    },
+    {
+      "number": 445,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/445",
+      "baselineBodySha256": "c141671aa4b683282957e46bac847de4e4364e9c9fed23826e0dd72fe8b7e225",
+      "updatedBodySha256": "4666fd237df8e365493040ebb8b1865f23648688750079caeb82f8b377ab6529",
+      "updatedAt": "2026-11-15T12:19:25Z"
+    },
+    {
+      "number": 446,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/446",
+      "baselineBodySha256": "cde5bcf598133c8824027cec1cd431b97663fd51a734867dd86eaf96fb2107f9",
+      "updatedBodySha256": "bdeb2bf203916be56245c5cb3a338bca727e046cf6a3c95713cdec8400348058",
+      "updatedAt": "2026-11-15T12:19:26Z"
+    },
+    {
+      "number": 447,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/447",
+      "baselineBodySha256": "8901c16204babac979a7e881bbce64fb4fe93b3a5f9e74f2176918b16bdda577",
+      "updatedBodySha256": "d0c4bab78058fcc59b2c963fed90525c2a3813b78985abb510502c2cff9128a4",
+      "updatedAt": "2026-11-15T12:19:28Z"
+    },
+    {
+      "number": 504,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/504",
+      "baselineBodySha256": "3079eaca49d5af516e11d55ea4a4a80aadbff0f53ff1dd007fa0b719981be40b",
+      "updatedBodySha256": "d21d44b2ec75b746a1a0c842202a29b5c9c9550e551951a9cd0159324bdaaa8f",
+      "updatedAt": "2026-11-15T12:19:30Z"
+    },
+    {
+      "number": 505,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/505",
+      "baselineBodySha256": "c1a396b750731d49ebc31a77eeb3022c093f14978fdaf6f3a0208c4d02d673eb",
+      "updatedBodySha256": "35fb83ff092d9ef10f331706d6087fe43981ebd20a7a443980ffe6057c9afdea",
+      "updatedAt": "2026-11-15T12:19:31Z"
+    },
+    {
+      "number": 506,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/506",
+      "baselineBodySha256": "b8f538464f0178b1fd2d3ef5123c16ccca6955304c61f1003576dfed8a1370d2",
+      "updatedBodySha256": "004d02462c600658e204818a1943befca169851782f2ee923ba1382f5ac6dfc8",
+      "updatedAt": "2026-11-15T12:19:32Z"
+    },
+    {
+      "number": 507,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/507",
+      "baselineBodySha256": "4a050ecd66ac219666438a0070d2f1ea92107b4dffd8348824b10abd0ee35cb3",
+      "updatedBodySha256": "d05b216d3b95216adc700e9d2293a4bd9d52c9801c6d1311cf8247bbc7667967",
+      "updatedAt": "2026-11-15T12:19:34Z"
+    },
+    {
+      "number": 508,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/508",
+      "baselineBodySha256": "fa4df85ea70d313e6912b5998521d167f32b9390db3e5fb013c410ec4f164ec8",
+      "updatedBodySha256": "98af60bf4980a87b71f0ded37fdb28a91e20f31d8466d25fa7996e1724554f67",
+      "updatedAt": "2026-11-15T12:19:35Z"
+    },
+    {
+      "number": 509,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/509",
+      "baselineBodySha256": "c4965465c1079e0dc26c88daa7692b02dfcc1ff9f856091f372701d942d9d3db",
+      "updatedBodySha256": "876a17685ab6c921536b02f87cf3009033fd02afeb4bd6d24d0c20ad4743ae5e",
+      "updatedAt": "2026-11-15T12:19:36Z"
+    },
+    {
+      "number": 510,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/510",
+      "baselineBodySha256": "f2c2569f5a690e587f3a492d5b0d735648400ffcc12fa9dbffbfe9cc31d3cdee",
+      "updatedBodySha256": "d2b2cafe57dc0d7f67ff7423318eb0feb74341bde2b882af156c1794848a6530",
+      "updatedAt": "2026-11-15T12:19:37Z"
+    },
+    {
+      "number": 511,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/511",
+      "baselineBodySha256": "3cc965328b19d21404e9ba1a7533e870d91cea4dcd0a1ab7c15e2d7ea09417b8",
+      "updatedBodySha256": "a877a84d755808d36946e3ed78180502786919c1a5aa04d9e1d768df3a85b0c1",
+      "updatedAt": "2026-11-15T12:19:39Z"
+    },
+    {
+      "number": 512,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/512",
+      "baselineBodySha256": "17c702b75bbf4b7700095e5361834a9a2905c9eff93d270165ab309a1692637d",
+      "updatedBodySha256": "7a85ef2d1223d5fc22671be96ca358b1fdf269cc0c7d9b58b89e9ddbb18933ef",
+      "updatedAt": "2026-11-15T12:19:40Z"
+    },
+    {
+      "number": 513,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/513",
+      "baselineBodySha256": "99edc0e48bfd9751c9d1579a59d32b7c4764d5e9e06afa5db68bec2c4e16e7c8",
+      "updatedBodySha256": "9fa10417e1bc776a34e40a1552d733c12fa380e0ae5f66fdf4f8d75225c511ca",
+      "updatedAt": "2026-11-15T12:19:41Z"
+    },
+    {
+      "number": 747,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/747",
+      "baselineBodySha256": "0866c637d3047335659a8146789d7357e7eb7df3893394610d3a54121d56ba1f",
+      "updatedBodySha256": "f79a01a7d2c4096eb5f66cd1d17d575287e885ea7b6df6142697cc09e1bf3625",
+      "updatedAt": "2026-11-15T12:19:43Z"
+    },
+    {
+      "number": 932,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/932",
+      "baselineBodySha256": "42828d16937338efb6f448d882166e9364dfaa3d1539bb42dd2714697f6c54bd",
+      "updatedBodySha256": "aad1f770d47294998e70d4a68e5f18d8ce5559fc2955a67ade4d4833e3eeeafa",
+      "updatedAt": "2026-11-15T12:19:44Z"
+    },
+    {
+      "number": 935,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/935",
+      "baselineBodySha256": "92269f9e8448deeae9139cc81500440af33b8b46a38a0ca8531bb11c747d79d9",
+      "updatedBodySha256": "8be77eee8aab51c148f2f6b026e05084e9be1fd8e663118d9b3ab14860be0c62",
+      "updatedAt": "2026-11-15T12:19:45Z"
+    },
+    {
+      "number": 941,
+      "result": "updated",
+      "url": "https://github.com/moldovancsaba/mvp-factory-control/issues/941",
+      "baselineBodySha256": "7411598fc845c0649dca82eeafee0c3df44ca33397efc60e5e1753ba87b9be43",
+      "updatedBodySha256": "d25fe915391c861e5677da830dfbd7bd5546aff9a88e20a5de5b908ede89e422",
+      "updatedAt": "2026-11-15T12:19:47Z"
+    }
+  ],
+  "duplicateClosures": [
+    {
+      "number": 233,
+      "canonical": 230,
+      "state": "closed",
+      "reason": "not_planned"
+    },
+    {
+      "number": 31,
+      "canonical": 30,
+      "state": "closed",
+      "reason": "not_planned"
+    }
+  ]
+}
