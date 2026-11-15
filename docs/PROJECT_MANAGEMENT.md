@@ -6,6 +6,12 @@
 
 ## Source Of Truth
 
+Owner instruction, 2026-11-15: every repository has an associated GitHub Project board. Discover and inspect that board alongside the repository issues before classifying, prioritising or updating work. A board that is not linked in the README, missing from a central listing, or inaccessible with the current connection must be recorded as undiscovered/access-blocked, never assumed absent. Project 1 is the portfolio control board; it does not replace a product's own board or authorize moving its work here.
+
+Owner clarification, 2026-11-15: project boards are the owner's single source of truth and historical context. **Read boards only; never modify them. Update repository issues only.** Do not add/remove cards, edit draft cards, change statuses, fields, options, order or project metadata. Record discrepancies and proposed actions in the relevant issues without applying board changes. This supersedes older instructions in this document that suggest keeping board state aligned by writing to it.
+
+During audits, compare issue state, board state, closure reason, migration comments and destination issues separately. A migrated or duplicate tracking card is not proof that the underlying product feature shipped. Preserve canonical destination links and do not reactivate reversed migrations.
+
 Delivery truth lives in:
 
 - GitHub issues in this repository
@@ -14,6 +20,7 @@ Delivery truth lives in:
 Board:
 
 - [GitHub Project 1](https://github.com/users/moldovancsaba/projects/1)
+- [Manual movement and Scrum notes](PROJECT_BOARD_MOVEMENT_LOG.md) — observed card status, proposed destination, evidence, owner decision and verified manual execution. This log never authorizes board writes.
 
 ## Delivery Contract
 
